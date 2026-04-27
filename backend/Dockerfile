@@ -29,4 +29,4 @@ COPY . .
 EXPOSE 5000
 
 # Start the server
-CMD ["node", "index.js"]
+CMD ["node", "server.js"]
