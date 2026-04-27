@@ -1,0 +1,305 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-navy-900 text-slate-100 font-sans antialiased;
+    background-image:
+      radial-gradient(ellipse at 20% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 80%, rgba(99, 102, 241, 0.06) 0%, transparent 60%);
+    min-height: 100vh;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-navy-800;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-brand-700 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-brand-500;
+  }
+}
+
+/* ── Components ───────────────────────────────────────────────────────────── */
+@layer components {
+  /* Glass card */
+  .glass-card {
+    @apply rounded-2xl border border-white/5 bg-navy-800/70 backdrop-blur-sm shadow-card;
+    background: linear-gradient(135deg, rgba(17, 29, 53, 0.9) 0%, rgba(13, 21, 40, 0.9) 100%);
+  }
+
+  .glass-card-hover {
+    @apply glass-card transition-all duration-300 hover:border-brand-500/30 hover:shadow-glow;
+  }
+
+  /* Primary button */
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm
+           bg-brand-600 text-white border border-brand-500/50
+           hover:bg-brand-500 hover:shadow-glow
+           disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-brand-600 disabled:hover:shadow-none
+           transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-400/50;
+  }
+
+  /* Secondary button */
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm
+           bg-navy-700 text-slate-200 border border-white/10
+           hover:bg-navy-600 hover:border-white/20
+           disabled:opacity-40 disabled:cursor-not-allowed
+           transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-400/50;
+  }
+
+  /* Danger button */
+  .btn-danger {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm
+           bg-red-900/40 text-red-400 border border-red-500/30
+           hover:bg-red-900/60 hover:text-red-300
+           disabled:opacity-40 disabled:cursor-not-allowed
+           transition-all duration-200;
+  }
+
+  /* Success button */
+  .btn-success {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm
+           bg-emerald-700 text-white border border-emerald-500/50
+           hover:bg-emerald-600 hover:shadow-lg
+           disabled:opacity-40 disabled:cursor-not-allowed
+           transition-all duration-200;
+  }
+
+  /* Form input */
+  .form-input {
+    @apply w-full bg-navy-900/60 border border-white/10 rounded-xl px-4 py-3
+           text-slate-100 placeholder-slate-500 text-sm
+           focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500/50
+           transition-all duration-200;
+  }
+
+  /* Form textarea */
+  .form-textarea {
+    @apply form-input resize-none leading-relaxed;
+  }
+
+  /* Section label */
+  .section-label {
+    @apply text-xs font-semibold uppercase tracking-widest text-brand-400 mb-3;
+  }
+
+  /* Panel header */
+  .panel-header {
+    @apply flex items-center gap-3 mb-6 pb-4 border-b border-white/5;
+  }
+
+  /* Panel icon */
+  .panel-icon {
+    @apply w-9 h-9 rounded-xl flex items-center justify-center text-lg flex-shrink-0;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-blue {
+    @apply badge bg-brand-900/60 text-brand-300 border border-brand-700/40;
+  }
+
+  .badge-green {
+    @apply badge bg-emerald-900/60 text-emerald-300 border border-emerald-700/40;
+  }
+
+  .badge-yellow {
+    @apply badge bg-yellow-900/40 text-yellow-300 border border-yellow-700/40;
+  }
+
+  .badge-red {
+    @apply badge bg-red-900/40 text-red-300 border border-red-700/40;
+  }
+
+  /* Status dot */
+  .status-dot {
+    @apply w-2 h-2 rounded-full;
+  }
+
+  /* Skill tag */
+  .skill-tag {
+    @apply badge-blue px-3 py-1 text-xs;
+  }
+
+  /* Shimmer loading */
+  .skeleton {
+    @apply rounded-lg bg-gradient-to-r from-navy-700 via-navy-600 to-navy-700 bg-[length:200%_100%] animate-shimmer;
+  }
+
+  /* Divider */
+  .divider {
+    @apply border-t border-white/5 my-4;
+  }
+}
+
+/* ── Utilities ────────────────────────────────────────────────────────────── */
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-brand-300 to-blue-200 bg-clip-text text-transparent;
+  }
+
+  .glow-text {
+    text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+  }
+}
+
+/* ── Custom animations ─────────────────────────────────────────────────────── */
+.fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.slide-up {
+  animation: slideUp 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Drag & Drop ─────────────────────────────────────────────────────────── */
+.drop-zone {
+  @apply border-2 border-dashed border-white/15 rounded-2xl p-8 text-center
+         transition-all duration-300 cursor-pointer;
+}
+
+.drop-zone:hover,
+.drop-zone.dragging {
+  @apply border-brand-500/60 bg-brand-900/20;
+  box-shadow: inset 0 0 30px rgba(59, 130, 246, 0.06);
+}
+
+/* ── Toast notification ──────────────────────────────────────────────────── */
+.toast {
+  @apply fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-4 rounded-2xl
+         border shadow-xl text-sm font-medium;
+  animation: slideUp 0.3s ease-out forwards;
+}
+
+.toast-success {
+  @apply toast bg-emerald-900/90 border-emerald-500/40 text-emerald-100 backdrop-blur-sm;
+}
+
+.toast-error {
+  @apply toast bg-red-900/90 border-red-500/40 text-red-100 backdrop-blur-sm;
+}
+
+.toast-info {
+  @apply toast bg-navy-700/95 border-brand-500/40 text-brand-100 backdrop-blur-sm;
+}
+
+/* ── Navigation Cards (Dashboard) ─────────────────────────────────────────── */
+.nav-card {
+  @apply relative rounded-2xl border border-white/10 bg-navy-800/70 backdrop-blur-sm
+         p-6 cursor-pointer transition-all duration-300 overflow-hidden
+         hover:border-brand-500/40 hover:shadow-glow hover:-translate-y-0.5;
+  background: linear-gradient(135deg, rgba(17, 29, 53, 0.92) 0%, rgba(13, 21, 40, 0.92) 100%);
+}
+
+.nav-card::before {
+  content: '';
+  @apply absolute inset-0 opacity-0 transition-opacity duration-300;
+  background: radial-gradient(ellipse at 30% 40%, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+}
+
+.nav-card:hover::before {
+  @apply opacity-100;
+}
+
+.nav-card-coming {
+  @apply nav-card opacity-50 cursor-not-allowed hover:translate-y-0 hover:shadow-none hover:border-white/10;
+}
+
+.nav-card-coming::before {
+  display: none;
+}
+
+/* ── Modal ───────────────────────────────────────────────────────────────── */
+.modal-backdrop {
+  background: rgba(5, 10, 22, 0.85);
+  backdrop-filter: blur(12px);
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+.modal-box {
+  @apply rounded-2xl border border-white/10 p-6 shadow-2xl;
+  background: linear-gradient(135deg, rgba(17, 29, 53, 0.98) 0%, rgba(10, 18, 36, 0.98) 100%);
+}
+
+/* ── Step progress indicator (breadcrumb-style) ──────────────────────────── */
+.step-flow {
+  @apply flex items-center gap-2;
+}
+
+.step-dot {
+  @apply w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold
+         border transition-all duration-300;
+}
+
+.step-dot-active {
+  @apply step-dot bg-brand-600 border-brand-500 text-white;
+}
+
+.step-dot-done {
+  @apply step-dot bg-emerald-900/40 border-emerald-500/60 text-emerald-400;
+}
+
+.step-dot-idle {
+  @apply step-dot bg-navy-900/60 border-white/10 text-slate-500;
+}
+
+.step-connector {
+  @apply flex-1 h-px;
+}
+
+.step-connector-done {
+  @apply step-connector bg-gradient-to-r from-emerald-500/40 to-brand-500/40;
+}
+
+.step-connector-idle {
+  @apply step-connector bg-white/5;
+}
+
+/* ── Page hero ───────────────────────────────────────────────────────────── */
+.page-hero {
+  @apply mb-8;
+}
+
+.page-hero h1 {
+  @apply text-2xl font-bold text-white;
+}
+
+.page-hero p {
+  @apply text-sm text-slate-400 mt-1;
+}

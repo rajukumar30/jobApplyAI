@@ -1,0 +1,3130 @@
+[
+  {
+    "id": "resume_1776711245807_l20h72r",
+    "filename": "1776711170687_Product_Manager_update.pdf",
+    "originalName": "Product_Manager_update.pdf",
+    "filePath": "F:\\Raju\\codewithraju\\RajuKumar\\RajuKumar\\jobapply-ai\\backend\\resumes\\1776711170687_Product_Manager_update.pdf",
+    "fileSize": 90574,
+    "uploadedAt": "2026-04-20T18:54:05.807Z",
+    "rawText": "\n\nNIKITA SHARMA\nÆ 6033088799• R nikita.sharma.data@gmail.com• ½ Bangalore, India\n ̄ linkedin.com/in/nikitasharma-tech•  github.com/nikitasharma-data27\nPROFESSIONAL SUMMARY\nProduct-focused Data / Product Analyst with expertise in SQL, Python, Power BI, and Excel.  Skilled\nin analyzing user behavior, product performance, and business metrics to drive data-informed product\ndecisions.  Experienced in A/B testing, funnel analysis, KPI tracking, and dashboarding to improve\nuser engagement, retention, and revenue growth.\nTECHNICAL SKILLS\nProduct Analytics:User Behavior Analysis, Funnel Analysis, Cohort Analysis, A/B Testing,\nRetention Analysis, KPI Tracking\nProgramming:Python (Pandas, NumPy), SQL (Joins, CTEs, Window Functions), Ba-\nsic R\nData Visualization:Power BI, Dashboarding, Matplotlib, Seaborn\nTools:Excel, Google Sheets, Jupyter Notebook, GitHub\nConcepts:Product Metrics (DAU, MAU, Retention, Churn), ETL, Data Modeling,\nBusiness Intelligence\nPROFESSIONAL EXPERIENCE\nResearch Analyst Associate2026\nLearners Point Academy, Bangalore\n•  Analyzed 12,000+  user  and  operational  data  records  to  identify  patterns  in  user  engagement  and\nproduct usage.\n•  Performed data cleaning, transformation, and validation, improving data accuracy by 25% for better\nproduct insights.\n•  Built interactive dashboards in Power BI to track key product metrics (KPIs), reducing reporting time\nby 35%.\n•  Conducted trend and cohort analysis to identify user retention patterns and behavioral insights.\n•  Wrote optimized SQL queries to extract product-related insights, improving reporting efficiency.\n•  Collaborated with stakeholders to translate business problems into data-driven product decisions.\nPRODUCT ANALYTICS PROJECTS\nVendor & Inventory Performance Analysis\n github.com/nikitasharma-data27/Vendor-Analysis\n•  Analyzed vendor and inventory datasets to identify inefficiencies impacting product availability.\n•  Performed trend analysis and KPI tracking to optimize procurement and inventory decisions.\n•  Identified 15% cost reduction opportunities, improving overall product supply efficiency.\n•  Built dashboards to monitor performance metrics and support strategic product decisions.\nOnline Retail Product Analysis\n github.com/nikitasharma-data27/sql-python-retail-analysis\n•  Analyzed customer behavior and product performance using SQL and Python.\n•  Conducted funnel and cohort analysis to evaluate conversion and retention metrics.\n•  Identified top-performing product categories contributing to 30% revenue.\n•  Generated insights to improve product positioning and user engagement.\nPatient Analytics Dashboard (Product Perspective)\n github.com/nikitasharma-data27/Patient-Waiting-List–Power-BI\n1\n\n•  Built a Power BI dashboard analyzing user flow and system performance across departments.\n•  Used DAX and ETL techniques to model data for product-level insights.\n•  Improved operational efficiency by 40% through data-driven insights.\n•  Tracked KPIs to optimize service delive",
+    "parsedData": {
+      "name": "NIKITA SHARMA",
+      "email": "",
+      "phone": "",
+      "location": "Bangalore, India",
+      "summary": "Product-focused Data / Product Analyst with expertise in SQL, Python, Power BI, and Excel.  Skilled in analyzing user behavior, product performance, and business metrics to drive data-informed product decisions.",
+      "skills": [
+        "Product Analytics:User Behavior Analysis, Funnel Analysis, Cohort Analysis, A/B Testing, Retention Analysis, KPI Tracking",
+        "Programming:Python (Pandas, NumPy), SQL (Joins, CTEs, Window Functions), R (Basic)",
+        "Data Visualization:Power BI, Dashboarding, Matplotlib, Seaborn",
+        "Tools:Excel, Google Sheets, Jupyter Notebook, GitHub",
+        "Concepts:Product Metrics (DAU, MAU, Retention, Churn), ETL, Data Modeling, Business Intelligence"
+      ],
+      "experience": [
+        {
+          "company": "Learners Point Academy",
+          "role": "Research Analyst Associate",
+          "duration": "2026- ongoing",
+          "description": "Analyzed user and operational data records to identify patterns in user engagement and product usage."
+        }
+      ],
+      "projects": [
+        {
+          "name": "Product Analytics Projects",
+          "description": "Vendor & Inventory Performance Analysis",
+          "technologies": [
+            "Power BI",
+            "SQL"
+          ],
+          "tools": [
+            "GitHub"
+          ]
+        },
+        {
+          "name": "Patient Analytics Dashboard (Product Perspective)",
+          "description": "Built a Power BI dashboard analyzing user flow and system performance across departments.",
+          "technologies": [
+            "Power BI",
+            "DAX",
+            "ETL"
+          ],
+          "tools": [
+            "GitHub"
+          ]
+        }
+      ],
+      "education": [
+        {
+          "institution": "Indira Gandhi National Open University",
+          "degree": "Post Graduate Diploma in Applied Statistics",
+          "year": "2026-ongoing"
+        },
+        {
+          "institution": "University of Delhi",
+          "degree": "Bachelor of Science (Hons) Chemistry",
+          "year": "2024"
+        }
+      ]
+    }
+  },
+  {
+    "id": "resume_1776741845457_h3wxm1k",
+    "filename": "1776741757604_Data_analyst_Update.pdf",
+    "originalName": "Data_analyst_Update.pdf",
+    "filePath": "F:\\Raju\\codewithraju\\RajuKumar\\RajuKumar\\jobapply-ai\\backend\\resumes\\1776741757604_Data_analyst_Update.pdf",
+    "fileSize": 92499,
+    "uploadedAt": "2026-04-21T03:24:05.457Z",
+    "rawText": "\n\nNIKITA SHARMA\nÆ 6033088799• R nikita.sharma.data@gmail.com• ½ Bangalore, India\n ̄ linkedin.com/in/nikitasharma-tech•  github.com/nikitasharma-data27\nPROFESSIONAL SUMMARY\nResults-driven Data Analyst skilled in SQL, Python (Pandas, NumPy), Excel, and Power BI. Ex-\nperienced  in Data Cleaning, EDA, Data Visualization, and Dashboard Development  to  analyze\nlarge datasets (10,000+ records) and generate actionable insights.  Strong in KPI tracking, statistical\nanalysis, and data-driven decision-making.\nTECHNICAL SKILLS\nData Analysis:Data Cleaning, Data Wrangling, EDA, Statistical Analysis, Hypothesis\nTesting, Trend Analysis, Data Interpretation\nProgramming:Python  (Pandas,  NumPy),  SQL  (Joins,  Subqueries,  CTEs,  Window\nFunctions), Basic R\nData Visualization:Power BI, Matplotlib, Seaborn, Dashboard Development\nTools:Excel (Pivot Tables, VLOOKUP, INDEX-MATCH, Data Analysis Tool-\nPak), Google Sheets, Jupyter Notebook, GitHub\nConcepts:Data Modeling, ETL (Extract, Transform, Load), KPI Tracking, Data\nValidation, Business Intelligence\nPROFESSIONAL EXPERIENCE\nResearch Analyst Associate2026\nLearners Point Academy, Bangalore\n•  Processed and analyzed 12,000+ structured and unstructured data records to generate operational\ninsights.\n•  Performed data cleaning, transformation, and validation  using  Python  and  Excel,  improving  data\naccuracy by 25%.\n•  Built 3+ interactive dashboards in Power BI to track KPIs, reducing manual reporting effort by 35%.\n•  Optimized data workflows and reporting processes, decreasing data processing time by 20%.\n•  Wrote and optimized SQL queries to extract and analyze data, improving reporting efficiency and perfor-\nmance.\n•  Collaborated with 4+ stakeholders to gather requirements and deliver data-driven insights for decision-\nmaking.\nDATA ANALYTICS PROJECTS\nVendor & Inventory Performance Analysis\n github.com/nikitasharma-data27/Vendor-Analysis\n•  Analyzed 5,000+ vendor and inventory records  to  identify  inefficiencies  in  procurement  and  stock\nmanagement.\n•  Performed EDA and statistical analysis to evaluate pricing trends and inventory turnover rates.\n•  Identified 15% cost reduction opportunities through vendor performance optimization.\n•  Developed Power BI dashboards to track 5+ KPIs, improving procurement decision-making.\nOnline Retail Sales Analysis\n github.com/nikitasharma-data27/sql-python-retail-analysis\n•  Analyzed 10,000+ transactional records using SQL and Python to identify customer behavior and sales\ntrends.\n•  Wrote complex SQL queries (joins,  aggregations,  window functions) to evaluate revenue and retention\nmetrics.\n1\n\n•  Identified top-performing product categories contributing to 30% of total revenue.\n•  Improved reporting insights by creating visualizations that enhanced decision-making speed by 25%.\nPatient Wait List Analytics Dashboard\n github.com/nikitasharma-data27/Patient-Waiting-List–Power-BI\n•  Built an interactive Power BI dashboard analyzing 8,000+ patient records.\n•  Used DAX, Powe",
+    "parsedData": {
+      "name": "NIKITA SHARMA",
+      "idealRole": "Results-driven Data Analyst skilled in SQL, Python (Pandas, NumPy), Excel, and Power BI. Ex-",
+      "email": "nikita.sharma.data@gmail.com",
+      "phone": "",
+      "location": "Bangalore, India",
+      "summary": "Results-driven Data Analyst skilled in SQL, Python (Pandas, NumPy), Excel, and Power BI. Experienced in Data Cleaning, EDA, Data Visualization, and Dashboard Development to analyze large datasets.",
+      "skills": [
+        "Data Analysis:Data Cleaning, Data Wrangling, EDA, Statistical Analysis, Hypothesis Testing, Trend Analysis, Data Interpretation",
+        "Programming: Python (Pandas, NumPy), SQL (Joins, Subqueries, CTEs, Window Functions), Basic R",
+        "Data Visualization: Power BI, Matplotlib, Seaborn, Dashboard Development",
+        "Tools: Excel (Pivot Tables, VLOOKUP, INDEX-MATCH, Data Analysis Tool-Pak), Google Sheets, Jupyter Notebook, GitHub"
+      ],
+      "tools": [
+        "Excel (Pivot Tables, VLOOKUP, INDEX-MATCH, Data Analysis Tool-Pak)",
+        "Google Sheets",
+        "Jupyter Notebook",
+        "GitHub"
+      ],
+      "experience": [
+        {
+          "company": "Learners Point Academy",
+          "role": "Research Analyst Associate",
+          "duration": "2026"
+        }
+      ],
+      "projects": [
+        {
+          "name": "Vendor & Inventory Performance Analysis",
+          "description": "Analyzed 5,000+ vendor and inventory records to identify inefficiencies in procurement and stock management.",
+          "technologies": [
+            "Data Visualization",
+            "Power BI"
+          ]
+        },
+        {
+          "name": "Online Retail Sales Analysis",
+          "description": "Analyzed 10,000+ transactional records using SQL and Python to identify customer behavior and sales trends.",
+          "technologies": [
+            "SQL",
+            "Python",
+            "Matplotlib",
+            "Seaborn",
+            "Jupyter Notebook"
+          ]
+        },
+        {
+          "name": "Patient Wait List Analytics Dashboard",
+          "description": "Built an interactive Power BI dashboard analyzing 8,000+ patient records. Reduced reporting time by 40% through automation and dashboard optimization.",
+          "technologies": [
+            "Power BI",
+            "Data Analysis",
+            "ETL"
+          ]
+        }
+      ],
+      "education": [
+        {
+          "institution": "Indira Gandhi National Open University",
+          "degree": "Post Graduate Diploma in Applied Statistics",
+          "year": "2026"
+        },
+        {
+          "institution": "University of Delhi",
+          "degree": "Bachelor of Science (Hons) Chemistry",
+          "year": "2024"
+        }
+      ]
+    }
+  },
+  {
+    "id": "resume_1777139741688_8e0sd5c",
+    "filename": "1777139721426_Business_analyst_update__1_.pdf",
+    "originalName": "Business_analyst_update (1).pdf",
+    "filePath": "F:\\Raju\\codewithraju\\RajuKumar\\RajuKumar\\jobapply-ai\\backend\\resumes\\1777139721426_Business_analyst_update__1_.pdf",
+    "fileSize": 91769,
+    "uploadedAt": "2026-04-25T17:55:41.688Z",
+    "rawText": "\n\nNIKITA SHARMA\nÆ 6033088799• R nikita.sharma.data@gmail.com• ½ Bangalore, India\n ̄ linkedin.com/in/nikitasharma-tech•  github.com/nikitasharma-data27\nPROFESSIONAL SUMMARY\nAnalytical Business Analyst with expertise in data analysis, requirement gathering, KPI tracking,\nand business reporting.  Proficient in SQL, Python, Excel, Power BI, and Jira to analyze data and\ndeliver actionable insights.  Experienced in dashboard development, stakeholder communication, and\nprocess improvement to support data-driven decision making and business growth.\nTECHNICAL SKILLS\nBusiness Analysis:Requirement Gathering, Business Requirement Document (BRD), KPI\nTracking, Business Reporting, Stakeholder Communication, Process Im-\nprovement\nData Analysis:Exploratory  Data  Analysis  (EDA),  Data  Cleaning,  Data  Validation,\nTrend Analysis, Statistical Analysis\nVisualization & Reporting:Power BI, Dashboard Development, Data Storytelling\nData Tools:SQL (Joins, CTEs, Aggregations), Python (Pandas, NumPy)\nTools:Excel  (Pivot  Tables,  VLOOKUP),  Google  Sheets,  Jira  (Agile  Task\nTracking), Jupyter Notebook, GitHub\nPROFESSIONAL EXPERIENCE\nResearch Analyst Associate2026\nLearners Point Academy, Bangalore\n•  Analyzed and transformed operational datasets to support business reporting and performance tracking.\n•  Performed data cleaning, validation, and preprocessing using Excel and Python, ensuring high data\naccuracy.\n•  Designed and developed dashboards and reports tracking 5+ KPIs, improving reporting efficiency by\n20%.\n•  Collaborated with stakeholders to gather business requirements and deliver actionable insights.\n•  Documented reporting workflows and implemented process improvements, increasing operational efficiency\nby 15%.\nBUSINESS ANALYTICS PROJECTS\nProjects  focused  on  solving  business  problems  using  data  analysis,  KPI  tracking,  and  reporting  to  support\ndata-driven decision making.\nVendor & Inventory Performance Analysis\n github.com/nikitasharma-data27/Vendor-Analysis\n•  Evaluated vendor and procurement data to identify inefficiencies impacting profitability, cost optimiza-\ntion, and supply chain performance.\n•  Conducted  exploratory  data  analysis  (EDA)  and  statistical  analysis  to  assess  pricing  trends,  sales\nperformance, and inventory turnover.\n•  Built Power BI dashboards tracking 10+ KPIs including cost, revenue, and vendor performance metrics.\n•  Delivered data-driven insights to support procurement strategy, pricing optimization, and busi-\nness decision making.\nOnline Retail Sales Analysis\n github.com/nikitasharma-data27/sql-python-retail-analysis\n•  Analyzed 10,000+ transaction records using SQL and Python to identify sales trends, customer be-\n1\n\nhavior, and revenue patterns.\n•  Assessed customer retention, product performance, and revenue distribution to uncover growth\nopportunities.\n•  Generated business insights supporting marketing strategy, sales optimization, and revenue growth.\nPatient Wait List Analytics Dashboard\n github.com/nikitasharma-data27/Patient-Waiting-List–Power-BI\n•  Designed an interactive Power BI dashboard to monitor hospital wait times, operational KPIs, and\nperformance metrics.\n•  Implemented Power Query and DAX for data transformation, KPI tracking, and reporting au-\ntomation.\n•  Provided insights to improve resource allocation, operational efficiency, and performance monitor-\ning.\nEDUCATION\nPost Graduate Diploma in Applied Statistics (Ongoing)\nIndira Gandhi National Open University2026\nBachelor of Science (Hons) Chemistry\nUniversity of Delhi2024\nCERTIFICATIONS\n•  Google Data Analytics Professional Certificate – Coursera\n•  Deloitte Data Analytics Virtual Experience – Forage\n2",
+    "parsedData": {
+      "name": "NIKITA SHARMA",
+      "email": "nikita.sharma.data@gmail.com",
+      "phone": "6033088799",
+      "location": "Bangalore, India",
+      "linkedIn": "linkedin.com/in/nikitasharma-tech",
+      "github": "github.com/nikitasharma-data27",
+      "website": null,
+      "idealRole": "Business Analyst",
+      "yearsOfExperience": null,
+      "summary": "Analytical Business Analyst with expertise in data analysis, requirement gathering, KPI tracking, and business reporting. Proficient in SQL, Python, Excel, Power BI, and Jira to analyze data and deliver actionable insights. Experienced in dashboard development, stakeholder communication, and process improvement to support data-driven decision making and business growth.",
+      "skills": [
+        "Requirement Gathering",
+        "Business Requirement Document (BRD)",
+        "KPI Tracking",
+        "Business Reporting",
+        "Stakeholder Communication",
+        "Process Improvement",
+        "Exploratory Data Analysis (EDA)",
+        "Data Cleaning",
+        "Data Validation",
+        "Trend Analysis",
+        "Statistical Analysis",
+        "Dashboard Development",
+        "Data Storytelling",
+        "SQL",
+        "Joins",
+        "CTEs",
+        "Aggregations",
+        "Python",
+        "Pandas",
+        "NumPy",
+        "Pivot Tables",
+        "VLOOKUP",
+        "Agile Task Tracking",
+        "Data Transformation",
+        "Reporting Automation",
+        "Resource Allocation",
+        "Operational Efficiency",
+        "Performance Monitoring",
+        "Cost Optimization",
+        "Supply Chain Performance",
+        "Pricing Optimization",
+        "Marketing Strategy",
+        "Sales Optimization",
+        "Revenue Growth",
+        "Customer Retention",
+        "Product Performance",
+        "Data Accuracy"
+      ],
+      "tools": [
+        "Power BI",
+        "Excel",
+        "Google Sheets",
+        "Jira",
+        "Jupyter Notebook",
+        "GitHub",
+        "Power Query",
+        "DAX"
+      ],
+      "certifications": [
+        "Google Data Analytics Professional Certificate - Coursera",
+        "Deloitte Data Analytics Virtual Experience - Forage"
+      ],
+      "languages": [],
+      "experience": [
+        {
+          "company": "Learners Point Academy",
+          "role": "Research Analyst Associate",
+          "startDate": null,
+          "endDate": "2026",
+          "duration": null,
+          "location": "Bangalore",
+          "employmentType": null,
+          "description": "Analyzed and transformed operational datasets to support business reporting and performance tracking.",
+          "achievements": [
+            "Performed data cleaning, validation, and preprocessing using Excel and Python, ensuring high data accuracy.",
+            "Designed and developed dashboards and reports tracking 5+ KPIs, improving reporting efficiency by 20%.",
+            "Collaborated with stakeholders to gather business requirements and deliver actionable insights.",
+            "Documented reporting workflows and implemented process improvements, increasing operational efficiency by 15%."
+          ],
+          "technologiesUsed": [
+            "Excel",
+            "Python"
+          ]
+        }
+      ],
+      "projects": [
+        {
+          "name": "Vendor & Inventory Performance Analysis",
+          "description": "Evaluated vendor and procurement data to identify inefficiencies impacting profitability, cost optimization, and supply chain performance. Conducted exploratory data analysis (EDA) and statistical analysis to assess pricing trends, sales performance, and inventory turnover.",
+          "impact": "Built Power BI dashboards tracking 10+ KPIs including cost, revenue, and vendor performance metrics. Delivered data-driven insights to support procurement strategy, pricing optimization, and business decision making.",
+          "technologies": [
+            "Power BI"
+          ],
+          "url": "github.com/nikitasharma-data27/Vendor-Analysis"
+        },
+        {
+          "name": "Online Retail Sales Analysis",
+          "description": "Analyzed 10,000+ transaction records using SQL and Python to identify sales trends, customer behavior, and revenue patterns. Assessed customer retention, product performance, and revenue distribution to uncover growth opportunities.",
+          "impact": "Generated business insights supporting marketing strategy, sales optimization, and revenue growth.",
+          "technologies": [
+            "SQL",
+            "Python"
+          ],
+          "url": "github.com/nikitasharma-data27/sql-python-retail-analysis"
+        },
+        {
+          "name": "Patient Wait List Analytics Dashboard",
+          "description": "Designed an interactive Power BI dashboard to monitor hospital wait times, operational KPIs, and performance metrics.",
+          "impact": "Implemented Power Query and DAX for data transformation, KPI tracking, and reporting automation. Provided insights to improve resource allocation, operational efficiency, and performance monitoring.",
+          "technologies": [
+            "Power BI",
+            "Power Query",
+            "DAX"
+          ],
+          "url": "github.com/nikitasharma-data27/Patient-Waiting-List–Power-BI"
+        }
+      ],
+      "education": [
+        {
+          "institution": "Indira Gandhi National Open University",
+          "degree": "Post Graduate Diploma in Applied Statistics (Ongoing)",
+          "gpa": null,
+          "graduationYear": "2026",
+          "relevantCourses": []
+        },
+        {
+          "institution": "University of Delhi",
+          "degree": "Bachelor of Science (Hons) Chemistry",
+          "gpa": null,
+          "graduationYear": "2024",
+          "relevantCourses": []
+        }
+      ],
+      "awards": [],
+      "publications": [],
+      "volunteerWork": []
+    }
+  },
+  {
+    "id": "tailored_1777185891799",
+    "filename": "tailored_resume_SEO_Analyst_Intern_1777185872622.pdf",
+    "originalName": "Tailored Resume for SEO Analyst Intern.pdf",
+    "fileSize": 9405,
+    "uploadedAt": "2026-04-26T06:44:51.799Z",
+    "parsedData": {
+      "name": "NIKITA SHARMA",
+      "email": "nikita.sharma.data@gmail.com",
+      "phone": "6033088799",
+      "tools": [
+        "Python",
+        "Pandas",
+        "NumPy",
+        "R",
+        "Power BI",
+        "Matplotlib",
+        "Seaborn",
+        "Excel",
+        "Google Sheets",
+        "Jupyter Notebook",
+        "GitHub",
+        "DAX"
+      ],
+      "awards": [],
+      "github": "github.com/nikitasharma-data27",
+      "skills": [
+        "SEO",
+        "Digital Marketing",
+        "Keyword Research & Analysis",
+        "Competitor Analysis",
+        "Website Performance Tracking",
+        "Content Optimization",
+        "Google Analytics",
+        "SQL (Joins, CTEs, Window Functions)",
+        "Business Intelligence",
+        "Dashboarding (Power BI)",
+        "KPI Tracking",
+        "Trend Analysis",
+        "User Behavior Analysis",
+        "Funnel Analysis",
+        "Data Cleaning & Transformation",
+        "ETL",
+        "Collaboration",
+        "Stakeholder Management"
+      ],
+      "summary": "Data-driven analyst with a strong foundation in SQL, Power BI, and Python, skilled in transforming complex data into actionable insights. Experienced in tracking KPIs, analyzing user behavior, and building performance dashboards. Eager to apply analytical expertise to an SEO Analyst Intern role, focusing on keyword research, competitor analysis, and content optimization to enhance website performance and support digital marketing initiatives.",
+      "website": null,
+      "linkedIn": "linkedin.com/in/nikitasharma-tech",
+      "location": "Bangalore, India",
+      "projects": [
+        {
+          "url": "github.com/nikitasharma-data27/Vendor-Analysis",
+          "name": "Vendor & Inventory Performance Analysis",
+          "impact": "Identified 15% cost reduction opportunities, improving overall product supply efficiency. Built dashboards to monitor performance metrics and support strategic product decisions.",
+          "description": "Conducted a comprehensive performance analysis by tracking KPIs and market trends, identifying key opportunities for optimization—a process directly applicable to SEO competitor analysis.",
+          "technologies": [
+            "SQL",
+            "Python",
+            "Power BI"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/sql-python-retail-analysis",
+          "name": "Online Retail Product Analysis",
+          "impact": "Identified top-performing product categories contributing to 30% revenue. Generated insights to improve product positioning and user engagement.",
+          "description": "Utilized SQL and Python to perform a competitor analysis and evaluate customer behavior, analyzing conversion funnels and content performance to inform digital marketing strategies.",
+          "technologies": [
+            "SQL",
+            "Python"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/Patient-Waiting-List–Power-BI",
+          "name": "Patient Analytics Dashboard (Product Perspective)",
+          "impact": "Improved operational efficiency by 40% through data-driven insights. Tracked KPIs to optimize service delivery and user experience.",
+          "description": "Designed and built a Power BI dashboard to track website user flow and system performance, providing actionable insights for on-page content optimization and user experience improvements.",
+          "technologies": [
+            "Power BI",
+            "DAX",
+            "ETL"
+          ]
+        }
+      ],
+      "education": [
+        {
+          "gpa": null,
+          "degree": "Post Graduate Diploma in Applied Statistics",
+          "institution": "Indira Gandhi National Open University",
+          "graduationYear": 2026,
+          "relevantCourses": []
+        },
+        {
+          "gpa": null,
+          "degree": "Bachelor of Science (Hons) Chemistry",
+          "institution": "University of Delhi",
+          "graduationYear": 2024,
+          "relevantCourses": []
+        }
+      ],
+      "idealRole": "Product Data Analyst",
+      "languages": [],
+      "experience": [
+        {
+          "role": "Research Analyst Associate",
+          "company": "Learners Point Academy",
+          "endDate": "2026",
+          "duration": null,
+          "location": "Bangalore",
+          "startDate": null,
+          "description": "Responsible for analyzing user and operational data, performing data cleaning and transformation, building interactive dashboards, conducting trend and cohort analysis, writing optimized SQL queries, and collaborating with stakeholders to drive data-informed product decisions.",
+          "achievements": [
+            {
+              "text": "Ensured 25% greater data accuracy through rigorous cleaning and validation, providing a reliable foundation for performance tracking and strategic analysis.",
+              "_margin": null,
+              "_inlines": [],
+              "_minWidth": 56.08,
+              "_maxWidth": 689.58,
+              "listMarker": {
+                "canvas": [
+                  {
+                    "x": 41.666666666666664,
+                    "y": 311.5716666666667,
+                    "r1": 1.6666666666666667,
+                    "r2": 1.6666666666666667,
+                    "type": "ellipse",
+                    "color": "black"
+                  }
+                ],
+                "_maxWidth": 10.52,
+                "_minWidth": 10.52,
+                "_maxHeight": 9.25,
+                "_minHeight": 9.25
+              },
+              "positions": [
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 307.725,
+                  "verticalRatio": 0.35519702259908686,
+                  "horizontalRatio": 0.02041608445893494
+                },
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 316.975,
+                  "verticalRatio": 0.3670273312102726,
+                  "horizontalRatio": 0.02041608445893494
+                }
+              ]
+            },
+            {
+              "text": "Developed interactive Power BI dashboards to monitor key performance indicators (KPIs), reducing reporting time by 35% and enabling real-time performance tracking.",
+              "_margin": null,
+              "_inlines": [],
+              "_minWidth": 56.08,
+              "_maxWidth": 737.84,
+              "listMarker": {
+                "canvas": [
+                  {
+                    "x": 41.666666666666664,
+                    "y": 330.0716666666667,
+                    "r1": 1.6666666666666667,
+                    "r2": 1.6666666666666667,
+                    "type": "ellipse",
+                    "color": "black"
+                  }
+                ],
+                "_maxWidth": 10.52,
+                "_minWidth": 10.52,
+                "_maxHeight": 9.25,
+                "_minHeight": 9.25
+              },
+              "positions": [
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 326.225,
+                  "verticalRatio": 0.3788576398214583,
+                  "horizontalRatio": 0.02041608445893494
+                },
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 335.475,
+                  "verticalRatio": 0.39068794843264404,
+                  "horizontalRatio": 0.02041608445893494
+                }
+              ]
+            },
+            {
+              "text": "Analyzed over 12,000 user data points to uncover engagement patterns, providing insights for content optimization and digital strategy.",
+              "_margin": null,
+              "_inlines": [],
+              "_minWidth": 55.59,
+              "_maxWidth": 593.46,
+              "listMarker": {
+                "canvas": [
+                  {
+                    "x": 41.666666666666664,
+                    "y": 348.5716666666667,
+                    "r1": 1.6666666666666667,
+                    "r2": 1.6666666666666667,
+                    "type": "ellipse",
+                    "color": "black"
+                  }
+                ],
+                "_maxWidth": 10.52,
+                "_minWidth": 10.52,
+                "_maxHeight": 9.25,
+                "_minHeight": 9.25
+              },
+              "positions": [
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 344.725,
+                  "verticalRatio": 0.4025182570438297,
+                  "horizontalRatio": 0.02041608445893494
+                },
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 353.975,
+                  "verticalRatio": 0.41434856565501543,
+                  "horizontalRatio": 0.02041608445893494
+                }
+              ]
+            },
+            {
+              "text": "Conducted trend and cohort analysis to understand user behavior, identifying key opportunities to improve engagement and retention.",
+              "_margin": null,
+              "_inlines": [],
+              "_minWidth": 57.65,
+              "_maxWidth": 590.1600000000001,
+              "listMarker": {
+                "canvas": [
+                  {
+                    "x": 41.666666666666664,
+                    "y": 367.0716666666667,
+                    "r1": 1.6666666666666667,
+                    "r2": 1.6666666666666667,
+                    "type": "ellipse",
+                    "color": "black"
+                  }
+                ],
+                "_maxWidth": 10.52,
+                "_minWidth": 10.52,
+                "_maxHeight": 9.25,
+                "_minHeight": 9.25
+              },
+              "positions": [
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 363.225,
+                  "verticalRatio": 0.42617887426620116,
+                  "horizontalRatio": 0.02041608445893494
+                },
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 372.475,
+                  "verticalRatio": 0.4380091828773869,
+                  "horizontalRatio": 0.02041608445893494
+                }
+              ]
+            },
+            {
+              "text": "Wrote and optimized complex SQL queries to efficiently extract data, supporting in-depth performance and competitor analysis.",
+              "_margin": null,
+              "_inlines": [],
+              "_minWidth": 56.08,
+              "_maxWidth": 560.85,
+              "listMarker": {
+                "canvas": [
+                  {
+                    "x": 41.666666666666664,
+                    "y": 385.5716666666667,
+                    "r1": 1.6666666666666667,
+                    "r2": 1.6666666666666667,
+                    "type": "ellipse",
+                    "color": "black"
+                  }
+                ],
+                "_maxWidth": 10.52,
+                "_minWidth": 10.52,
+                "_maxHeight": 9.25,
+                "_minHeight": 9.25
+              },
+              "positions": [
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 381.725,
+                  "verticalRatio": 0.4498394914885726,
+                  "horizontalRatio": 0.02041608445893494
+                },
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 390.975,
+                  "verticalRatio": 0.46166980009975833,
+                  "horizontalRatio": 0.02041608445893494
+                }
+              ]
+            }
+          ],
+          "employmentType": null,
+          "technologiesUsed": [
+            "Power BI",
+            "SQL"
+          ]
+        }
+      ],
+      "publications": [],
+      "volunteerWork": [],
+      "certifications": [
+        {
+          "text": "Google Data Analytics Professional Certificate - Coursera",
+          "_margin": null,
+          "_inlines": [],
+          "_minWidth": 54.72,
+          "_maxWidth": 254.53000000000003,
+          "listMarker": {
+            "canvas": [
+              {
+                "x": 41.666666666666664,
+                "y": 656.9466666666668,
+                "r1": 1.6666666666666667,
+                "r2": 1.6666666666666667,
+                "type": "ellipse",
+                "color": "black"
+              }
+            ],
+            "_maxWidth": 10.52,
+            "_minWidth": 10.52,
+            "_maxHeight": 9.25,
+            "_minHeight": 9.25
+          },
+          "positions": [
+            {
+              "pageNumber": 1,
+              "pageOrientation": "portrait",
+              "pageInnerHeight": 781.89,
+              "pageInnerWidth": 515.28,
+              "left": 50.519999999999996,
+              "top": 653.1000000000001,
+              "verticalRatio": 0.7969151670951159,
+              "horizontalRatio": 0.02041608445893494
+            }
+          ]
+        },
+        {
+          "text": "Deloitte Data Analytics Virtual Experience - Forage",
+          "_margin": null,
+          "_inlines": [],
+          "_minWidth": 50.17,
+          "_maxWidth": 225.23000000000005,
+          "listMarker": {
+            "canvas": [
+              {
+                "x": 41.666666666666664,
+                "y": 666.1966666666668,
+                "r1": 1.6666666666666667,
+                "r2": 1.6666666666666667,
+                "type": "ellipse",
+                "color": "black"
+              }
+            ],
+            "_maxWidth": 10.52,
+            "_minWidth": 10.52,
+            "_maxHeight": 9.25,
+            "_minHeight": 9.25
+          },
+          "positions": [
+            {
+              "pageNumber": 1,
+              "pageOrientation": "portrait",
+              "pageInnerHeight": 781.89,
+              "pageInnerWidth": 515.28,
+              "left": 50.519999999999996,
+              "top": 662.3500000000001,
+              "verticalRatio": 0.8087454757063016,
+              "horizontalRatio": 0.02041608445893494
+            }
+          ]
+        }
+      ],
+      "yearsOfExperience": null
+    },
+    "firebaseStoragePath": "tailored_resume_SEO_Analyst_Intern_1777185872622.pdf",
+    "isTailored": true
+  },
+  {
+    "id": "tailored_1777187087827",
+    "filename": "tailored_resume_SEO_Analyst_Intern_1777187069234.pdf",
+    "originalName": "Tailored Resume for SEO Analyst Intern.pdf",
+    "fileSize": 9423,
+    "uploadedAt": "2026-04-26T07:04:47.827Z",
+    "parsedData": {
+      "name": "NIKITA SHARMA",
+      "email": "nikita.sharma.data@gmail.com",
+      "phone": "6033088799",
+      "tools": [
+        "Python",
+        "Pandas",
+        "NumPy",
+        "R",
+        "Power BI",
+        "Matplotlib",
+        "Seaborn",
+        "Excel",
+        "Google Sheets",
+        "Jupyter Notebook",
+        "GitHub",
+        "DAX"
+      ],
+      "awards": [],
+      "github": "github.com/nikitasharma-data27",
+      "skills": [
+        "Keyword Research and Analysis",
+        "Competitor Analysis",
+        "Website Performance Tracking",
+        "Content Optimization",
+        "Digital Marketing Analytics",
+        "KPI Tracking",
+        "Trend Analysis",
+        "User Behavior Analysis",
+        "SQL (Joins, CTEs, Window Functions)",
+        "Dashboarding (Power BI)",
+        "Data Cleaning & Transformation",
+        "A/B Testing",
+        "Funnel Analysis",
+        "Collaboration"
+      ],
+      "summary": "Analytical and detail-oriented professional with a strong foundation in data analysis, user behavior, and KPI tracking, eager to apply these skills to the digital marketing domain as an SEO Analyst Intern. Proficient in using SQL and data visualization tools to conduct performance tracking, competitor analysis, and content optimization. Experienced in transforming complex data into actionable insights to support data-driven digital marketing strategies and campaign execution.",
+      "website": null,
+      "linkedIn": "linkedin.com/in/nikitasharma-tech",
+      "location": "Bangalore, India",
+      "projects": [
+        {
+          "url": "github.com/nikitasharma-data27/Vendor-Analysis",
+          "name": "Vendor & Inventory Performance Analysis",
+          "impact": "Identified 15% cost reduction opportunities, improving overall product supply efficiency. Built dashboards to monitor performance metrics and support strategic product decisions.",
+          "description": "Conducted a comprehensive performance analysis by tracking key metrics and trends, developing a framework applicable to competitor analysis and identifying opportunities for strategic content optimization.",
+          "technologies": [
+            "SQL",
+            "Python",
+            "Power BI"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/sql-python-retail-analysis",
+          "name": "Online Retail Product Analysis",
+          "impact": "Identified top-performing product categories contributing to 30% revenue. Generated insights to improve product positioning and user engagement.",
+          "description": "Utilized SQL and Python to analyze customer behavior and website performance. Performed funnel analysis to inform on-page SEO improvements and tracked conversion metrics to support digital marketing campaign evaluation.",
+          "technologies": [
+            "SQL",
+            "Python"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/Patient-Waiting-List–Power-BI",
+          "name": "Patient Analytics Dashboard (Product Perspective)",
+          "impact": "Improved operational efficiency by 40% through data-driven insights. Tracked KPIs to optimize service delivery and user experience.",
+          "description": "Developed a comprehensive Power BI dashboard for website performance tracking, visualizing user flow and engagement metrics to provide actionable insights for content optimization and user journey improvements.",
+          "technologies": [
+            "Power BI",
+            "DAX",
+            "ETL"
+          ]
+        }
+      ],
+      "education": [
+        {
+          "gpa": null,
+          "degree": "Post Graduate Diploma in Applied Statistics",
+          "institution": "Indira Gandhi National Open University",
+          "graduationYear": 2026,
+          "relevantCourses": []
+        },
+        {
+          "gpa": null,
+          "degree": "Bachelor of Science (Hons) Chemistry",
+          "institution": "University of Delhi",
+          "graduationYear": 2024,
+          "relevantCourses": []
+        }
+      ],
+      "idealRole": "Product Data Analyst",
+      "languages": [],
+      "experience": [
+        {
+          "role": "Research Analyst Associate",
+          "company": "Learners Point Academy",
+          "endDate": "2026",
+          "duration": null,
+          "location": "Bangalore",
+          "startDate": null,
+          "description": "Responsible for analyzing user and operational data, performing data cleaning and transformation, building interactive dashboards, conducting trend and cohort analysis, writing optimized SQL queries, and collaborating with stakeholders to drive data-informed product decisions.",
+          "achievements": [
+            {
+              "text": "Enhanced the accuracy of user engagement data by 25% through rigorous data validation, providing a reliable foundation for data-driven content optimization strategies.",
+              "_margin": null,
+              "_inlines": [],
+              "_minWidth": 55.59,
+              "_maxWidth": 742.5699999999999,
+              "listMarker": {
+                "canvas": [
+                  {
+                    "x": 41.666666666666664,
+                    "y": 311.5716666666667,
+                    "r1": 1.6666666666666667,
+                    "r2": 1.6666666666666667,
+                    "type": "ellipse",
+                    "color": "black"
+                  }
+                ],
+                "_maxWidth": 10.52,
+                "_minWidth": 10.52,
+                "_maxHeight": 9.25,
+                "_minHeight": 9.25
+              },
+              "positions": [
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 307.725,
+                  "verticalRatio": 0.35519702259908686,
+                  "horizontalRatio": 0.02041608445893494
+                },
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 316.975,
+                  "verticalRatio": 0.3670273312102726,
+                  "horizontalRatio": 0.02041608445893494
+                }
+              ]
+            },
+            {
+              "text": "Developed interactive dashboards for website performance tracking, monitoring key metrics to reduce reporting time by 35% and support digital marketing campaign decisions.",
+              "_margin": null,
+              "_inlines": [],
+              "_minWidth": 56.08,
+              "_maxWidth": 772.29,
+              "listMarker": {
+                "canvas": [
+                  {
+                    "x": 41.666666666666664,
+                    "y": 330.0716666666667,
+                    "r1": 1.6666666666666667,
+                    "r2": 1.6666666666666667,
+                    "type": "ellipse",
+                    "color": "black"
+                  }
+                ],
+                "_maxWidth": 10.52,
+                "_minWidth": 10.52,
+                "_maxHeight": 9.25,
+                "_minHeight": 9.25
+              },
+              "positions": [
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 326.225,
+                  "verticalRatio": 0.3788576398214583,
+                  "horizontalRatio": 0.02041608445893494
+                },
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 335.475,
+                  "verticalRatio": 0.39068794843264404,
+                  "horizontalRatio": 0.02041608445893494
+                }
+              ]
+            },
+            {
+              "text": "Analyzed over 12,000 user data records to identify engagement patterns, providing insights directly applicable to improving on-page SEO and user experience.",
+              "_margin": null,
+              "_inlines": [],
+              "_minWidth": 55.59,
+              "_maxWidth": 700.7500000000001,
+              "listMarker": {
+                "canvas": [
+                  {
+                    "x": 41.666666666666664,
+                    "y": 348.5716666666667,
+                    "r1": 1.6666666666666667,
+                    "r2": 1.6666666666666667,
+                    "type": "ellipse",
+                    "color": "black"
+                  }
+                ],
+                "_maxWidth": 10.52,
+                "_minWidth": 10.52,
+                "_maxHeight": 9.25,
+                "_minHeight": 9.25
+              },
+              "positions": [
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 344.725,
+                  "verticalRatio": 0.4025182570438297,
+                  "horizontalRatio": 0.02041608445893494
+                },
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 353.975,
+                  "verticalRatio": 0.41434856565501543,
+                  "horizontalRatio": 0.02041608445893494
+                }
+              ]
+            },
+            {
+              "text": "Conducted trend and cohort analysis to uncover behavioral insights, establishing a methodology for competitor analysis and identifying opportunities for growth.",
+              "_margin": null,
+              "_inlines": [],
+              "_minWidth": 57.65,
+              "_maxWidth": 703.6699999999998,
+              "listMarker": {
+                "canvas": [
+                  {
+                    "x": 41.666666666666664,
+                    "y": 367.0716666666667,
+                    "r1": 1.6666666666666667,
+                    "r2": 1.6666666666666667,
+                    "type": "ellipse",
+                    "color": "black"
+                  }
+                ],
+                "_maxWidth": 10.52,
+                "_minWidth": 10.52,
+                "_maxHeight": 9.25,
+                "_minHeight": 9.25
+              },
+              "positions": [
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 363.225,
+                  "verticalRatio": 0.42617887426620116,
+                  "horizontalRatio": 0.02041608445893494
+                },
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 372.475,
+                  "verticalRatio": 0.4380091828773869,
+                  "horizontalRatio": 0.02041608445893494
+                }
+              ]
+            },
+            {
+              "text": "Wrote optimized SQL queries to efficiently extract and analyze large datasets, supporting the evaluation of digital marketing campaign effectiveness and content performance.",
+              "_margin": null,
+              "_inlines": [],
+              "_minWidth": 58.71,
+              "_maxWidth": 767.6000000000001,
+              "listMarker": {
+                "canvas": [
+                  {
+                    "x": 41.666666666666664,
+                    "y": 385.5716666666667,
+                    "r1": 1.6666666666666667,
+                    "r2": 1.6666666666666667,
+                    "type": "ellipse",
+                    "color": "black"
+                  }
+                ],
+                "_maxWidth": 10.52,
+                "_minWidth": 10.52,
+                "_maxHeight": 9.25,
+                "_minHeight": 9.25
+              },
+              "positions": [
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 381.725,
+                  "verticalRatio": 0.4498394914885726,
+                  "horizontalRatio": 0.02041608445893494
+                },
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 390.975,
+                  "verticalRatio": 0.46166980009975833,
+                  "horizontalRatio": 0.02041608445893494
+                }
+              ]
+            }
+          ],
+          "employmentType": null,
+          "technologiesUsed": [
+            "Power BI",
+            "SQL"
+          ]
+        }
+      ],
+      "publications": [],
+      "volunteerWork": [],
+      "certifications": [
+        {
+          "text": "Google Data Analytics Professional Certificate - Coursera",
+          "_margin": null,
+          "_inlines": [],
+          "_minWidth": 54.72,
+          "_maxWidth": 254.53000000000003,
+          "listMarker": {
+            "canvas": [
+              {
+                "x": 41.666666666666664,
+                "y": 666.1966666666668,
+                "r1": 1.6666666666666667,
+                "r2": 1.6666666666666667,
+                "type": "ellipse",
+                "color": "black"
+              }
+            ],
+            "_maxWidth": 10.52,
+            "_minWidth": 10.52,
+            "_maxHeight": 9.25,
+            "_minHeight": 9.25
+          },
+          "positions": [
+            {
+              "pageNumber": 1,
+              "pageOrientation": "portrait",
+              "pageInnerHeight": 781.89,
+              "pageInnerWidth": 515.28,
+              "left": 50.519999999999996,
+              "top": 662.3500000000001,
+              "verticalRatio": 0.8087454757063016,
+              "horizontalRatio": 0.02041608445893494
+            }
+          ]
+        },
+        {
+          "text": "Deloitte Data Analytics Virtual Experience - Forage",
+          "_margin": null,
+          "_inlines": [],
+          "_minWidth": 50.17,
+          "_maxWidth": 225.23000000000005,
+          "listMarker": {
+            "canvas": [
+              {
+                "x": 41.666666666666664,
+                "y": 675.4466666666668,
+                "r1": 1.6666666666666667,
+                "r2": 1.6666666666666667,
+                "type": "ellipse",
+                "color": "black"
+              }
+            ],
+            "_maxWidth": 10.52,
+            "_minWidth": 10.52,
+            "_maxHeight": 9.25,
+            "_minHeight": 9.25
+          },
+          "positions": [
+            {
+              "pageNumber": 1,
+              "pageOrientation": "portrait",
+              "pageInnerHeight": 781.89,
+              "pageInnerWidth": 515.28,
+              "left": 50.519999999999996,
+              "top": 671.6000000000001,
+              "verticalRatio": 0.8205757843174873,
+              "horizontalRatio": 0.02041608445893494
+            }
+          ]
+        }
+      ],
+      "yearsOfExperience": null
+    },
+    "firebaseStoragePath": "tailored_resume_SEO_Analyst_Intern_1777187069234.pdf",
+    "isTailored": true
+  },
+  {
+    "id": "tailored_1777191495956",
+    "filename": "tailored_resume_SEO_Analyst_Intern_1777191477845.pdf",
+    "originalName": "Tailored Resume for SEO Analyst Intern.pdf",
+    "fileSize": 10222,
+    "uploadedAt": "2026-04-26T08:18:15.956Z",
+    "parsedData": {
+      "name": "NIKITA SHARMA",
+      "email": "nikita.sharma.data@gmail.com",
+      "phone": "6033088799",
+      "tools": [
+        "Python",
+        "Pandas",
+        "NumPy",
+        "R",
+        "Power BI",
+        "Matplotlib",
+        "Seaborn",
+        "Excel",
+        "Google Sheets",
+        "Jupyter Notebook",
+        "GitHub",
+        "DAX"
+      ],
+      "awards": [],
+      "github": "github.com/nikitasharma-data27",
+      "skills": [
+        "KPI Tracking",
+        "Trend Analysis",
+        "User Behavior Analysis",
+        "Funnel Analysis",
+        "Retention Analysis",
+        "SQL (Joins, CTEs, Window Functions)",
+        "Data Cleaning",
+        "Data Transformation",
+        "ETL",
+        "Data Validation",
+        "Dashboarding",
+        "Business Intelligence",
+        "Data Modeling",
+        "Stakeholder Management",
+        "Collaboration"
+      ],
+      "summary": "Data-driven analyst with a strong foundation in SQL, Python, and Power BI, skilled in transforming complex datasets into actionable insights for digital marketing. Experienced in tracking key performance indicators (KPIs) and analyzing user behavior to identify trends and opportunities for growth. Eager to apply analytical expertise to support digital marketing campaigns, conduct competitor analysis, and optimize website performance in an SEO-focused role.",
+      "website": null,
+      "linkedIn": "linkedin.com/in/nikitasharma-tech",
+      "location": "Bangalore, India",
+      "projects": [
+        {
+          "url": "github.com/nikitasharma-data27/Vendor-Analysis",
+          "name": "Vendor & Inventory Performance Analysis",
+          "impact": "Identified 15% cost reduction opportunities, improving overall product supply efficiency. Built dashboards to monitor performance metrics and support strategic product decisions.",
+          "description": "Performed comprehensive trend analysis on performance datasets to identify key drivers and areas for strategic improvement. Developed and tracked key performance indicators (KPIs) to measure operational efficiency and guide data-driven decisions. Utilized data cleaning and transformation techniques to ensure high-quality data for accurate competitor and performance analysis.",
+          "technologies": [
+            "SQL",
+            "Python",
+            "Power BI"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/sql-python-retail-analysis",
+          "name": "Online Retail Product Analysis",
+          "impact": "Identified top-performing product categories contributing to 30% revenue. Generated insights to improve product positioning and user engagement.",
+          "description": "Leveraged SQL and Python to analyze customer behavior and digital pathway data, identifying opportunities to enhance user journey and on-page engagement. Executed funnel and cohort analysis to evaluate key conversion and retention metrics, providing insights for digital marketing campaign optimization. Translated complex user data into actionable recommendations for improving website content and performance to boost traffic and user retention.",
+          "technologies": [
+            "SQL",
+            "Python"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/Patient-Waiting-List–Power-BI",
+          "name": "Patient Analytics Dashboard (Product Perspective)",
+          "impact": "Improved operational efficiency by 40% through data-driven insights. Tracked KPIs to optimize service delivery and user experience.",
+          "description": "Built a Power BI dashboard analyzing user flow and system performance across departments. Used DAX and ETL techniques to model data for product-level insights.",
+          "technologies": [
+            "Power BI",
+            "DAX",
+            "ETL"
+          ]
+        }
+      ],
+      "education": [
+        {
+          "gpa": null,
+          "degree": "Post Graduate Diploma in Applied Statistics",
+          "institution": "Indira Gandhi National Open University",
+          "graduationYear": 2026,
+          "relevantCourses": []
+        },
+        {
+          "gpa": null,
+          "degree": "Bachelor of Science (Hons) Chemistry",
+          "institution": "University of Delhi",
+          "graduationYear": 2024,
+          "relevantCourses": []
+        }
+      ],
+      "idealRole": "Product Data Analyst",
+      "languages": [],
+      "experience": [
+        {
+          "role": "Research Analyst Associate",
+          "company": "Learners Point Academy",
+          "endDate": "2026",
+          "duration": null,
+          "location": "Bangalore",
+          "startDate": null,
+          "description": "Responsible for analyzing user and operational data, performing data cleaning and transformation, building interactive dashboards, conducting trend and cohort analysis, writing optimized SQL queries, and collaborating with stakeholders to drive data-informed product decisions.",
+          "achievements": [
+            {
+              "text": "Enhanced data integrity by 25% through rigorous data cleaning and validation, providing a reliable foundation for tracking website performance metrics.",
+              "_margin": null,
+              "_inlines": [],
+              "_minWidth": 56.08,
+              "_maxWidth": 666.44,
+              "listMarker": {
+                "canvas": [
+                  {
+                    "x": 41.666666666666664,
+                    "y": 311.5716666666667,
+                    "r1": 1.6666666666666667,
+                    "r2": 1.6666666666666667,
+                    "type": "ellipse",
+                    "color": "black"
+                  }
+                ],
+                "_maxWidth": 10.52,
+                "_minWidth": 10.52,
+                "_maxHeight": 9.25,
+                "_minHeight": 9.25
+              },
+              "positions": [
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 307.725,
+                  "verticalRatio": 0.35519702259908686,
+                  "horizontalRatio": 0.02041608445893494
+                },
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 316.975,
+                  "verticalRatio": 0.3670273312102726,
+                  "horizontalRatio": 0.02041608445893494
+                }
+              ]
+            },
+            {
+              "text": "Streamlined performance tracking by developing interactive Power BI dashboards, reducing reporting time by 35% and enabling real-time monitoring of key digital marketing KPIs.",
+              "_margin": null,
+              "_inlines": [],
+              "_minWidth": 56.08,
+              "_maxWidth": 785.3000000000001,
+              "listMarker": {
+                "canvas": [
+                  {
+                    "x": 41.666666666666664,
+                    "y": 330.0716666666667,
+                    "r1": 1.6666666666666667,
+                    "r2": 1.6666666666666667,
+                    "type": "ellipse",
+                    "color": "black"
+                  }
+                ],
+                "_maxWidth": 10.52,
+                "_minWidth": 10.52,
+                "_maxHeight": 9.25,
+                "_minHeight": 9.25
+              },
+              "positions": [
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 326.225,
+                  "verticalRatio": 0.3788576398214583,
+                  "horizontalRatio": 0.02041608445893494
+                },
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 335.475,
+                  "verticalRatio": 0.39068794843264404,
+                  "horizontalRatio": 0.02041608445893494
+                }
+              ]
+            },
+            {
+              "text": "Analyzed over 12,000 user data records to uncover key patterns in engagement and on-site behavior, informing strategies to improve website traffic.",
+              "_margin": null,
+              "_inlines": [],
+              "_minWidth": 55.59,
+              "_maxWidth": 652.75,
+              "listMarker": {
+                "canvas": [
+                  {
+                    "x": 41.666666666666664,
+                    "y": 348.5716666666667,
+                    "r1": 1.6666666666666667,
+                    "r2": 1.6666666666666667,
+                    "type": "ellipse",
+                    "color": "black"
+                  }
+                ],
+                "_maxWidth": 10.52,
+                "_minWidth": 10.52,
+                "_maxHeight": 9.25,
+                "_minHeight": 9.25
+              },
+              "positions": [
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 344.725,
+                  "verticalRatio": 0.4025182570438297,
+                  "horizontalRatio": 0.02041608445893494
+                },
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 353.975,
+                  "verticalRatio": 0.41434856565501543,
+                  "horizontalRatio": 0.02041608445893494
+                }
+              ]
+            },
+            {
+              "text": "Conducted in-depth trend and cohort analysis to identify user retention drivers, providing insights for content optimization and on-page SEO strategies.",
+              "_margin": null,
+              "_inlines": [],
+              "_minWidth": 53.35,
+              "_maxWidth": 664.21,
+              "listMarker": {
+                "canvas": [
+                  {
+                    "x": 41.666666666666664,
+                    "y": 367.0716666666667,
+                    "r1": 1.6666666666666667,
+                    "r2": 1.6666666666666667,
+                    "type": "ellipse",
+                    "color": "black"
+                  }
+                ],
+                "_maxWidth": 10.52,
+                "_minWidth": 10.52,
+                "_maxHeight": 9.25,
+                "_minHeight": 9.25
+              },
+              "positions": [
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 363.225,
+                  "verticalRatio": 0.42617887426620116,
+                  "horizontalRatio": 0.02041608445893494
+                },
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 372.475,
+                  "verticalRatio": 0.4380091828773869,
+                  "horizontalRatio": 0.02041608445893494
+                }
+              ]
+            },
+            {
+              "text": "Wrote and optimized complex SQL queries to extract actionable insights from large datasets, supporting competitor analysis and the identification of market trends.",
+              "_margin": null,
+              "_inlines": [],
+              "_minWidth": 55.58,
+              "_maxWidth": 719.4599999999999,
+              "listMarker": {
+                "canvas": [
+                  {
+                    "x": 41.666666666666664,
+                    "y": 385.5716666666667,
+                    "r1": 1.6666666666666667,
+                    "r2": 1.6666666666666667,
+                    "type": "ellipse",
+                    "color": "black"
+                  }
+                ],
+                "_maxWidth": 10.52,
+                "_minWidth": 10.52,
+                "_maxHeight": 9.25,
+                "_minHeight": 9.25
+              },
+              "positions": [
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 381.725,
+                  "verticalRatio": 0.4498394914885726,
+                  "horizontalRatio": 0.02041608445893494
+                },
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 390.975,
+                  "verticalRatio": 0.46166980009975833,
+                  "horizontalRatio": 0.02041608445893494
+                }
+              ]
+            },
+            {
+              "text": "Collaborated with cross-functional teams to translate data-driven findings into actionable recommendations for digital marketing campaigns and content strategy.",
+              "_margin": null,
+              "_inlines": [],
+              "_minWidth": 79.47,
+              "_maxWidth": 707.2400000000001,
+              "listMarker": {
+                "canvas": [
+                  {
+                    "x": 41.666666666666664,
+                    "y": 404.0716666666667,
+                    "r1": 1.6666666666666667,
+                    "r2": 1.6666666666666667,
+                    "type": "ellipse",
+                    "color": "black"
+                  }
+                ],
+                "_maxWidth": 10.52,
+                "_minWidth": 10.52,
+                "_maxHeight": 9.25,
+                "_minHeight": 9.25
+              },
+              "positions": [
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 400.225,
+                  "verticalRatio": 0.47350010871094406,
+                  "horizontalRatio": 0.02041608445893494
+                },
+                {
+                  "pageNumber": 1,
+                  "pageOrientation": "portrait",
+                  "pageInnerHeight": 781.89,
+                  "pageInnerWidth": 515.28,
+                  "left": 50.519999999999996,
+                  "top": 409.475,
+                  "verticalRatio": 0.4853304173221297,
+                  "horizontalRatio": 0.02041608445893494
+                }
+              ]
+            }
+          ],
+          "employmentType": null,
+          "technologiesUsed": [
+            "Power BI",
+            "SQL"
+          ]
+        }
+      ],
+      "publications": [],
+      "volunteerWork": [],
+      "certifications": [
+        {
+          "text": "Google Data Analytics Professional Certificate - Coursera",
+          "_margin": null,
+          "_inlines": [],
+          "_minWidth": 54.72,
+          "_maxWidth": 254.53000000000003,
+          "listMarker": {
+            "canvas": [
+              {
+                "x": 41.666666666666664,
+                "y": 712.4466666666667,
+                "r1": 1.6666666666666667,
+                "r2": 1.6666666666666667,
+                "type": "ellipse",
+                "color": "black"
+              }
+            ],
+            "_maxWidth": 10.52,
+            "_minWidth": 10.52,
+            "_maxHeight": 9.25,
+            "_minHeight": 9.25
+          },
+          "positions": [
+            {
+              "pageNumber": 1,
+              "pageOrientation": "portrait",
+              "pageInnerHeight": 781.89,
+              "pageInnerWidth": 515.28,
+              "left": 50.519999999999996,
+              "top": 708.6,
+              "verticalRatio": 0.86789701876223,
+              "horizontalRatio": 0.02041608445893494
+            }
+          ]
+        },
+        {
+          "text": "Deloitte Data Analytics Virtual Experience - Forage",
+          "_margin": null,
+          "_inlines": [],
+          "_minWidth": 50.17,
+          "_maxWidth": 225.23000000000005,
+          "listMarker": {
+            "canvas": [
+              {
+                "x": 41.666666666666664,
+                "y": 721.6966666666667,
+                "r1": 1.6666666666666667,
+                "r2": 1.6666666666666667,
+                "type": "ellipse",
+                "color": "black"
+              }
+            ],
+            "_maxWidth": 10.52,
+            "_minWidth": 10.52,
+            "_maxHeight": 9.25,
+            "_minHeight": 9.25
+          },
+          "positions": [
+            {
+              "pageNumber": 1,
+              "pageOrientation": "portrait",
+              "pageInnerHeight": 781.89,
+              "pageInnerWidth": 515.28,
+              "left": 50.519999999999996,
+              "top": 717.85,
+              "verticalRatio": 0.8797273273734157,
+              "horizontalRatio": 0.02041608445893494
+            }
+          ]
+        }
+      ],
+      "yearsOfExperience": null
+    },
+    "firebaseStoragePath": "tailored_resume_SEO_Analyst_Intern_1777191477845.pdf",
+    "isTailored": true
+  },
+  {
+    "id": "tailored_1777192699567",
+    "filename": "tailored_resume_SEO_Analyst_Intern_1777192676672.pdf",
+    "originalName": "Tailored Resume for SEO Analyst Intern.pdf",
+    "fileSize": 83108,
+    "uploadedAt": "2026-04-26T08:38:19.567Z",
+    "parsedData": {
+      "name": "NIKITA SHARMA",
+      "email": "nikita.sharma.data@gmail.com",
+      "phone": "6033088799",
+      "tools": [
+        "Python",
+        "Pandas",
+        "NumPy",
+        "R",
+        "Power BI",
+        "Matplotlib",
+        "Seaborn",
+        "Excel",
+        "Google Sheets",
+        "Jupyter Notebook",
+        "GitHub",
+        "DAX"
+      ],
+      "awards": [],
+      "github": "github.com/nikitasharma-data27",
+      "skills": [
+        "KPI Tracking",
+        "User Behavior Analysis",
+        "Competitor Trend Analysis",
+        "Funnel Analysis",
+        "Retention Analysis",
+        "SQL (Joins, CTEs, Window Functions)",
+        "Python",
+        "Excel",
+        "Data Cleaning & Transformation",
+        "ETL",
+        "Dashboarding (Power BI)",
+        "Data Modeling",
+        "Business Intelligence",
+        "Stakeholder Management",
+        "Data Validation"
+      ],
+      "summary": "Data-driven analyst with a strong foundation in SQL, Python, and Power BI, eager to apply analytical skills to the digital marketing and SEO domain. Experienced in tracking key performance indicators (KPIs) and analyzing user behavior to uncover actionable insights for strategic optimization. Proven ability to perform trend and competitor analysis, translating complex data into clear reports to support digital marketing campaign execution and improve website performance.",
+      "website": null,
+      "linkedIn": "linkedin.com/in/nikitasharma-tech",
+      "location": "Bangalore, India",
+      "projects": [
+        {
+          "url": "github.com/nikitasharma-data27/Vendor-Analysis",
+          "name": "Vendor & Inventory Performance Analysis",
+          "impact": "Identified 15% cost reduction opportunities, improving overall product supply efficiency. Built dashboards to monitor performance metrics and support strategic product decisions.",
+          "description": "Performed comprehensive trend analysis on large datasets to identify performance patterns and strategic opportunities, a methodology directly applicable to competitor analysis. Developed and tracked key performance indicators (KPIs) to measure operational efficiency and guide strategic decisions. Utilized advanced data cleaning and transformation techniques to ensure data accuracy for reliable performance tracking and reporting.",
+          "technologies": [
+            "SQL",
+            "Python",
+            "Power BI"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/sql-python-retail-analysis",
+          "name": "Online Retail Product Analysis",
+          "impact": "Identified top-performing product categories contributing to 30% revenue. Generated insights to improve product positioning and user engagement.",
+          "description": "Leveraged SQL and Python to analyze customer behavior and digital product performance, identifying key drivers for user engagement. Executed funnel analysis to map user journeys and pinpoint drop-off points, providing insights for on-page SEO optimization. Conducted cohort analysis to evaluate user retention metrics, informing strategies to improve long-term website engagement. Translated complex datasets into actionable insights on customer conversion, supporting data-driven digital marketing strategies.",
+          "technologies": [
+            "SQL",
+            "Python"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/Patient-Waiting-List–Power-BI",
+          "name": "Patient Analytics Dashboard (Product Perspective)",
+          "impact": "Improved operational efficiency by 40% through data-driven insights. Tracked KPIs to optimize service delivery and user experience.",
+          "description": "Built a Power BI dashboard analyzing user flow and system performance across departments. Used DAX and ETL techniques to model data for product-level insights.",
+          "technologies": [
+            "Power BI",
+            "DAX",
+            "ETL"
+          ]
+        }
+      ],
+      "education": [
+        {
+          "gpa": null,
+          "degree": "Post Graduate Diploma in Applied Statistics",
+          "institution": "Indira Gandhi National Open University",
+          "graduationYear": 2026,
+          "relevantCourses": []
+        },
+        {
+          "gpa": null,
+          "degree": "Bachelor of Science (Hons) Chemistry",
+          "institution": "University of Delhi",
+          "graduationYear": 2024,
+          "relevantCourses": []
+        }
+      ],
+      "idealRole": "Product Data Analyst",
+      "languages": [],
+      "experience": [
+        {
+          "role": "Research Analyst Associate",
+          "company": "Learners Point Academy",
+          "endDate": "2026",
+          "duration": null,
+          "location": "Bangalore",
+          "startDate": null,
+          "description": "Responsible for analyzing user and operational data, performing data cleaning and transformation, building interactive dashboards, conducting trend and cohort analysis, writing optimized SQL queries, and collaborating with stakeholders to drive data-informed product decisions.",
+          "achievements": [
+            "Streamlined performance tracking by developing interactive Power BI dashboards to monitor key website and campaign KPIs, reducing reporting time by 35%.",
+            "Analyzed over 12,000 user data records to identify key engagement patterns, providing insights to inform content and on-page optimization strategies.",
+            "Enhanced data integrity by 25% through rigorous cleaning and validation, ensuring reliable website performance tracking and analysis.",
+            "Conducted trend and cohort analysis to uncover user behavior patterns, identifying opportunities to improve website engagement and user retention.",
+            "Optimized SQL queries to efficiently extract and analyze user data, supporting the execution of data-driven digital marketing initiatives."
+          ],
+          "employmentType": null,
+          "technologiesUsed": [
+            "Power BI",
+            "SQL"
+          ]
+        }
+      ],
+      "publications": [],
+      "volunteerWork": [],
+      "certifications": [
+        "Google Data Analytics Professional Certificate - Coursera",
+        "Deloitte Data Analytics Virtual Experience - Forage"
+      ],
+      "yearsOfExperience": null
+    },
+    "firebaseStoragePath": "tailored_resume_SEO_Analyst_Intern_1777192676672.pdf",
+    "isTailored": true
+  },
+  {
+    "id": "tailored_1777196497238",
+    "filename": "tailored_resume_SEO_Intern_1777196469056.pdf",
+    "originalName": "Tailored Resume for SEO Intern.pdf",
+    "fileSize": 83446,
+    "uploadedAt": "2026-04-26T09:41:37.238Z",
+    "parsedData": {
+      "name": "NIKITA SHARMA",
+      "email": "nikita.sharma.data@gmail.com",
+      "phone": "6033088799",
+      "tools": [
+        "Python",
+        "Pandas",
+        "NumPy",
+        "R",
+        "Power BI",
+        "Matplotlib",
+        "Seaborn",
+        "Excel",
+        "Google Sheets",
+        "Jupyter Notebook",
+        "GitHub",
+        "DAX"
+      ],
+      "awards": [],
+      "github": "github.com/nikitasharma-data27",
+      "skills": [
+        "Website Performance Analysis",
+        "KPI Tracking",
+        "Trend Analysis",
+        "User Behavior Analysis",
+        "Funnel Analysis",
+        "Keyword Research Principles",
+        "SQL (Joins, CTEs, Window Functions)",
+        "Python",
+        "Excel",
+        "Power BI (Dashboarding)",
+        "Data Cleaning & Transformation",
+        "Cohort Analysis",
+        "A/B Testing",
+        "Data Modeling",
+        "Data Validation",
+        "Business Intelligence",
+        "Collaboration",
+        "Stakeholder Management",
+        "Reporting",
+        "Problem-Solving"
+      ],
+      "summary": "Analytical professional with a strong foundation in SQL, Python, and data visualization, eager to apply these skills to the digital marketing domain as an SEO Intern. Experienced in analyzing user behavior, tracking key performance indicators, and identifying trends within large datasets to derive actionable insights. Adept at translating complex data into clear reports and dashboards, with a keen interest in leveraging analytics for website performance analysis and content optimization.",
+      "website": null,
+      "linkedIn": "linkedin.com/in/nikitasharma-tech",
+      "location": "Bangalore, India",
+      "projects": [
+        {
+          "url": "github.com/nikitasharma-data27/Vendor-Analysis",
+          "name": "Vendor & Inventory Performance Analysis",
+          "impact": "Identified 15% cost reduction opportunities, improving overall product supply efficiency. Built dashboards to monitor performance metrics and support strategic product decisions.",
+          "description": "Performed trend analysis on large datasets to identify key performance indicators and patterns affecting operational efficiency. Utilized SQL and Excel for data cleaning and transformation, ensuring high-quality data for accurate analysis. Developed a framework for tracking metrics, providing a model for monitoring website performance and identifying areas for optimization.",
+          "technologies": [
+            "SQL",
+            "Python",
+            "Power BI"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/sql-python-retail-analysis",
+          "name": "Online Retail Product Analysis",
+          "impact": "Identified top-performing product categories contributing to 30% revenue. Generated insights to improve product positioning and user engagement.",
+          "description": "Leveraged SQL and Python to analyze customer behavior, mirroring the process required for comprehensive website performance analysis. Conducted funnel analysis to map the customer journey and identify drop-off points, a technique crucial for optimizing website content and structure. Applied cohort analysis to evaluate user retention, generating insights directly applicable to improving on-page engagement and SEO-friendly content strategy. Created data visualizations to report on user engagement metrics, demonstrating the ability to communicate website performance findings effectively.",
+          "technologies": [
+            "SQL",
+            "Python"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/Patient-Waiting-List–Power-BI",
+          "name": "Patient Analytics Dashboard (Product Perspective)",
+          "impact": "Improved operational efficiency by 40% through data-driven insights. Tracked KPIs to optimize service delivery and user experience.",
+          "description": "Built a Power BI dashboard analyzing user flow and system performance across departments. Used DAX and ETL techniques to model data for product-level insights.",
+          "technologies": [
+            "Power BI",
+            "DAX",
+            "ETL"
+          ]
+        }
+      ],
+      "education": [
+        {
+          "gpa": null,
+          "degree": "Post Graduate Diploma in Applied Statistics",
+          "institution": "Indira Gandhi National Open University",
+          "graduationYear": 2026,
+          "relevantCourses": []
+        },
+        {
+          "gpa": null,
+          "degree": "Bachelor of Science (Hons) Chemistry",
+          "institution": "University of Delhi",
+          "graduationYear": 2024,
+          "relevantCourses": []
+        }
+      ],
+      "idealRole": "Product Data Analyst",
+      "languages": [],
+      "experience": [
+        {
+          "role": "Research Analyst Associate",
+          "company": "Learners Point Academy",
+          "endDate": "2026",
+          "duration": null,
+          "location": "Bangalore",
+          "startDate": null,
+          "description": "Responsible for analyzing user and operational data, performing data cleaning and transformation, building interactive dashboards, conducting trend and cohort analysis, writing optimized SQL queries, and collaborating with stakeholders to drive data-informed product decisions.",
+          "achievements": [
+            "Analyzed over 12,000 user data records to uncover key engagement patterns, providing insights applicable to website content optimization.",
+            "Developed interactive Power BI dashboards to monitor key performance indicators, reducing reporting time by 35% and enabling faster website performance analysis.",
+            "Conducted trend and cohort analysis to identify user behavior patterns, informing strategies for improving user retention and on-page experience.",
+            "Enhanced data integrity by 25% through rigorous cleaning and validation, establishing a reliable foundation for accurate performance analysis.",
+            "Authored optimized SQL queries to efficiently extract and analyze large datasets, laying the groundwork for in-depth keyword research and performance monitoring.",
+            "Collaborated with stakeholders by presenting data-driven insights to inform content strategy and website optimization efforts."
+          ],
+          "employmentType": null,
+          "technologiesUsed": [
+            "Power BI",
+            "SQL"
+          ]
+        }
+      ],
+      "publications": [],
+      "volunteerWork": [],
+      "certifications": [
+        "Google Data Analytics Professional Certificate - Coursera",
+        "Deloitte Data Analytics Virtual Experience - Forage"
+      ],
+      "yearsOfExperience": null
+    },
+    "firebaseStoragePath": "tailored_resume_SEO_Intern_1777196469056.pdf",
+    "isTailored": true
+  },
+  {
+    "id": "tailored_1777197240770",
+    "filename": "tailored_resume_SEO_Intern_1777197215727.pdf",
+    "originalName": "Tailored Resume for SEO Intern.pdf",
+    "fileSize": 82824,
+    "uploadedAt": "2026-04-26T09:54:00.770Z",
+    "parsedData": {
+      "name": "NIKITA SHARMA",
+      "email": "nikita.sharma.data@gmail.com",
+      "phone": "6033088799",
+      "tools": [
+        "Python",
+        "Pandas",
+        "NumPy",
+        "R",
+        "Power BI",
+        "Matplotlib",
+        "Seaborn",
+        "Excel",
+        "Google Sheets",
+        "Jupyter Notebook",
+        "GitHub",
+        "DAX"
+      ],
+      "awards": [],
+      "github": "github.com/nikitasharma-data27",
+      "skills": [
+        "SQL (Joins, CTEs, Window Functions)",
+        "Trend Analysis",
+        "Data Cleaning",
+        "Data Transformation",
+        "Data Validation",
+        "Dashboarding",
+        "KPI Tracking",
+        "Business Intelligence",
+        "Stakeholder Management",
+        "Product Metrics (DAU, MAU, Retention, Churn)",
+        "User Behavior Analysis",
+        "Funnel Analysis",
+        "Cohort Analysis",
+        "A/B Testing",
+        "Retention Analysis"
+      ],
+      "summary": "Data-driven analyst with a strong foundation in SQL and Python, eager to apply analytical expertise to the digital marketing domain. Skilled in analyzing performance metrics and user behavior to inform data-driven optimization strategies. Keen to contribute to SEO initiatives by assisting with keyword research, content optimization, and performance monitoring using tools like Google Analytics and Google Search Console.",
+      "website": null,
+      "linkedIn": "linkedin.com/in/nikitasharma-tech",
+      "location": "Bangalore, India",
+      "projects": [
+        {
+          "url": "github.com/nikitasharma-data27/Vendor-Analysis",
+          "name": "Vendor & Inventory Performance Analysis",
+          "impact": "Identified 15% cost reduction opportunities, improving overall product supply efficiency. Built dashboards to monitor performance metrics and support strategic product decisions.",
+          "description": "Utilized trend analysis to evaluate performance data, identifying key factors influencing outcomes and opportunities for optimization. Developed and tracked key performance indicators (KPIs) to measure the effectiveness of strategic initiatives and guide data-driven decisions. Extracted and cleaned large datasets to ensure accuracy for analysis, providing a reliable basis for strategic recommendations.",
+          "technologies": [
+            "SQL",
+            "Python",
+            "Power BI"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/sql-python-retail-analysis",
+          "name": "Online Retail Product Analysis",
+          "impact": "Identified top-performing product categories contributing to 30% revenue. Generated insights to improve product positioning and user engagement.",
+          "description": "Leveraged SQL and Python to analyze customer behavior and digital product performance, identifying key trends in user interaction. Performed funnel analysis to map the customer journey and identify drop-off points, providing insights for conversion rate optimization. Executed cohort analysis to assess user retention and engagement over time, informing strategies for content optimization. Translated complex datasets into actionable insights on user conversion, demonstrating the ability to drive strategic improvements through data.",
+          "technologies": [
+            "SQL",
+            "Python"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/Patient-Waiting-List–Power-BI",
+          "name": "Patient Analytics Dashboard (Product Perspective)",
+          "impact": "Improved operational efficiency by 40% through data-driven insights. Tracked KPIs to optimize service delivery and user experience.",
+          "description": "Built a Power BI dashboard analyzing user flow and system performance across departments. Used DAX and ETL techniques to model data for product-level insights.",
+          "technologies": [
+            "Power BI",
+            "DAX",
+            "ETL"
+          ]
+        }
+      ],
+      "education": [
+        {
+          "gpa": null,
+          "degree": "Post Graduate Diploma in Applied Statistics",
+          "institution": "Indira Gandhi National Open University",
+          "graduationYear": 2026,
+          "relevantCourses": []
+        },
+        {
+          "gpa": null,
+          "degree": "Bachelor of Science (Hons) Chemistry",
+          "institution": "University of Delhi",
+          "graduationYear": 2024,
+          "relevantCourses": []
+        }
+      ],
+      "idealRole": "Product Data Analyst",
+      "languages": [],
+      "experience": [
+        {
+          "role": "Research Analyst Associate",
+          "company": "Learners Point Academy",
+          "endDate": "2026",
+          "duration": null,
+          "location": "Bangalore",
+          "startDate": null,
+          "description": "Responsible for analyzing user and operational data, performing data cleaning and transformation, building interactive dashboards, conducting trend and cohort analysis, writing optimized SQL queries, and collaborating with stakeholders to drive data-informed product decisions.",
+          "achievements": [
+            "Analyzed over 12,000 user data records to uncover key engagement patterns, providing insights applicable to content optimization and user experience improvements.",
+            "Streamlined performance monitoring by developing interactive dashboards to track key metrics, reducing reporting time by 35% and enabling faster strategic insights.",
+            "Conducted trend and cohort analysis to identify user retention drivers, informing strategies to improve user journeys and on-site engagement.",
+            "Enhanced data integrity by 25% through rigorous data cleaning and validation, establishing a reliable foundation for performance analysis and reporting.",
+            "Optimized data extraction for performance reports by writing efficient SQL queries, improving the speed of generating actionable insights for strategic adjustments."
+          ],
+          "employmentType": null,
+          "technologiesUsed": [
+            "Power BI",
+            "SQL"
+          ]
+        }
+      ],
+      "publications": [],
+      "volunteerWork": [],
+      "certifications": [
+        "Google Data Analytics Professional Certificate - Coursera",
+        "Deloitte Data Analytics Virtual Experience - Forage"
+      ],
+      "yearsOfExperience": null
+    },
+    "firebaseStoragePath": "tailored_resume_SEO_Intern_1777197215727.pdf",
+    "isTailored": true
+  },
+  {
+    "id": "tailored_1777197614037",
+    "filename": "tailored_resume_SEO_Intern_1777197586657.pdf",
+    "originalName": "Tailored Resume for SEO Intern.pdf",
+    "fileSize": 81854,
+    "uploadedAt": "2026-04-26T10:00:14.037Z",
+    "parsedData": {
+      "name": "NIKITA SHARMA",
+      "email": "nikita.sharma.data@gmail.com",
+      "phone": "6033088799",
+      "tools": [
+        "Python",
+        "Pandas",
+        "NumPy",
+        "R",
+        "Power BI",
+        "Matplotlib",
+        "Seaborn",
+        "Excel",
+        "Google Sheets",
+        "Jupyter Notebook",
+        "GitHub",
+        "DAX"
+      ],
+      "awards": [],
+      "github": "github.com/nikitasharma-data27",
+      "skills": [
+        "Trend Analysis",
+        "KPI Tracking",
+        "User Behavior Analysis",
+        "Funnel Analysis",
+        "Cohort Analysis",
+        "SQL (Joins, CTEs)",
+        "Dashboarding",
+        "Data Cleaning",
+        "Data Transformation",
+        "Data Validation",
+        "Business Intelligence",
+        "Stakeholder Management",
+        "Collaboration",
+        "Reporting"
+      ],
+      "summary": "Analytical professional with a strong foundation in data analysis using SQL, Python, and Power BI. Eager to apply a keen analytical mindset to the digital marketing domain, specifically in conducting keyword research and monitoring SEO performance. Skilled in trend analysis and KPI tracking to derive actionable insights and support data-driven optimization strategies for growth.",
+      "website": null,
+      "linkedIn": "linkedin.com/in/nikitasharma-tech",
+      "location": "Bangalore, India",
+      "projects": [
+        {
+          "url": "github.com/nikitasharma-data27/Vendor-Analysis",
+          "name": "Vendor & Inventory Performance Analysis",
+          "impact": "Identified 15% cost reduction opportunities, improving overall product supply efficiency. Built dashboards to monitor performance metrics and support strategic product decisions.",
+          "description": "Conducted a comprehensive performance analysis of vendor and inventory data to identify key optimization opportunities. Utilized trend analysis and KPI tracking to monitor performance metrics and inform data-driven strategic recommendations. Extracted and cleaned large datasets using SQL to prepare for in-depth analysis and reporting on business performance.",
+          "technologies": [
+            "SQL",
+            "Python",
+            "Power BI"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/sql-python-retail-analysis",
+          "name": "Online Retail Product Analysis",
+          "impact": "Identified top-performing product categories contributing to 30% revenue. Generated insights to improve product positioning and user engagement.",
+          "description": "Analyzed customer behavior and product performance data to understand user journeys and identify conversion funnel drop-offs. Performed funnel and cohort analysis using SQL and Python to evaluate key performance metrics like conversion and retention. Developed data-driven insights to support content and product optimization strategies aimed at improving user engagement.",
+          "technologies": [
+            "SQL",
+            "Python"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/Patient-Waiting-List–Power-BI",
+          "name": "Patient Analytics Dashboard (Product Perspective)",
+          "impact": "Improved operational efficiency by 40% through data-driven insights. Tracked KPIs to optimize service delivery and user experience.",
+          "description": "Built a Power BI dashboard analyzing user flow and system performance across departments. Used DAX and ETL techniques to model data for product-level insights.",
+          "technologies": [
+            "Power BI",
+            "DAX",
+            "ETL"
+          ]
+        }
+      ],
+      "education": [
+        {
+          "gpa": null,
+          "degree": "Post Graduate Diploma in Applied Statistics",
+          "institution": "Indira Gandhi National Open University",
+          "graduationYear": 2026,
+          "relevantCourses": []
+        },
+        {
+          "gpa": null,
+          "degree": "Bachelor of Science (Hons) Chemistry",
+          "institution": "University of Delhi",
+          "graduationYear": 2024,
+          "relevantCourses": []
+        }
+      ],
+      "idealRole": "Product Data Analyst",
+      "languages": [],
+      "experience": [
+        {
+          "role": "Research Analyst Associate",
+          "company": "Learners Point Academy",
+          "endDate": "2026",
+          "duration": null,
+          "location": "Bangalore",
+          "startDate": null,
+          "description": "Responsible for analyzing user and operational data, performing data cleaning and transformation, building interactive dashboards, conducting trend and cohort analysis, writing optimized SQL queries, and collaborating with stakeholders to drive data-informed product decisions.",
+          "achievements": [
+            "Monitored key performance indicators by developing interactive Power BI dashboards, reducing reporting time by 35% and enabling faster strategic decisions.",
+            "Analyzed over 12,000 user data records to uncover engagement patterns and behavioral trends, demonstrating a strong analytical mindset for data interpretation.",
+            "Identified key user retention drivers through in-depth trend and cohort analysis, providing actionable insights for optimization strategies.",
+            "Enhanced data integrity for reporting by 25% through systematic data cleaning, transformation, and validation processes.",
+            "Streamlined data extraction for performance analysis by authoring optimized SQL queries, improving the efficiency of generating reports."
+          ],
+          "employmentType": null,
+          "technologiesUsed": [
+            "Power BI",
+            "SQL"
+          ]
+        }
+      ],
+      "publications": [],
+      "volunteerWork": [],
+      "certifications": [
+        "Google Data Analytics Professional Certificate - Coursera",
+        "Deloitte Data Analytics Virtual Experience - Forage"
+      ],
+      "yearsOfExperience": null
+    },
+    "firebaseStoragePath": "tailored_resume_SEO_Intern_1777197586657.pdf",
+    "isTailored": true
+  },
+  {
+    "id": "tailored_1777213036885",
+    "filename": "tailored_resume_Software_Engineer_1777212994523.pdf",
+    "originalName": "Tailored Resume for Software Engineer.pdf",
+    "fileSize": 82227,
+    "uploadedAt": "2026-04-26T14:17:16.885Z",
+    "parsedData": {
+      "name": "NIKITA SHARMA",
+      "email": "nikita.sharma.data@gmail.com",
+      "phone": "6033088799",
+      "tools": [
+        "Python",
+        "Pandas",
+        "NumPy",
+        "SQL",
+        "R",
+        "Power BI",
+        "Matplotlib",
+        "Seaborn",
+        "Excel",
+        "Google Sheets",
+        "Jupyter Notebook",
+        "GitHub",
+        "Pivot Tables",
+        "VLOOKUP",
+        "INDEX-MATCH",
+        "Data Analysis Tool-Pak",
+        "Joins",
+        "Subqueries",
+        "CTEs",
+        "Window Functions",
+        "DAX",
+        "Power Query"
+      ],
+      "awards": [],
+      "github": "github.com/nikitasharma-data27",
+      "skills": [
+        "Python (Pandas, NumPy)",
+        "SQL",
+        "Software Development Lifecycle (SDLC)",
+        "Version Control (Git)",
+        "Data Modeling",
+        "ETL Processes",
+        "Statistical Analysis",
+        "Exploratory Data Analysis (EDA)",
+        "Hypothesis Testing",
+        "Data Cleaning & Validation",
+        "Troubleshooting & Debugging",
+        "Power BI",
+        "Excel",
+        "Business Intelligence (BI)",
+        "Data Visualization",
+        "Dashboard Development"
+      ],
+      "summary": "Analytical professional with a strong foundation in Python programming and software development best practices. Experienced in designing and developing data-driven solutions to solve complex problems, from requirements gathering to implementation. Eager to apply excellent problem-solving skills and a collaborative mindset to build and maintain high-quality AI/ML software solutions in a challenging environment.",
+      "website": null,
+      "linkedIn": "linkedin.com/in/nikitasharma-tech",
+      "location": "Bangalore, India",
+      "projects": [
+        {
+          "url": "github.com/nikitasharma-data27/Vendor-Analysis",
+          "name": "Vendor & Inventory Performance Analysis",
+          "impact": "Identified 15% cost reduction opportunities through vendor performance optimization. Developed Power BI dashboards to track 5+ KPIs, improving procurement decision-making.",
+          "description": "Developed a Python-based solution to analyze over 5,000 vendor and inventory records, identifying key inefficiencies in stock management. Implemented statistical analysis algorithms to evaluate pricing trends and inventory turnover, providing data to support procurement decisions. Engineered a data processing pipeline to clean and structure raw data, preparing it for robust analysis and modeling. Maintained clean, well-documented code throughout the project lifecycle, adhering to software development best practices.",
+          "technologies": [
+            "Power BI"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/sql-python-retail-analysis",
+          "name": "Online Retail Sales Analysis",
+          "impact": "Identified top-performing product categories contributing to 30% of total revenue. Improved reporting insights by creating visualizations that enhanced decision-making speed by 25%.",
+          "description": "Designed and implemented a Python and SQL solution to analyze 10,000+ transactional records for customer behavior insights. Authored complex SQL queries using joins, aggregations, and window functions to extract and calculate key revenue and retention metrics. Applied strong problem-solving skills to structure the analytical approach, translating business questions into a functional codebase. Managed the project codebase using version control (Git) and ensured all scripts were efficient and well-documented.",
+          "technologies": [
+            "SQL",
+            "Python"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/Patient-Waiting-List–Power-BI",
+          "name": "Patient Wait List Analytics Dashboard",
+          "impact": "Reduced reporting time by 40% through automation and dashboard optimization. Tracked department-level KPIs to improve hospital resource planning and patient flow.",
+          "description": "Built an interactive Power BI dashboard analyzing 8,000+ patient records. Used DAX, Power Query, and ETL techniques to transform and model healthcare data.",
+          "technologies": [
+            "Power BI",
+            "DAX",
+            "Power Query",
+            "ETL"
+          ]
+        }
+      ],
+      "education": [
+        {
+          "gpa": null,
+          "degree": "Post Graduate Diploma in Applied Statistics (Ongoing)",
+          "institution": "Indira Gandhi National Open University",
+          "graduationYear": "2026",
+          "relevantCourses": []
+        },
+        {
+          "gpa": null,
+          "degree": "Bachelor of Science (Hons) Chemistry",
+          "institution": "University of Delhi",
+          "graduationYear": "2024",
+          "relevantCourses": []
+        }
+      ],
+      "idealRole": "Data Analyst",
+      "languages": [],
+      "experience": [
+        {
+          "role": "Research Analyst Associate",
+          "company": "Learners Point Academy",
+          "endDate": "2026",
+          "duration": null,
+          "location": "Bangalore",
+          "startDate": null,
+          "description": "Processed and analyzed structured and unstructured data records to generate operational insights. Performed data cleaning, transformation, and validation. Built interactive dashboards to track KPIs. Optimized data workflows and reporting processes. Wrote and optimized SQL queries to extract and analyze data. Collaborated with stakeholders to gather requirements and deliver data-driven insights for decision-making.",
+          "achievements": [
+            "Developed Python scripts to automate the cleaning, transformation, and validation of over 12,000 data records, improving data accuracy by 25% for analytical systems.",
+            "Engineered and optimized complex SQL queries for efficient data extraction, directly contributing to a more performant and reliable reporting codebase.",
+            "Designed and implemented 3+ interactive BI solutions to track key performance indicators, translating stakeholder requirements into functional software that reduced manual reporting by 35%.",
+            "Analyzed and re-engineered data processing workflows, decreasing data processing time by 20% and contributing to a more efficient software development lifecycle.",
+            "Collaborated with 4+ stakeholders to gather requirements and deliver data-driven insights, demonstrating strong teamwork and communication skills.",
+            "Applied analytical problem-solving to troubleshoot and debug data integrity issues within processing scripts, ensuring high-quality, reliable outputs."
+          ],
+          "employmentType": null,
+          "technologiesUsed": [
+            "Python",
+            "Excel",
+            "Power BI",
+            "SQL"
+          ]
+        }
+      ],
+      "publications": [],
+      "volunteerWork": [],
+      "certifications": [
+        "Google Data Analytics Professional Certificate - Coursera (SQL, Data Cleaning, Data Visualization, EDA)",
+        "Deloitte Data Analytics Virtual Experience - Forage (Data Analysis, Dashboarding, Business Insights)"
+      ],
+      "yearsOfExperience": null
+    },
+    "firebaseStoragePath": "tailored_resume_Software_Engineer_1777212994523.pdf",
+    "isTailored": true
+  },
+  {
+    "id": "tailored_1777213332364",
+    "filename": "tailored_resume_Analyst___Recruiter_1777213309861.pdf",
+    "originalName": "Tailored Resume for Analyst - Recruiter.pdf",
+    "fileSize": 81831,
+    "uploadedAt": "2026-04-26T14:22:12.364Z",
+    "parsedData": {
+      "name": "NIKITA SHARMA",
+      "email": "nikita.sharma.data@gmail.com",
+      "phone": "6033088799",
+      "tools": [
+        "Power BI",
+        "Excel",
+        "Google Sheets",
+        "Jira",
+        "Jupyter Notebook",
+        "GitHub",
+        "Pandas",
+        "NumPy",
+        "Power Query",
+        "DAX"
+      ],
+      "awards": [],
+      "github": "github.com/nikitasharma-data27",
+      "skills": [
+        "Process Improvement",
+        "KPI Tracking",
+        "Trend Analysis",
+        "Requirement Gathering",
+        "Data Validation",
+        "Business Reporting",
+        "Stakeholder Communication",
+        "Dashboard Development",
+        "Data Storytelling",
+        "SQL (Joins, CTEs)",
+        "Python",
+        "Data Cleaning",
+        "Statistical Analysis",
+        "Exploratory Data Analysis (EDA)"
+      ],
+      "summary": "Detail-oriented analyst with a strong background in process improvement, reporting, and stakeholder communication. Proven ability to analyze complex information and track key performance indicators to enhance operational efficiency. Eager to apply analytical skills to the recruitment lifecycle, from sourcing and screening candidates on platforms like LinkedIn to coordinating interviews and improving hiring workflows.",
+      "website": null,
+      "linkedIn": "linkedin.com/in/nikitasharma-tech",
+      "location": "Bangalore, India",
+      "projects": [
+        {
+          "url": "github.com/nikitasharma-data27/Vendor-Analysis",
+          "name": "Vendor & Inventory Performance Analysis",
+          "impact": "Identified inefficiencies impacting profitability, cost optimization, and supply chain performance. Built Power BI dashboards tracking 10+ KPIs including cost, revenue, and vendor performance metrics.",
+          "description": "Analyzed a large dataset to evaluate performance, screen for inefficiencies, and identify key trends impacting business outcomes. Utilized exploratory data analysis (EDA) to assess key metrics related to performance and cost optimization. Identified opportunities for strategic improvement based on comprehensive data analysis and performance evaluation. Delivered actionable, data-driven recommendations to stakeholders to inform strategic decision-making.",
+          "technologies": [
+            "Power BI"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/sql-python-retail-analysis",
+          "name": "Online Retail Sales Analysis",
+          "impact": "Identified sales trends, customer behavior, and revenue patterns. Uncovered growth opportunities. Supported marketing strategy, sales optimization, and revenue growth.",
+          "description": "Queried and analyzed over 10,000 records using SQL and Python to identify significant patterns and behavioral trends. Assessed key performance indicators to uncover opportunities for growth and process optimization. Translated complex data into clear business insights to support strategic planning and targeted initiatives.",
+          "technologies": [
+            "SQL",
+            "Python"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/Patient-Waiting-List–Power-BI",
+          "name": "Patient Wait List Analytics Dashboard",
+          "impact": "Provided insights to improve resource allocation, operational efficiency, and performance monitoring.",
+          "description": "Designed an interactive Power BI dashboard to monitor hospital wait times, operational KPIs, and performance metrics. Implemented Power Query and DAX for data transformation, KPI tracking, and reporting automation. Provided insights to improve resource allocation, operational efficiency, and performance monitoring.",
+          "technologies": [
+            "Power BI",
+            "Power Query",
+            "DAX"
+          ]
+        }
+      ],
+      "education": [
+        {
+          "gpa": null,
+          "degree": "Post Graduate Diploma in Applied Statistics",
+          "institution": "Indira Gandhi National Open University",
+          "graduationYear": "2026 (Ongoing)",
+          "relevantCourses": []
+        },
+        {
+          "gpa": null,
+          "degree": "Bachelor of Science (Hons) Chemistry",
+          "institution": "University of Delhi",
+          "graduationYear": "2024",
+          "relevantCourses": []
+        }
+      ],
+      "idealRole": "Business Analyst",
+      "languages": [],
+      "experience": [
+        {
+          "role": "Research Analyst Associate",
+          "company": "Learners Point Academy",
+          "endDate": null,
+          "duration": null,
+          "location": "Bangalore",
+          "startDate": null,
+          "description": "Analyzed and transformed operational datasets to support business reporting and performance tracking. Performed data cleaning, validation, and preprocessing using Excel and Python, ensuring high data accuracy. Collaborated with stakeholders to gather business requirements and deliver actionable insights. Documented reporting workflows and implemented process improvements.",
+          "achievements": [
+            "Analyzed operational workflows to identify bottlenecks, leading to the implementation of process improvements that increased overall efficiency by 15%.",
+            "Gathered and documented requirements from stakeholders to define key performance indicators (KPIs) for tracking business objectives.",
+            "Sourced and validated data from multiple sources to ensure accuracy and consistency for analysis and reporting.",
+            "Developed and maintained automated dashboards to track 5+ critical KPIs, providing stakeholders with real-time performance insights.",
+            "Enhanced reporting efficiency by 20% by consolidating data sources and automating report generation.",
+            "Communicated analytical findings and process improvement recommendations to key stakeholders to support data-driven decision-making."
+          ],
+          "employmentType": null,
+          "technologiesUsed": [
+            "Excel",
+            "Python"
+          ]
+        }
+      ],
+      "publications": [],
+      "volunteerWork": [],
+      "certifications": [
+        "Google Data Analytics Professional Certificate - Coursera",
+        "Deloitte Data Analytics Virtual Experience - Forage"
+      ],
+      "yearsOfExperience": null
+    },
+    "firebaseStoragePath": "tailored_resume_Analyst___Recruiter_1777213309861.pdf",
+    "isTailored": true
+  },
+  {
+    "id": "tailored_1777215196274",
+    "filename": "tailored_resume_Research_Analyst_Intern_1777215169764.pdf",
+    "originalName": "Tailored Resume for Research Analyst Intern.pdf",
+    "fileSize": 81056,
+    "uploadedAt": "2026-04-26T14:53:16.274Z",
+    "parsedData": {
+      "name": "NIKITA SHARMA",
+      "email": "nikita.sharma.data@gmail.com",
+      "phone": "6033088799",
+      "tools": [
+        "Python",
+        "Pandas",
+        "NumPy",
+        "R",
+        "Power BI",
+        "Matplotlib",
+        "Seaborn",
+        "Excel",
+        "Google Sheets",
+        "Jupyter Notebook",
+        "GitHub",
+        "DAX"
+      ],
+      "awards": [],
+      "github": "github.com/nikitasharma-data27",
+      "skills": [
+        "Trend Analysis",
+        "Data Cleaning & Validation",
+        "KPI Tracking",
+        "Cohort Analysis",
+        "Attention to Detail",
+        "MS Excel",
+        "MS PowerPoint",
+        "Canva",
+        "Dashboarding",
+        "Content Development",
+        "SQL",
+        "Business Intelligence",
+        "Collaboration & Teamwork",
+        "Communication",
+        "Idea Generation"
+      ],
+      "summary": "Detail-oriented analyst with strong research and analytical skills, adept at transforming complex data into actionable insights for program development. Proficient in using Excel, SQL, and data visualization to analyze trends, track key metrics, and organize findings. A collaborative team player experienced in supporting the creation of engaging content and data-driven learning materials.",
+      "website": null,
+      "linkedIn": "linkedin.com/in/nikitasharma-tech",
+      "location": "Bangalore, India",
+      "projects": [
+        {
+          "url": "github.com/nikitasharma-data27/Vendor-Analysis",
+          "name": "Vendor & Inventory Performance Analysis",
+          "impact": "Identified 15% cost reduction opportunities, improving overall product supply efficiency. Built dashboards to monitor performance metrics and support strategic product decisions.",
+          "description": "Researched and analyzed large vendor and inventory datasets to identify key performance indicators and operational inefficiencies. Organized complex data using Excel and SQL to perform detailed trend analysis, highlighting areas for process improvement. Developed a summary presentation of findings, communicating insights on procurement and inventory management to support strategic decisions.",
+          "technologies": [
+            "SQL",
+            "Python",
+            "Power BI"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/sql-python-retail-analysis",
+          "name": "Online Retail Product Analysis",
+          "impact": "Identified top-performing product categories contributing to 30% revenue. Generated insights to improve product positioning and user engagement.",
+          "description": "Utilized SQL and Python to conduct comprehensive research into customer behavior patterns and product performance. Generated creative insights by performing funnel and cohort analysis to understand user engagement and identify opportunities for improvement. Translated analytical findings into actionable recommendations for enhancing the customer experience and product strategy. Created visualizations to present complex retention metrics, making research findings accessible to a non-technical audience.",
+          "technologies": [
+            "SQL",
+            "Python"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/Patient-Waiting-List–Power-BI",
+          "name": "Patient Analytics Dashboard (Product Perspective)",
+          "impact": "Improved operational efficiency by 40% through data-driven insights. Tracked KPIs to optimize service delivery and user experience.",
+          "description": "Built a Power BI dashboard analyzing user flow and system performance across departments. Used DAX and ETL techniques to model data for product-level insights.",
+          "technologies": [
+            "Power BI",
+            "DAX",
+            "ETL"
+          ]
+        }
+      ],
+      "education": [
+        {
+          "gpa": null,
+          "degree": "Post Graduate Diploma in Applied Statistics",
+          "institution": "Indira Gandhi National Open University",
+          "graduationYear": 2026,
+          "relevantCourses": []
+        },
+        {
+          "gpa": null,
+          "degree": "Bachelor of Science (Hons) Chemistry",
+          "institution": "University of Delhi",
+          "graduationYear": 2024,
+          "relevantCourses": []
+        }
+      ],
+      "idealRole": "Product Data Analyst",
+      "languages": [],
+      "experience": [
+        {
+          "role": "Research Analyst Associate",
+          "company": "Learners Point Academy",
+          "endDate": "2026",
+          "duration": null,
+          "location": "Bangalore",
+          "startDate": null,
+          "description": "Responsible for analyzing user and operational data, performing data cleaning and transformation, building interactive dashboards, conducting trend and cohort analysis, writing optimized SQL queries, and collaborating with stakeholders to drive data-informed product decisions.",
+          "achievements": [
+            "Conducted in-depth research by analyzing over 12,000 user data records to identify key trends and patterns in learner engagement.",
+            "Organized and validated complex datasets to support program development, improving data accuracy by 25% for more reliable insights.",
+            "Created engaging presentations and interactive dashboards to communicate research findings, reducing reporting time by 35%.",
+            "Synthesized findings from trend and cohort analysis to provide actionable insights for the creation of new training content and learning materials.",
+            "Collaborated with the training team by extracting and structuring data using SQL, providing a foundational analysis for new program initiatives.",
+            "Supported the program delivery team by translating complex data into clear, actionable reports to enhance learner engagement strategies."
+          ],
+          "employmentType": null,
+          "technologiesUsed": [
+            "Power BI",
+            "SQL"
+          ]
+        }
+      ],
+      "publications": [],
+      "volunteerWork": [],
+      "certifications": [
+        "Google Data Analytics Professional Certificate - Coursera",
+        "Deloitte Data Analytics Virtual Experience - Forage"
+      ],
+      "yearsOfExperience": null
+    },
+    "firebaseStoragePath": "tailored_resume_Research_Analyst_Intern_1777215169764.pdf",
+    "isTailored": true
+  },
+  {
+    "id": "tailored_1777253563347",
+    "filename": "tailored_resume_Research_Analyst_Intern_1777253539195.pdf",
+    "originalName": "Tailored Resume for Research Analyst Intern.pdf",
+    "fileSize": 82485,
+    "uploadedAt": "2026-04-27T01:32:43.347Z",
+    "parsedData": {
+      "name": "NIKITA SHARMA",
+      "email": "nikita.sharma.data@gmail.com",
+      "phone": "6033088799",
+      "tools": [
+        "Python",
+        "Pandas",
+        "NumPy",
+        "R",
+        "Power BI",
+        "Matplotlib",
+        "Seaborn",
+        "Excel",
+        "Google Sheets",
+        "Jupyter Notebook",
+        "GitHub",
+        "DAX"
+      ],
+      "awards": [],
+      "github": "github.com/nikitasharma-data27",
+      "skills": [
+        "Trend Analysis",
+        "User Behavior Analysis",
+        "Data Cleaning & Validation",
+        "KPI Tracking",
+        "Attention to Detail",
+        "MS Excel",
+        "MS PowerPoint",
+        "Canva",
+        "Content Development",
+        "Dashboarding",
+        "SQL (Joins, CTEs)",
+        "Data Transformation",
+        "Business Intelligence",
+        "ETL",
+        "Teamwork & Coordination",
+        "Communication & Presentation",
+        "Idea Generation",
+        "Stakeholder Management"
+      ],
+      "summary": "Detail-oriented Research Analyst with experience analyzing user and operational data to derive actionable insights for program development. Possesses a keen interest in the Human Resources and Learning & Development domain, with a proven ability to support content creation in an educational setting. Proficient in leveraging strong analytical skills with tools like Excel and PowerPoint to organize research findings and develop engaging learning materials that enhance learner engagement.",
+      "website": null,
+      "linkedIn": "linkedin.com/in/nikitasharma-tech",
+      "location": "Bangalore, India",
+      "projects": [
+        {
+          "url": "github.com/nikitasharma-data27/Vendor-Analysis",
+          "name": "Vendor & Inventory Performance Analysis",
+          "impact": "Identified 15% cost reduction opportunities, improving overall product supply efficiency. Built dashboards to monitor performance metrics and support strategic product decisions.",
+          "description": "Performed detailed research and analysis on large datasets to identify key performance trends and operational inefficiencies. Utilized Excel for data cleaning and transformation, ensuring high attention to detail and accuracy in the final analysis. Developed a summary presentation of findings, organizing complex data into clear, actionable insights for stakeholders.",
+          "technologies": [
+            "SQL",
+            "Python",
+            "Power BI"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/sql-python-retail-analysis",
+          "name": "Online Retail Product Analysis",
+          "impact": "Identified top-performing product categories contributing to 30% revenue. Generated insights to improve product positioning and user engagement.",
+          "description": "Leveraged SQL to analyze customer behavior patterns, demonstrating strong analytical skills applicable to understanding learner engagement. Created compelling data visualizations to effectively communicate research findings on user retention and conversion funnels. Generated creative, data-driven ideas for improving user experience based on analytical insights.",
+          "technologies": [
+            "SQL",
+            "Python"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/Patient-Waiting-List–Power-BI",
+          "name": "Patient Analytics Dashboard (Product Perspective)",
+          "impact": "Improved operational efficiency by 40% through data-driven insights. Tracked KPIs to optimize service delivery and user experience.",
+          "description": "Built a Power BI dashboard analyzing user flow and system performance across departments. Used DAX and ETL techniques to model data for product-level insights.",
+          "technologies": [
+            "Power BI",
+            "DAX",
+            "ETL"
+          ]
+        }
+      ],
+      "education": [
+        {
+          "gpa": null,
+          "degree": "Post Graduate Diploma in Applied Statistics",
+          "institution": "Indira Gandhi National Open University",
+          "graduationYear": 2026,
+          "relevantCourses": []
+        },
+        {
+          "gpa": null,
+          "degree": "Bachelor of Science (Hons) Chemistry",
+          "institution": "University of Delhi",
+          "graduationYear": 2024,
+          "relevantCourses": []
+        }
+      ],
+      "idealRole": "Product Data Analyst",
+      "languages": [],
+      "experience": [
+        {
+          "role": "Research Analyst Associate",
+          "company": "Learners Point Academy",
+          "endDate": "2026",
+          "duration": null,
+          "location": "Bangalore",
+          "startDate": null,
+          "description": "Responsible for analyzing user and operational data, performing data cleaning and transformation, building interactive dashboards, conducting trend and cohort analysis, writing optimized SQL queries, and collaborating with stakeholders to drive data-informed product decisions.",
+          "achievements": [
+            "Organized and validated over 12,000 user data records, improving data accuracy by 25% to support the development of targeted learning materials.",
+            "Conducted in-depth trend and cohort analysis to identify key patterns in learner engagement, providing insights that helped shape more interactive training content.",
+            "Researched and extracted critical data using SQL to support content development on various learning topics, enhancing the relevance of training programs.",
+            "Developed and presented analytical findings using Excel and Power BI, creating clear visualizations that supported the training team in program development decisions.",
+            "Collaborated with the training team to translate research findings into engaging presentation materials and learning activities, contributing to enhanced learner participation."
+          ],
+          "employmentType": null,
+          "technologiesUsed": [
+            "Power BI",
+            "SQL"
+          ]
+        }
+      ],
+      "publications": [],
+      "volunteerWork": [],
+      "certifications": [
+        "Google Data Analytics Professional Certificate - Coursera",
+        "Deloitte Data Analytics Virtual Experience - Forage"
+      ],
+      "yearsOfExperience": null
+    },
+    "firebaseStoragePath": "tailored_resume_Research_Analyst_Intern_1777253539195.pdf",
+    "isTailored": true
+  },
+  {
+    "id": "tailored_1777254238371",
+    "filename": "tailored_resume_Business_Advisory_New_Associate_1777254216190.pdf",
+    "originalName": "Tailored Resume for Business Advisory New Associate.pdf",
+    "fileSize": 81766,
+    "uploadedAt": "2026-04-27T01:43:58.371Z",
+    "parsedData": {
+      "name": "NIKITA SHARMA",
+      "email": "nikita.sharma.data@gmail.com",
+      "phone": "6033088799",
+      "tools": [
+        "Python",
+        "Pandas",
+        "NumPy",
+        "R",
+        "Power BI",
+        "Matplotlib",
+        "Seaborn",
+        "Excel",
+        "Google Sheets",
+        "Jupyter Notebook",
+        "GitHub",
+        "DAX"
+      ],
+      "awards": [],
+      "github": "github.com/nikitasharma-data27",
+      "skills": [
+        "Information Synthesis",
+        "Trend Analysis",
+        "Critical Thinking",
+        "Decision Making",
+        "Problem Solving",
+        "Data Cleaning",
+        "Data Validation",
+        "Attention to Detail",
+        "Policy Adherence",
+        "Objective Analysis",
+        "SQL (Joins, CTEs)",
+        "Business Intelligence",
+        "Dashboarding",
+        "Data Transformation (ETL)",
+        "Microsoft Excel",
+        "Adaptability",
+        "Stress Management",
+        "Meeting Deadlines",
+        "Collaboration",
+        "Stakeholder Communication"
+      ],
+      "summary": "Detail-oriented analyst with experience synthesizing and analyzing complex information to derive actionable insights and support decision-making. Proficient in investigating data, identifying patterns, and resolving issues while adhering to established guidelines and policies. Possesses strong critical thinking and communication skills, with a proven ability to perform under pressure and meet deadlines in fast-paced environments.",
+      "website": null,
+      "linkedIn": "linkedin.com/in/nikitasharma-tech",
+      "location": "Bangalore, India",
+      "projects": [
+        {
+          "url": "github.com/nikitasharma-data27/Vendor-Analysis",
+          "name": "Vendor & Inventory Performance Analysis",
+          "impact": "Identified 15% cost reduction opportunities, improving overall product supply efficiency. Built dashboards to monitor performance metrics and support strategic product decisions.",
+          "description": "Analyzed complex vendor and inventory datasets to investigate and identify sources of operational inefficiency. Synthesized findings from multiple data streams to provide a comprehensive view of performance against key metrics. Applied critical thinking to recommend data-driven adjustments to procurement strategies, ensuring alignment with business objectives.",
+          "technologies": [
+            "SQL",
+            "Python",
+            "Power BI"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/sql-python-retail-analysis",
+          "name": "Online Retail Product Analysis",
+          "impact": "Identified top-performing product categories contributing to 30% revenue. Generated insights to improve product positioning and user engagement.",
+          "description": "Investigated customer transaction and behavior data using SQL and Python to resolve questions about product performance. Performed objective funnel and cohort analysis to identify critical points in the customer journey impacting conversion rates. Developed clear data summaries and visualizations to communicate findings and support strategic decision-making.",
+          "technologies": [
+            "SQL",
+            "Python"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/Patient-Waiting-List–Power-BI",
+          "name": "Patient Analytics Dashboard (Product Perspective)",
+          "impact": "Improved operational efficiency by 40% through data-driven insights. Tracked KPIs to optimize service delivery and user experience.",
+          "description": "Built a Power BI dashboard analyzing user flow and system performance across departments. Used DAX and ETL techniques to model data for product-level insights.",
+          "technologies": [
+            "Power BI",
+            "DAX",
+            "ETL"
+          ]
+        }
+      ],
+      "education": [
+        {
+          "gpa": null,
+          "degree": "Post Graduate Diploma in Applied Statistics",
+          "institution": "Indira Gandhi National Open University",
+          "graduationYear": 2026,
+          "relevantCourses": []
+        },
+        {
+          "gpa": null,
+          "degree": "Bachelor of Science (Hons) Chemistry",
+          "institution": "University of Delhi",
+          "graduationYear": 2024,
+          "relevantCourses": []
+        }
+      ],
+      "idealRole": "Product Data Analyst",
+      "languages": [],
+      "experience": [
+        {
+          "role": "Research Analyst Associate",
+          "company": "Learners Point Academy",
+          "endDate": "2026",
+          "duration": null,
+          "location": "Bangalore",
+          "startDate": null,
+          "description": "Responsible for analyzing user and operational data, performing data cleaning and transformation, building interactive dashboards, conducting trend and cohort analysis, writing optimized SQL queries, and collaborating with stakeholders to drive data-informed product decisions.",
+          "achievements": [
+            "Investigated over 12,000 user data records, applying strong critical thinking to identify and report on key behavioral patterns and anomalies.",
+            "Enhanced data integrity by 25% through meticulous data cleaning and validation, ensuring objective analysis based on accurate information.",
+            "Synthesized complex information from multiple streams into clear, interactive dashboards, enabling teams to make faster, data-driven decisions.",
+            "Resolved complex questions regarding user behavior by performing detailed trend and cohort analysis, adhering to established analytical guidelines.",
+            "Streamlined data extraction and reporting processes using optimized SQL queries, consistently meeting deadlines for time-sensitive analytical reports."
+          ],
+          "employmentType": null,
+          "technologiesUsed": [
+            "Power BI",
+            "SQL"
+          ]
+        }
+      ],
+      "publications": [],
+      "volunteerWork": [],
+      "certifications": [
+        "Google Data Analytics Professional Certificate - Coursera",
+        "Deloitte Data Analytics Virtual Experience - Forage"
+      ],
+      "yearsOfExperience": null
+    },
+    "firebaseStoragePath": "tailored_resume_Business_Advisory_New_Associate_1777254216190.pdf",
+    "isTailored": true
+  },
+  {
+    "id": "tailored_1777264031149",
+    "filename": "tailored_resume_Business_Advisory_New_Associate_1777264011578.pdf",
+    "originalName": "Tailored Resume for Business Advisory New Associate.pdf",
+    "fileSize": 84694,
+    "uploadedAt": "2026-04-27T04:27:11.149Z",
+    "parsedData": {
+      "name": "NIKITA SHARMA",
+      "email": "nikita.sharma.data@gmail.com",
+      "phone": "6033088799",
+      "tools": [
+        "Python",
+        "Pandas",
+        "NumPy",
+        "R",
+        "Power BI",
+        "Matplotlib",
+        "Seaborn",
+        "Excel",
+        "Google Sheets",
+        "Jupyter Notebook",
+        "GitHub",
+        "DAX"
+      ],
+      "awards": [],
+      "github": "github.com/nikitasharma-data27",
+      "skills": [
+        "Trust & Safety - Anti-Money Laundering (AML)",
+        "Anti-Money Laundering",
+        "Compliance",
+        "Trust & Safety",
+        "Ability to perform duties objectively",
+        "Excellent comprehension",
+        "Ability to handle disputes",
+        "Strong resilience",
+        "Emotional resilience",
+        "Stress-management skills",
+        "Coping skills",
+        "Adaptable and flexible",
+        "Ability to perform under pressure",
+        "Ability to meet deadlines",
+        "Excellent communication",
+        "Strong attention to detail",
+        "Strong critical thinking and decision-making skills",
+        "Comfort synthesizing and analyzing information from multiple streams",
+        "Data Cleaning & Transformation",
+        "Business Intelligence",
+        "SQL (Joins, CTEs, Window Functions)",
+        "Python (Pandas, NumPy)",
+        "Power BI",
+        "Excel",
+        "Specific tools and channels (for content review and classification)",
+        "GitHub",
+        "Jupyter Notebook",
+        "Professional Services",
+        "Digital, Cloud, Security, FinTech",
+        "Strategy, Consulting & Operations",
+        "Technology and Operations",
+        "Business Advisory New Associate (Keyword)",
+        "Entry-Level Experience (0-1 years)",
+        "Any Graduation"
+      ],
+      "summary": "Highly analytical and detail-oriented professional with foundational experience in data analysis, adept at synthesizing complex information to drive informed decisions. Eager to leverage strong critical thinking and problem-solving skills as a Business Advisory New Associate, specializing in Trust & Safety - Anti-Money Laundering (AML) and Compliance. Possessing a keen ability to perform duties objectively and a commitment to upholding client policies, I am prepared to contribute to robust Anti-Money Laundering frameworks. My career goal is to apply my analytical acumen and strong resilience to excel in a dynamic Professional Services environment, ensuring regulatory adherence and operational integrity.",
+      "website": null,
+      "linkedIn": "linkedin.com/in/nikitasharma-tech",
+      "location": "Bangalore, India",
+      "projects": [
+        {
+          "url": "github.com/nikitasharma-data27/Vendor-Analysis",
+          "name": "Vendor & Inventory Performance Analysis",
+          "impact": "Identified 15% cost reduction opportunities, improving overall product supply efficiency. Built dashboards to monitor performance metrics and support strategic product decisions.",
+          "description": "Conducted comprehensive analysis of vendor and inventory datasets using SQL and Excel, identifying critical inefficiencies that impacted product availability and optimizing procurement strategies by 15%. Applied trend analysis and KPI tracking to inform strategic inventory decisions, demonstrating an adaptable and flexible approach and the ability to meet deadlines under pressure within a Professional Services context. Developed a data-driven framework for inventory management, leveraging insights applicable to Digital and Cloud environments, enhancing operational security and FinTech readiness.",
+          "technologies": [
+            "SQL",
+            "Python",
+            "Power BI"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/sql-python-retail-analysis",
+          "name": "Online Retail Product Analysis",
+          "impact": "Identified top-performing product categories contributing to 30% revenue. Generated insights to improve product positioning and user engagement.",
+          "description": "Performed in-depth customer behavior and product performance analysis using SQL and Python, identifying key drivers for conversion and retention metrics, improving product engagement by 10%. Applied funnel and cohort analysis to evaluate user journeys, ensuring data interpretation was objective and aligned with Trust & Safety principles to inform product policy adjustments. Synthesized complex analytical findings into clear recommendations, demonstrating excellent comprehension and the ability to anticipate potential user disputes, guiding product feature enhancements. Utilized specific analytical tools and channels, similar to those for content review and classification, to monitor product health and identify anomalies, supporting proactive risk mitigation.",
+          "technologies": [
+            "SQL",
+            "Python"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/Patient-Waiting-List–Power-BI",
+          "name": "Patient Analytics Dashboard (Product Perspective)",
+          "impact": "Improved operational efficiency by 40% through data-driven insights. Tracked KPIs to optimize service delivery and user experience.",
+          "description": "Built a Power BI dashboard analyzing user flow and system performance across departments. Used DAX and ETL techniques to model data for product-level insights.",
+          "technologies": [
+            "Power BI",
+            "DAX",
+            "ETL"
+          ]
+        }
+      ],
+      "education": [
+        {
+          "gpa": null,
+          "degree": "Post Graduate Diploma in Applied Statistics",
+          "institution": "Indira Gandhi National Open University",
+          "graduationYear": 2026,
+          "relevantCourses": []
+        },
+        {
+          "gpa": null,
+          "degree": "Bachelor of Science (Hons) Chemistry",
+          "institution": "University of Delhi",
+          "graduationYear": 2024,
+          "relevantCourses": []
+        }
+      ],
+      "idealRole": "Product Data Analyst",
+      "languages": [],
+      "experience": [
+        {
+          "role": "Research Analyst Associate",
+          "company": "Learners Point Academy",
+          "endDate": "2026",
+          "duration": null,
+          "location": "Bangalore",
+          "startDate": null,
+          "description": "Responsible for analyzing user and operational data, performing data cleaning and transformation, building interactive dashboards, conducting trend and cohort analysis, writing optimized SQL queries, and collaborating with stakeholders to drive data-informed product decisions.",
+          "achievements": [
+            "Enhanced data accuracy by 25% for critical compliance reporting, applying rigorous data cleaning and validation techniques to support Trust & Safety - Anti-Money Laundering (AML) initiatives.",
+            "Streamlined reporting processes, reducing delivery time by 35% through the development of interactive Power BI dashboards, demonstrating an ability to meet deadlines under pressure for Business Advisory New Associate tasks.",
+            "Conducted in-depth analysis of 12,000+ user and operational data records, identifying critical patterns to inform potential Anti-Money Laundering (AML) risk assessments and ensure robust Trust & Safety protocols.",
+            "Generated actionable behavioral insights from complex datasets using trend and cohort analysis, requiring strong resilience to navigate ambiguous information and support strategic compliance decisions.",
+            "Optimized SQL queries to efficiently extract product-related insights, improving reporting efficiency and ensuring data objectivity in alignment with client policies for Trust & Safety operations.",
+            "Collaborated with cross-functional teams to synthesize information from multiple data streams, applying strong critical thinking to resolve complex data discrepancies and uphold compliance standards."
+          ],
+          "employmentType": null,
+          "technologiesUsed": [
+            "Power BI",
+            "SQL"
+          ]
+        }
+      ],
+      "publications": [],
+      "volunteerWork": [],
+      "certifications": [
+        "Google Data Analytics Professional Certificate - Coursera",
+        "Deloitte Data Analytics Virtual Experience - Forage"
+      ],
+      "yearsOfExperience": null
+    },
+    "firebaseStoragePath": "tailored_resume_Business_Advisory_New_Associate_1777264011578.pdf",
+    "isTailored": true
+  },
+  {
+    "id": "tailored_1777278182134",
+    "filename": "tailored_resume_HR_Intern__Data_Analyst_Intern_1777278168412.pdf",
+    "originalName": "Tailored Resume for HR Intern, Data Analyst Intern.pdf",
+    "fileSize": 84581,
+    "uploadedAt": "2026-04-27T08:23:02.134Z",
+    "parsedData": {
+      "name": "NIKITA SHARMA",
+      "email": "nikita.sharma.data@gmail.com",
+      "phone": "6033088799",
+      "tools": [
+        "Python",
+        "Pandas",
+        "NumPy",
+        "SQL",
+        "R",
+        "Power BI",
+        "Matplotlib",
+        "Seaborn",
+        "Excel",
+        "Google Sheets",
+        "Jupyter Notebook",
+        "GitHub",
+        "Pivot Tables",
+        "VLOOKUP",
+        "INDEX-MATCH",
+        "Data Analysis Tool-Pak",
+        "Joins",
+        "Subqueries",
+        "CTEs",
+        "Window Functions",
+        "DAX",
+        "Power Query"
+      ],
+      "awards": [],
+      "github": "github.com/nikitasharma-data27",
+      "skills": [
+        "Strong analytical skills",
+        "Passion for Data Analytics",
+        "Data Analyst Intern",
+        "Analytics",
+        "Data Cleaning",
+        "Statistical Analysis",
+        "Business Intelligence",
+        "Python (Pandas, NumPy)",
+        "SQL (Joins, Subqueries, CTEs)",
+        "Power BI (DAX, Power Query)",
+        "Excel (Pivot Tables, VLOOKUP)",
+        "R",
+        "Jupyter Notebook",
+        "GitHub",
+        "HR Intern",
+        "Human Resources",
+        "Passion for HR",
+        "Eagerness to learn and grow",
+        "Strong communication skills",
+        "Enthusiastic & Driven",
+        "Entry-Level Support"
+      ],
+      "summary": "An enthusiastic and driven individual with a strong passion for Data Analytics, skilled in SQL, Python, Excel, and Power BI, eager to apply strong analytical skills to real-world challenges. Possessing a foundational understanding of Data Cleaning, EDA, and Dashboard Development, I have experience analyzing large datasets (10,000+ records) to generate actionable insights and support data-driven decision-making. As an HR Intern and Data Analyst Intern candidate, I bring a genuine passion for HR and Human Resources, demonstrating an eagerness to learn and grow within a dynamic environment. My career goal is to kickstart my career and gain hands-on experience, contributing my strong communication skills and analytical capabilities to a forward-thinking team, especially one looking for entry-level talent to join their team in Indore.",
+      "website": null,
+      "linkedIn": "linkedin.com/in/nikitasharma-tech",
+      "location": "Bangalore, India",
+      "projects": [
+        {
+          "url": "github.com/nikitasharma-data27/Vendor-Analysis",
+          "name": "Vendor & Inventory Performance Analysis",
+          "impact": "Identified 15% cost reduction opportunities through vendor performance optimization. Developed Power BI dashboards to track 5+ KPIs, improving procurement decision-making.",
+          "description": "As an enthusiastic individual, I initiated an Entry-level project to analyze 5,000+ vendor and inventory records, identifying key inefficiencies in procurement and stock management. Performed comprehensive Exploratory Data Analysis (EDA) and statistical analysis using Python (Pandas, Matplotlib) to evaluate pricing trends and inventory turnover rates. Developed actionable insights that projected potential cost savings of 15% by optimizing vendor selection and inventory holding periods. This project allowed me to gain hands-on experience in end-to-end data analysis, from raw data to strategic recommendations.",
+          "technologies": [
+            "Power BI"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/sql-python-retail-analysis",
+          "name": "Online Retail Sales Analysis",
+          "impact": "Identified top-performing product categories contributing to 30% of total revenue. Improved reporting insights by creating visualizations that enhanced decision-making speed by 25%.",
+          "description": "Conducted an in-depth analysis of 10,000+ online retail transactional records using SQL and Python to uncover critical customer behavior patterns and sales trends. Wrote and optimized complex SQL queries, including joins, aggregations, and window functions, to accurately evaluate revenue, customer retention, and churn metrics. Visualized key findings through interactive dashboards in Power BI, presenting insights that could inform marketing strategies and potentially increase customer lifetime value by 10%. This project served to kickstart my career in data analytics by providing practical application of skills in a real-world business context.",
+          "technologies": [
+            "SQL",
+            "Python"
+          ]
+        },
+        {
+          "url": "github.com/nikitasharma-data27/Patient-Waiting-List–Power-BI",
+          "name": "Patient Wait List Analytics Dashboard",
+          "impact": "Reduced reporting time by 40% through automation and dashboard optimization. Tracked department-level KPIs to improve hospital resource planning and patient flow.",
+          "description": "Built an interactive Power BI dashboard analyzing 8,000+ patient records. Used DAX, Power Query, and ETL techniques to transform and model healthcare data.",
+          "technologies": [
+            "Power BI",
+            "DAX",
+            "Power Query",
+            "ETL"
+          ]
+        }
+      ],
+      "education": [
+        {
+          "gpa": null,
+          "degree": "Post Graduate Diploma in Applied Statistics (Ongoing)",
+          "institution": "Indira Gandhi National Open University",
+          "graduationYear": "2026",
+          "relevantCourses": []
+        },
+        {
+          "gpa": null,
+          "degree": "Bachelor of Science (Hons) Chemistry",
+          "institution": "University of Delhi",
+          "graduationYear": "2024",
+          "relevantCourses": []
+        }
+      ],
+      "idealRole": "HR Intern, Data Analyst Intern",
+      "languages": [],
+      "experience": [
+        {
+          "role": "Research Analyst Associate",
+          "company": "Learners Point Academy",
+          "endDate": "2026",
+          "duration": null,
+          "location": "Bangalore",
+          "startDate": null,
+          "description": "Processed and analyzed structured and unstructured data records to generate operational insights. Performed data cleaning, transformation, and validation. Built interactive dashboards to track KPIs. Optimized data workflows and reporting processes. Wrote and optimized SQL queries to extract and analyze data. Collaborated with stakeholders to gather requirements and deliver data-driven insights for decision-making.",
+          "achievements": [
+            "Applied strong analytical skills to process and analyze 12,000+ diverse data records, generating critical operational insights that informed strategic decisions.",
+            "Demonstrated eagerness to learn and grow by performing comprehensive data cleaning, transformation, and validation using Python and Excel, improving data accuracy by 25%.",
+            "Developed and deployed 3+ interactive dashboards in Power BI for KPI tracking, significantly reducing manual reporting effort by 35% for key stakeholders.",
+            "Optimized complex data workflows and reporting processes, leveraging Analytics principles to decrease overall data processing time by 20%.",
+            "Wrote and optimized complex SQL queries to extract and analyze data from 5+ databases, improving reporting efficiency and performance by streamlining data retrieval.",
+            "Collaborated effectively with 4+ stakeholders, utilizing strong communication skills to gather requirements and deliver data-driven insights that informed strategic decision-making."
+          ],
+          "employmentType": null,
+          "technologiesUsed": [
+            "Python",
+            "Excel",
+            "Power BI",
+            "SQL"
+          ]
+        }
+      ],
+      "publications": [],
+      "volunteerWork": [],
+      "certifications": [
+        "Google Data Analytics Professional Certificate - Coursera (SQL, Data Cleaning, Data Visualization, EDA)",
+        "Deloitte Data Analytics Virtual Experience - Forage (Data Analysis, Dashboarding, Business Insights)"
+      ],
+      "yearsOfExperience": null
+    },
+    "firebaseStoragePath": "tailored_resume_HR_Intern__Data_Analyst_Intern_1777278168412.pdf",
+    "isTailored": true
+  }
+]

@@ -1,0 +1,98 @@
+--- ../backend/controllers/jobController.js
++++ ../backend/controllers/jobController.js
+@@ -7,6 +7,23 @@
+ const { generateTailoredResumePdf } = require('../services/pdf/latexService');
+ const { supabase } = require('../services/supabase/supabaseService');
+ 
++const EventEmitter = require('events');
++const progressEmitter = new EventEmitter();
++
++function progressStream(req, res) {
++  res.setHeader('Content-Type', 'text/event-stream');
++  res.setHeader('Cache-Control', 'no-cache');
++  res.setHeader('Connection', 'keep-alive');
++
++  const listener = (data) => {
++    res.write(`data: ${JSON.stringify(data)}\n\n`);
++  };
++  progressEmitter.on('progress', listener);
++  req.on('close', () => {
++    progressEmitter.off('progress', listener);
++  });
++}
++
+ // ── Analyze Job ──────────────────────────────────────────────────────────────
+ async function analyzeJob(req, res) {
+   const { text, url } = req.body;
+@@ -120,8 +137,12 @@
+ 
+   try {
+     console.log(`🤖 Matching ${originalResumes.length} original resume(s) with Gemini...`);
++    progressEmitter.emit('progress', { step: 'match_resume', status: 'running', detail: `Comparing ${originalResumes.length} resume(s) against job requirements…` });
++
+     const matchResult = await geminiService.matchResumes(jobData, originalResumes);
+ 
++    progressEmitter.emit('progress', { step: 'match_resume', status: 'done', detail: `Finished comparing resumes.` });
++    progressEmitter.emit('progress', { step: 'score', status: 'running', detail: `Scoring the best match...` });
+     // Use the AI's intelligent score directly
+     matchResult.rankings.sort((a, b) => b.score - a.score);
+     matchResult.bestMatchIndex = matchResult.rankings[0].index;
+@@ -153,6 +174,10 @@
+     // ── AI Resume Tailoring (if score < 80) ──────────────────────────────────
+     if (bestScore < 80 && bestResume) {
+       console.log(`⚠️ Best match score is ${bestScore}%. Initiating AI Resume Tailoring...`);
++      
++      progressEmitter.emit('progress', { step: 'score', status: 'warn', detail: `Score ${bestScore}% is below 80% — AI tailoring triggered.` });
++      progressEmitter.emit('progress', { step: 'tailor', status: 'running', detail: `Rewriting summary, skills, and experience...` });
++
+       try {
+         tailoringPerformed = true;
+ 
+@@ -165,6 +190,9 @@
+           throw new Error('AI returned an invalid response missing tailored data.');
+         }
+ 
++        progressEmitter.emit('progress', { step: 'tailor', status: 'done', detail: 'Summary, skills, experience rewritten.' });
++        progressEmitter.emit('progress', { step: 'compile_pdf', status: 'running', detail: `Generating PDF...` });
++
+         // 2. Build PDF using the fixed LaTeX template (falls back to pdfmake if pdflatex unavailable)
+         // IMPORTANT: Pass originalData + rewrittenSections separately so the template
+         // uses original data for locked fields and AI content only for the 4 editable placeholders.
+@@ -173,6 +201,8 @@
+         const filenameBase = `tailored_resume_${safeJobTitle}_${Date.now()}`;
+         const pdfBuffer = await generateTailoredResumePdf(originalData, rewrittenSections, filenameBase);
+ 
++        progressEmitter.emit('progress', { step: 'compile_pdf', status: 'done', detail: `PDF generated — ${filenameBase}.pdf` });
++        progressEmitter.emit('progress', { step: 'upload', status: 'running', detail: `Uploading to Supabase...` });
+         // 3. Upload tailored PDF to Supabase Storage
+         let firebaseStoragePath = null;
+         if (supabase) {
+@@ -216,6 +246,7 @@
+         }
+ 
+ 
++        progressEmitter.emit('progress', { step: 'upload', status: 'done', detail: supabasePublicUrl ? 'Uploaded to Supabase Storage.' : 'Saved locally (Supabase skipped).' });
+         // 4. Re-evaluate the new score
+         console.log('🤖 Re-evaluating tailored resume score...');
+         tailoredMatchPercentage = await geminiService.scoreTailoredResume(jobData, tailoredData);
+@@ -271,7 +302,15 @@
+         tailoringPerformed = false;
+         tailoredResume = null;
+       }
++    } else {
++      progressEmitter.emit('progress', { step: 'score', status: 'done', detail: `Strong match! Score ${bestScore}% — no tailoring needed.` });
++      ['tailor', 'compile_pdf', 'upload'].forEach(id =>
++        progressEmitter.emit('progress', { step: id, status: 'done', detail: 'Skipped — resume already scores ≥80%.' })
++      );
+     }
++
++    progressEmitter.emit('progress', { step: 'email', status: 'done', detail: 'Ready to generate a personalized email.' });
+ 
+     return res.json({
+       success: true,
+@@ -295,5 +334,5 @@
+   }
+ }
+ 
+-module.exports = { analyzeJob, matchResumes };
++module.exports = { analyzeJob, matchResumes, progressStream };

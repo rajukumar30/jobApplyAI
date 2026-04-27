@@ -1,0 +1,59 @@
+--- ../backend/services/gemini/geminiService.js
++++ ../backend/services/gemini/geminiService.js
+@@ -443,6 +443,7 @@
+     primaryExperience: {
+       role: primaryExp.role || 'Research Analyst Associate',
+       company: primaryExp.company || 'Learners Point Academy',
++      duration: primaryExp.duration || '2026',
+       existingBullets: primaryExp.achievements || []
+     },
+     projects: topProjects
+@@ -465,11 +466,22 @@
+ ✅ "summary" → Exactly 3–4 sentences. Highlight domain expertise + job-relevant skills naturally.
+ ✅ "skillCategories" → Group skills into 3–5 named categories as a JSON object. Each category must have an array of 3–6 skill strings. Prioritize skills that match the job description.
+-✅ "experienceBullets" → Exactly 5–6 bullet point strings for the ONE work experience entry. Each bullet must start with a strong action verb and include a measurable outcome where possible.
++✅ "experienceBullets" → Exactly 5–6 bullet point strings for the ONE work experience entry. Each bullet must start with a strong action verb and include measurable achievements using numbers or percentages.
+ ✅ "projects[].bullets" → Exactly 3–4 bullet strings per project. Start each with an action verb. Align with job requirements.
+ ✅ "projects[].url" → Keep the EXACT original URL. Do not invent or change URLs.
+ ✅ Use keywords from the job description naturally throughout all rewritten content.
+ ✅ Keep all content factual — only rephrase existing details to better match the job.
++
++═══════════════════════════ ATS OPTIMIZATION WORKFLOW ═══════════════════════════
++Follow these steps before generating the final JSON:
++1. Extract important keywords from the job description (job title, required/preferred skills, tools, industry keywords).
++2. Compare these keywords with the existing resume.
++3. Identify missing keywords.
++4. Inject missing keywords naturally into the Summary, Technical Skills, Professional Experience, and Projects.
++5. Ensure the exact job title from the job description appears at least once.
++6. Ensure each experience section includes measurable achievements using numbers or percentages.
++7. Use ATS-friendly date formats (e.g., MM/YYYY or Month YYYY). If the month is not mentioned, use the year only. Apply this to the "experienceDuration".
++8. Ensure high keyword density by mentioning important skills multiple times naturally.
+ ════════════════════════════════════════════════════════════════════
+ 
+ Job Description:
+@@ -484,6 +496,11 @@
+ Original Editable Resume Content:
+ ${JSON.stringify(editableInput, null, 2)}
+ 
+ Return ONLY valid JSON with this EXACT structure (no extra keys, no extra text):
+ {
++  "atsOptimization": {
++    "extractedKeywords": ["keyword1", "keyword2"],
++    "missingKeywords": ["keyword3"],
++    "strategy": "Brief explanation of how keywords were naturally injected."
++  },
+   "summary": "3–4 sentence professional summary string",
+   "skillCategories": {
+@@ -493,6 +510,7 @@
+     "Methodologies": ["Hypothesis Testing", "Regression", "EDA"]
+   },
++  "experienceDuration": "ATS-friendly date string (e.g., MM/YYYY - MM/YYYY)",
+   "experienceBullets": [
+     "Action verb + specific task + measurable outcome 1",
+@@ -536,6 +554,7 @@
+     const tailoredExperience = (parsedData.experience || []).map((orig, i) => ({
+       ...orig,
+       // All bullets go to the first (and only) job entry
++      duration: i === 0 && rewrittenContent.experienceDuration ? rewrittenContent.experienceDuration : orig.duration,
+       achievements: i === 0
+         ? (rewrittenContent.experienceBullets || orig.achievements || [])

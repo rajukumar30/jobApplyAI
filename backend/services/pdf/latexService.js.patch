@@ -1,0 +1,14 @@
+--- ../backend/services/pdf/latexService.js
++++ ../backend/services/pdf/latexService.js
+@@ -86,6 +86,16 @@
+   );
+ 
++  // ── EXPERIENCE HEADER ────────────────────────────────────────────────────
++  const expOrig = orig.experience?.[0] || {};
++  template = template.replace(/\{\{EXPERIENCE_ROLE\}\}/g, escapeLatex(ai.experienceRole || expOrig.role || 'Role'));
++  template = template.replace(/\{\{EXPERIENCE_DATE\}\}/g, escapeLatex(ai.experienceDuration || expOrig.duration || 'Date'));
++  template = template.replace(/\{\{EXPERIENCE_COMPANY\}\}/g, escapeLatex(expOrig.company || 'Company'));
++  template = template.replace(/\{\{EXPERIENCE_LOCATION\}\}/g, escapeLatex(expOrig.location || 'Location'));
++
+   // ── EXPERIENCE BULLETS (6 individual placeholders) ───────────────────────
+   const expBullets = ai.experienceBullets || [];

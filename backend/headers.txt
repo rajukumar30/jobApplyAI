@@ -1,0 +1,6 @@
+HTTP/1.1 301 Moved Permanently
+Date: Sun, 26 Apr 2026 07:50:51 GMT
+Server: Apache/2.4.62 (Debian)
+Location: /latexcgi/document_B13B_3466399.log
+Transfer-Encoding: chunked
+
