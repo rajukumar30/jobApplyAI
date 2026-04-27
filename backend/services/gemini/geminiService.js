@@ -369,24 +369,96 @@ async function generateEmail(jobData, resumeData) {
     workMode: jobData.workMode || null,
   };
 
-  const prompt = `You are a world-class executive recruiter and expert copywriter. Write a highly professional, compelling, and perfectly tailored job application email. The email must connect the candidate's actual resume achievements directly to the core needs of the job description.
+  const prompt = `You are an expert professional career writer specializing in high-response job application emails.
 
-REQUIREMENTS:
-- Address the recruiter by name if available, otherwise use "Hiring Manager" or "Hiring Team".
-- Opening: A strong, engaging, and professional hook expressing interest in the specific role and company. Mention a detail about the company if available to show genuine interest.
-- Body Paragraph 1 (The Hook): State exactly how the candidate's current/recent experience directly solves the primary responsibilities of this role.
-- Body Paragraph 2 (The Proof): Highlight 2-3 specific, measurable achievements or key skills from the candidate's resume that perfectly match the job's required skills. Use bullet points or a short, punchy paragraph.
-- Closing: A confident, professional call to action expressing readiness for an interview.
-- Tone: Highly professional, confident, articulate, warm, and engaging. Absolutely NO robotic, clichÃ©, or AI-sounding filler phrases (e.g., "I am writing to express my interest", "I am a passionate professional", "I believe I am the perfect fit"). Big emails are boring to read, ensure it is compelling.
-- Length: Perfect lengthâ€”not too short and not too long (approx 100-150 words). Respect the recruiter's time.
-- Accuracy: Ensure the candidate's name, the recruiter's name, the company name, and the job title are perfect.
-- Signature: MUST include the candidate's name and phone number at the very end.
+Your task is to generate a highly personalized job application email using the Job Context and Candidate Profile.
+
+The email must sound natural, professional, confident, and written by a real human—not AI.
+
+EMAIL STRUCTURE
+
+Greeting:
+Address the recruiter by name if available.
+If the recruiter name is not available, use "Hiring Manager" or "Hiring Team".
+
+Opening Hook:
+Write a compelling opening sentence referencing the specific job title and company name.
+
+Avoid robotic phrases such as:
+"I am writing to express my interest"
+"I am passionate about"
+"I believe I am the perfect fit"
+
+Instead use natural openings such as:
+"I was excited to see the opening for [Job Title] at [Company Name]."
+"What stood out to me about this opportunity at [Company Name] is..."
+
+Body:
+Explain briefly how the candidate's background aligns with the role.
+
+Then include 2–3 short bullet points highlighting measurable achievements or relevant experience.
+
+Formatting Rules:
+• Use the bullet symbol "•" for bullet points.
+• Never use markdown formatting like *, **, or numbered lists.
+• Each bullet point must be one concise sentence.
+
+Example format:
+• Built dashboards tracking 5+ KPIs, improving reporting efficiency by 20%.
+• Conducted sales data analysis to identify customer behavior trends.
+• Experienced in requirement gathering and structured business reporting.
+
+Experience Adaptation Rules:
+
+If candidate experience is less than 6 months:
+Focus on projects, certifications, and skills.
+
+If candidate experience is between 6–24 months:
+Highlight early career experience and measurable achievements.
+
+If candidate experience is more than 2 years:
+Focus on impact, leadership, and results.
+
+Closing:
+Write a confident and professional closing.
+
+Mention that the resume is attached.
+
+Example:
+"I’ve attached my resume for your review and would welcome the opportunity to discuss how my experience could support your team."
+
+Tone Requirements:
+Professional
+Warm
+Confident
+Concise
+Human-like
+
+The email must NOT sound robotic or AI-generated.
+
+Length:
+100–150 words maximum.
+
+Accuracy Rules:
+Ensure the following are correct:
+• Candidate name
+• Recruiter name
+• Company name
+• Job title
 
 CRITICAL RULES:
-- Use ONLY factual data from the candidate profile â€” NEVER invent or hallucinate achievements.
-- Draw a direct, explicit line between a requirement in the Job Context and an achievement in the Candidate Profile.
-- The email must read exactly like a top-tier professional wrote it.
-- Return ONLY valid JSON.
+
+Use ONLY factual information from the Candidate Profile.
+Never invent or hallucinate achievements.
+Always connect candidate achievements directly to job requirements.
+
+Signature:
+The email must end with:
+
+[Candidate Name]
+[Phone Number]
+
+Return ONLY valid JSON.
 
 Job Context:
 ${JSON.stringify(jobContext, null, 2)}
