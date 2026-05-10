@@ -14,8 +14,8 @@ const USE_VERTEX_AI = process.env.USE_VERTEX_AI === 'true' && fs.existsSync(SERV
 const GCP_PROJECT  = process.env.GOOGLE_CLOUD_PROJECT  || 'jobapply-ai-c597b';
 const GCP_LOCATION = process.env.GOOGLE_CLOUD_LOCATION || 'global';
 
-// Primary model — gemini-2.5-flash works without geographic restriction on Vertex AI
-const PRIMARY_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+// Primary model — gemini-2.0-flash (has high free tier quota, whereas 2.5-flash is limited to 20/day)
+const PRIMARY_MODEL = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
 
 let vertexClient = null;   // @google/genai client for Vertex AI
 let genAI        = null;   // @google/generative-ai client for API key fallback
