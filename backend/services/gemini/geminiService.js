@@ -5,10 +5,11 @@ const path = require('path');
 const fs   = require('fs');
 
 // ── Auth Mode Detection ─────────────────────────────────────────────────────
-// Prefer Vertex AI (Agent Platform) if service account file exists.
-// Falls back to API key (Google AI Studio) if not available.
+// ── Auth Mode Detection ─────────────────────────────────────────────────────
+// Prefer API key mode by default (easier for switching projects).
+// Set USE_VERTEX_AI=true in .env to use Agent Platform (requires service account).
 const SERVICE_ACCOUNT_PATH = path.join(__dirname, '../../firebase-service-account.json');
-const USE_VERTEX_AI = fs.existsSync(SERVICE_ACCOUNT_PATH);
+const USE_VERTEX_AI = process.env.USE_VERTEX_AI === 'true' && fs.existsSync(SERVICE_ACCOUNT_PATH);
 
 const GCP_PROJECT  = process.env.GOOGLE_CLOUD_PROJECT  || 'jobapply-ai-c597b';
 const GCP_LOCATION = process.env.GOOGLE_CLOUD_LOCATION || 'global';
