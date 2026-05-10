@@ -1,34 +1,53 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { GoogleAuth }          = require('google-auth-library');
+const { GoogleGenAI }         = require('@google/genai');
+const path = require('path');
+const fs   = require('fs');
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// ── Auth Mode Detection ─────────────────────────────────────────────────────
+// Prefer Vertex AI (Agent Platform) if service account file exists.
+// Falls back to API key (Google AI Studio) if not available.
+const SERVICE_ACCOUNT_PATH = path.join(__dirname, '../../firebase-service-account.json');
+const USE_VERTEX_AI = fs.existsSync(SERVICE_ACCOUNT_PATH);
 
-// Model fallback chain (in order of preference)
-// Override primary via GEMINI_MODEL env var (e.g. set to 'gemini-2.0-flash' on deployed servers)
-// gemini-2.5-flash       → best quality, works locally, region-restricted on some cloud servers
-// gemini-2.0-flash       → widely available on cloud servers, good quality
-// gemini-1.5-flash-latest → last resort fallback
-const PRIMARY_MODEL = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
-const MODEL_CHAIN = [
-  PRIMARY_MODEL,
-  PRIMARY_MODEL === 'gemini-2.5-flash' ? 'gemini-2.0-flash' : 'gemini-2.5-flash',
-  'gemini-1.5-flash-latest',
-].filter((v, i, arr) => arr.indexOf(v) === i); // deduplicate
+const GCP_PROJECT  = process.env.GOOGLE_CLOUD_PROJECT  || 'jobapply-ai-c597b';
+const GCP_LOCATION = process.env.GOOGLE_CLOUD_LOCATION || 'global';
 
-const sharedGenerationConfig = {
-  temperature: 0.1,
-  topP: 0.9,
-  maxOutputTokens: 16384,
-};
+// Primary model — gemini-2.5-flash works without geographic restriction on Vertex AI
+const PRIMARY_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
 
-// Pre-instantiate all models in the chain
-const geminiModels = MODEL_CHAIN.map(model =>
-  genAI.getGenerativeModel({ model, generationConfig: sharedGenerationConfig })
-);
+let vertexClient = null;   // @google/genai client for Vertex AI
+let genAI        = null;   // @google/generative-ai client for API key fallback
+let geminiModels = [];     // API-key fallback model chain
 
-// 90-second hard timeout so a stalled Gemini call never freezes the UI
+if (USE_VERTEX_AI) {
+  // ── Vertex AI / Agent Platform Mode ────────────────────────────────────────
+  process.env.GOOGLE_APPLICATION_CREDENTIALS = SERVICE_ACCOUNT_PATH;
+  vertexClient = new GoogleGenAI({
+    vertexai: true,
+    project:  GCP_PROJECT,
+    location: GCP_LOCATION,
+  });
+  console.log(`🌐 Gemini: Using Vertex AI (Agent Platform) — project: ${GCP_PROJECT}, model: ${PRIMARY_MODEL}`);
+} else {
+  // ── API Key Mode (fallback) ─────────────────────────────────────────────────
+  genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+  const MODEL_CHAIN = [
+    PRIMARY_MODEL,
+    PRIMARY_MODEL === 'gemini-2.5-flash' ? 'gemini-2.0-flash' : 'gemini-2.5-flash',
+    'gemini-1.5-flash-latest',
+  ].filter((v, i, arr) => arr.indexOf(v) === i);
+
+  const sharedConfig = { temperature: 0.1, topP: 0.9, maxOutputTokens: 16384 };
+  geminiModels = MODEL_CHAIN.map(model =>
+    ({ name: model, instance: genAI.getGenerativeModel({ model, generationConfig: sharedConfig }) })
+  );
+  console.log(`🔑 Gemini: Using API Key mode — model chain: ${MODEL_CHAIN.join(' → ')}`);
+}
+
+// 90-second hard timeout
 const GEMINI_TIMEOUT_MS = 90_000;
 
-// Detects geographic/region restriction errors from the Gemini API
 function isLocationError(err) {
   const msg = (err.message || '').toLowerCase();
   return (
@@ -39,10 +58,6 @@ function isLocationError(err) {
 }
 
 async function generateAIResponse(prompt) {
-  if (!process.env.GEMINI_API_KEY) {
-    throw new Error('GEMINI_API_KEY is not set in .env file');
-  }
-
   const makeTimeout = () =>
     new Promise((_, reject) =>
       setTimeout(
@@ -51,12 +66,32 @@ async function generateAIResponse(prompt) {
       )
     );
 
-  let lastErr = null;
+  // ── Path 1: Vertex AI (Agent Platform) ─────────────────────────────────────
+  if (USE_VERTEX_AI) {
+    try {
+      const result = await Promise.race([
+        vertexClient.models.generateContent({
+          model:    PRIMARY_MODEL,
+          contents: prompt,
+          config:   { temperature: 0.1, topP: 0.9, maxOutputTokens: 16384 },
+        }),
+        makeTimeout(),
+      ]);
+      return result.text;
+    } catch (err) {
+      console.error(`Vertex AI call failed (${PRIMARY_MODEL}):`, err.message);
+      throw new Error(`Gemini API failed: ${err.message}`);
+    }
+  }
 
-  // Try each model in the chain until one succeeds
+  // ── Path 2: API Key Fallback ────────────────────────────────────────────────
+  if (!process.env.GEMINI_API_KEY) {
+    throw new Error('GEMINI_API_KEY is not set in .env file');
+  }
+
+  let lastErr = null;
   for (let i = 0; i < geminiModels.length; i++) {
-    const modelName = MODEL_CHAIN[i];
-    const model    = geminiModels[i];
+    const { name: modelName, instance: model } = geminiModels[i];
     try {
       const result = await Promise.race([
         model.generateContent(prompt),
@@ -68,28 +103,19 @@ async function generateAIResponse(prompt) {
       lastErr = err;
       console.error(`Gemini API call failed (${modelName}):`, err.message);
 
-      const blocked = isLocationError(err);
-      const notFound = (err.message || '').includes('404') || (err.message || '').toLowerCase().includes('not found');
+      const blocked  = isLocationError(err);
+      const notFound = (err.message || '').includes('404') ||
+                       (err.message || '').toLowerCase().includes('not found');
+      const quota    = (err.message || '').includes('429') ||
+                       (err.message || '').toLowerCase().includes('quota');
 
-      if (blocked || notFound) {
-        // Location-blocked or model not available — try next in chain
-        if (i < geminiModels.length - 1) {
-          console.warn(`⚠️  [${modelName}] ${blocked ? 'region-blocked' : 'not available'}. Trying next model: ${MODEL_CHAIN[i + 1]}...`);
-          continue;
-        }
-        // All models exhausted
-        throw new Error(
-          'All Gemini models are unavailable from your server region. ' +
-          'Fix: Change your server deployment region to US or EU ' +
-          '(Render → Service Settings → Region → Oregon US / Frankfurt EU)'
-        );
+      if ((blocked || notFound) && i < geminiModels.length - 1) {
+        console.warn(`⚠️  [${modelName}] ${blocked ? 'region-blocked' : 'not available'}. Trying: ${geminiModels[i + 1].name}...`);
+        continue;
       }
-
-      // Any other error (auth, quota, timeout) — fail immediately
       throw new Error(`Gemini API failed: ${err.message}`);
     }
   }
-
   throw new Error(`Gemini API failed: ${lastErr?.message || 'Unknown error'}`);
 }
 function extractJSON(text) {
