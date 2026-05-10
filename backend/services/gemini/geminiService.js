@@ -3,14 +3,16 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // Model fallback chain (in order of preference)
-// gemini-2.5-flash  → best quality but region-restricted on some servers
-// gemini-2.0-flash  → widely available, good quality
+// Override primary via GEMINI_MODEL env var (e.g. set to 'gemini-2.0-flash' on deployed servers)
+// gemini-2.5-flash       → best quality, works locally, region-restricted on some cloud servers
+// gemini-2.0-flash       → widely available on cloud servers, good quality
 // gemini-1.5-flash-latest → last resort fallback
+const PRIMARY_MODEL = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
 const MODEL_CHAIN = [
-  'gemini-2.5-flash',
-  'gemini-2.0-flash',
+  PRIMARY_MODEL,
+  PRIMARY_MODEL === 'gemini-2.5-flash' ? 'gemini-2.0-flash' : 'gemini-2.5-flash',
   'gemini-1.5-flash-latest',
-];
+].filter((v, i, arr) => arr.indexOf(v) === i); // deduplicate
 
 const sharedGenerationConfig = {
   temperature: 0.1,
