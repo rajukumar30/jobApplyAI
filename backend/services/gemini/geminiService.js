@@ -2,10 +2,15 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// Primary model — gemini-2.5-flash (best quality)
-const PRIMARY_MODEL   = 'gemini-2.5-flash';
-// Fallback model — gemini-1.5-flash (broader geographic availability)
-const FALLBACK_MODEL  = 'gemini-1.5-flash';
+// Model fallback chain (in order of preference)
+// gemini-2.5-flash  → best quality but region-restricted on some servers
+// gemini-2.0-flash  → widely available, good quality
+// gemini-1.5-flash-latest → last resort fallback
+const MODEL_CHAIN = [
+  'gemini-2.5-flash',
+  'gemini-2.0-flash',
+  'gemini-1.5-flash-latest',
+];
 
 const sharedGenerationConfig = {
   temperature: 0.1,
@@ -13,15 +18,10 @@ const sharedGenerationConfig = {
   maxOutputTokens: 16384,
 };
 
-const geminiModel = genAI.getGenerativeModel({
-  model: PRIMARY_MODEL,
-  generationConfig: sharedGenerationConfig,
-});
-
-const geminiFallbackModel = genAI.getGenerativeModel({
-  model: FALLBACK_MODEL,
-  generationConfig: sharedGenerationConfig,
-});
+// Pre-instantiate all models in the chain
+const geminiModels = MODEL_CHAIN.map(model =>
+  genAI.getGenerativeModel({ model, generationConfig: sharedGenerationConfig })
+);
 
 // 90-second hard timeout so a stalled Gemini call never freezes the UI
 const GEMINI_TIMEOUT_MS = 90_000;
@@ -49,41 +49,46 @@ async function generateAIResponse(prompt) {
       )
     );
 
-  // ── Attempt 1: Primary model (gemini-2.5-flash) ──────────────────────────
-  try {
-    const result = await Promise.race([
-      geminiModel.generateContent(prompt),
-      makeTimeout(),
-    ]);
-    return result.response.text();
-  } catch (err) {
-    console.error(`Gemini API call failed (${PRIMARY_MODEL}):`, err.message);
+  let lastErr = null;
 
-    // If NOT a location error, fail immediately — no point retrying
-    if (!isLocationError(err)) {
-      throw new Error(`Gemini API failed: ${err.message}`);
-    }
-
-    // ── Attempt 2: Fallback model (gemini-1.5-flash) — for region-blocked servers
-    console.warn(`⚠️  ${PRIMARY_MODEL} is region-blocked. Retrying with fallback model: ${FALLBACK_MODEL}...`);
+  // Try each model in the chain until one succeeds
+  for (let i = 0; i < geminiModels.length; i++) {
+    const modelName = MODEL_CHAIN[i];
+    const model    = geminiModels[i];
     try {
-      const fallbackResult = await Promise.race([
-        geminiFallbackModel.generateContent(prompt),
+      const result = await Promise.race([
+        model.generateContent(prompt),
         makeTimeout(),
       ]);
-      console.log(`✅ Fallback model (${FALLBACK_MODEL}) succeeded.`);
-      return fallbackResult.response.text();
-    } catch (fallbackErr) {
-      console.error(`Gemini API call failed (${FALLBACK_MODEL}):`, fallbackErr.message);
-      if (isLocationError(fallbackErr)) {
+      if (i > 0) console.log(`✅ Model [${modelName}] succeeded (fallback #${i}).`);
+      return result.response.text();
+    } catch (err) {
+      lastErr = err;
+      console.error(`Gemini API call failed (${modelName}):`, err.message);
+
+      const blocked = isLocationError(err);
+      const notFound = (err.message || '').includes('404') || (err.message || '').toLowerCase().includes('not found');
+
+      if (blocked || notFound) {
+        // Location-blocked or model not available — try next in chain
+        if (i < geminiModels.length - 1) {
+          console.warn(`⚠️  [${modelName}] ${blocked ? 'region-blocked' : 'not available'}. Trying next model: ${MODEL_CHAIN[i + 1]}...`);
+          continue;
+        }
+        // All models exhausted
         throw new Error(
-          'Your server region is not supported by the Gemini API. ' +
-          'Please change your server\'s deployment region to US or EU in your hosting provider settings.'
+          'All Gemini models are unavailable from your server region. ' +
+          'Fix: Change your server deployment region to US or EU ' +
+          '(Render → Service Settings → Region → Oregon US / Frankfurt EU)'
         );
       }
-      throw new Error(`Gemini API failed: ${fallbackErr.message}`);
+
+      // Any other error (auth, quota, timeout) — fail immediately
+      throw new Error(`Gemini API failed: ${err.message}`);
     }
   }
+
+  throw new Error(`Gemini API failed: ${lastErr?.message || 'Unknown error'}`);
 }
 function extractJSON(text) {
   try {
