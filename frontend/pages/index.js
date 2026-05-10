@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useApp } from '../lib/AppContext';
 
 // ── Auth gate ──────────────────────────────────────────────────────────────
@@ -79,14 +79,42 @@ function NavCard({ icon, title, description, onClick, comingSoon = false, accent
   );
 }
 
+// ── Extension detection ────────────────────────────────────────────────────
+function isExtensionInstalled() {
+  return !!document.getElementById('jobapply-ext-installed');
+}
+
 // ── Dashboard ──────────────────────────────────────────────────────────────
 export default function Dashboard() {
   const router = useRouter();
   const { user, authLoading, handleLogin, handleLogout, gmailConnected, showToast } = useApp();
+  const [extChecking, setExtChecking] = useState(false);
 
   const handleCommingSoon = () => {
     showToast('info', '🚧 Coming Soon — this feature will be available in a future update!', 3500);
   };
+
+  // Check if extension is installed; if not, route to the install guide page
+  const handleAutoDM = useCallback(() => {
+    setExtChecking(true);
+    let attempts = 0;
+    const MAX_ATTEMPTS = 5; // 5 × 300ms = 1.5 seconds
+
+    const interval = setInterval(() => {
+      attempts++;
+      if (document.getElementById('jobapply-ext-installed')) {
+        clearInterval(interval);
+        setExtChecking(false);
+        router.push('/auto-dm');
+        return;
+      }
+      if (attempts >= MAX_ATTEMPTS) {
+        clearInterval(interval);
+        setExtChecking(false);
+        router.push('/auto-dm/install');
+      }
+    }, 300);
+  }, [router]);
 
   if (authLoading) {
     return (
@@ -187,8 +215,7 @@ export default function Dashboard() {
                 icon="💬"
                 title="Auto Send DM to HR"
                 description="Automatically send personalized direct messages to recruiters on LinkedIn using AI-crafted outreach messages."
-                onClick={handleCommingSoon}
-                comingSoon
+                onClick={handleAutoDM}
                 accent="violet"
               />
               <NavCard

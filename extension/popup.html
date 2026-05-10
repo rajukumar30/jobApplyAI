@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="icon">⚡</div>
+      <h1 class="title">JobApply AI</h1>
+    </div>
+    
+    <div class="content">
+      <p class="description">Automatically extract LinkedIn connections for Auto DM.</p>
+      
+      <div id="statusBox" class="status-box hidden">
+        <div id="spinner" class="spinner"></div>
+        <p id="statusText">Ready to extract.</p>
+      </div>
+
+      <div class="limit-selector" style="margin-bottom: 16px;">
+        <label for="syncKeyInput" style="display:block; font-size:12px; font-weight:600; color:#94a3b8; margin-bottom:6px;">JobApply Sync Key (from Dashboard)</label>
+        <input type="text" id="syncKeyInput" placeholder="JA-XXXX-XXXX" style="width:100%; padding: 10px; border-radius: 8px; background: rgba(30, 41, 59, 1); color: white; border: 1px solid rgba(51, 65, 85, 0.6); font-size: 13px; outline: none; margin-bottom: 4px;" />
+      </div>
+
+      <div class="limit-selector" style="margin-bottom: 16px;">
+        <label for="limitSelect" style="display:block; font-size:12px; font-weight:600; color:#94a3b8; margin-bottom:6px;">Extraction Limit</label>
+        <select id="limitSelect" style="width:100%; padding: 10px; border-radius: 8px; background: rgba(30, 41, 59, 0.8); color: white; border: 1px solid rgba(51, 65, 85, 0.6); font-size: 13px; outline: none; cursor: pointer;">
+          <option value="100">Extract up to 100 connections</option>
+          <option value="500">Extract up to 500 connections</option>
+          <option value="99999">Extract All (Warning: Takes time!)</option>
+        </select>
+      </div>
+
+      <button id="extractBtn" class="btn-primary">Extract Connections</button>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "JobApply Connections Extractor",
+  "version": "1.0.0",
+  "description": "Extracts LinkedIn connections and syncs them automatically to JobApply AI.",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "host_permissions": [
+    "*://localhost/*",
+    "https://*.onrender.com/*",
+    "https://www.linkedin.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://localhost/*",
+        "https://*.onrender.com/*"
+      ],
+      "js": ["inject-marker.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

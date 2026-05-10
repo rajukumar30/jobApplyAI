@@ -11,6 +11,7 @@ const emailRoutes = require('./routes/emailRoutes');
 const gmailRoutes = require('./routes/gmailRoutes');
 const linkedinRoutes = require('./routes/linkedinRoutes');
 const applicationRoutes = require('./routes/applicationRoutes');
+const dmRoutes = require('./routes/dmRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -80,6 +81,7 @@ app.use('/api/email', emailRoutes);
 app.use('/api/gmail', gmailRoutes);
 app.use('/api/linkedin', linkedinRoutes);
 app.use('/api/applications', applicationRoutes);
+app.use('/api/dm', dmRoutes);
 
 app.get('/health', (req, res) => {
   res.json({

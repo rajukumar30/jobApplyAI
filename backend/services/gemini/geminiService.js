@@ -2,35 +2,87 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// Use gemini-2.5-flash — confirmed working with SDK v0.21.0 + v1beta endpoint
+// Primary model — gemini-2.5-flash (best quality)
+const PRIMARY_MODEL   = 'gemini-2.5-flash';
+// Fallback model — gemini-1.5-flash (broader geographic availability)
+const FALLBACK_MODEL  = 'gemini-1.5-flash';
+
+const sharedGenerationConfig = {
+  temperature: 0.1,
+  topP: 0.9,
+  maxOutputTokens: 16384,
+};
+
 const geminiModel = genAI.getGenerativeModel({
-  model: 'gemini-2.5-flash',
-  generationConfig: {
-    temperature: 0.1,
-    topP: 0.9,
-    maxOutputTokens: 16384,
-  },
+  model: PRIMARY_MODEL,
+  generationConfig: sharedGenerationConfig,
+});
+
+const geminiFallbackModel = genAI.getGenerativeModel({
+  model: FALLBACK_MODEL,
+  generationConfig: sharedGenerationConfig,
 });
 
 // 90-second hard timeout so a stalled Gemini call never freezes the UI
 const GEMINI_TIMEOUT_MS = 90_000;
 
+// Detects geographic/region restriction errors from the Gemini API
+function isLocationError(err) {
+  const msg = (err.message || '').toLowerCase();
+  return (
+    msg.includes('user location is not supported') ||
+    msg.includes('location is not supported') ||
+    msg.includes('api_key_service_blocked')
+  );
+}
+
 async function generateAIResponse(prompt) {
   if (!process.env.GEMINI_API_KEY) {
     throw new Error('GEMINI_API_KEY is not set in .env file');
   }
-  const timeoutPromise = new Promise((_, reject) =>
-    setTimeout(() => reject(new Error('Gemini request timed out after 90 seconds')), GEMINI_TIMEOUT_MS)
-  );
+
+  const makeTimeout = () =>
+    new Promise((_, reject) =>
+      setTimeout(
+        () => reject(new Error('Gemini request timed out after 90 seconds')),
+        GEMINI_TIMEOUT_MS
+      )
+    );
+
+  // ── Attempt 1: Primary model (gemini-2.5-flash) ──────────────────────────
   try {
     const result = await Promise.race([
       geminiModel.generateContent(prompt),
-      timeoutPromise,
+      makeTimeout(),
     ]);
     return result.response.text();
   } catch (err) {
-    console.error('Gemini API call failed:', err.message);
-    throw new Error(`Gemini API failed: ${err.message}`);
+    console.error(`Gemini API call failed (${PRIMARY_MODEL}):`, err.message);
+
+    // If NOT a location error, fail immediately — no point retrying
+    if (!isLocationError(err)) {
+      throw new Error(`Gemini API failed: ${err.message}`);
+    }
+
+    // ── Attempt 2: Fallback model (gemini-1.5-flash) — for region-blocked servers
+    console.warn(`⚠️  ${PRIMARY_MODEL} is region-blocked. Retrying with fallback model: ${FALLBACK_MODEL}...`);
+    try {
+      const fallbackResult = await Promise.race([
+        geminiFallbackModel.generateContent(prompt),
+        makeTimeout(),
+      ]);
+      console.log(`✅ Fallback model (${FALLBACK_MODEL}) succeeded.`);
+      return fallbackResult.response.text();
+    } catch (fallbackErr) {
+      console.error(`Gemini API call failed (${FALLBACK_MODEL}):`, fallbackErr.message);
+      if (isLocationError(fallbackErr)) {
+        throw new Error(
+          'Your server region is not supported by the Gemini API. ' +
+          'Please change your server\'s deployment region to US or EU in your hosting provider settings.'
+        );
+      }
+      throw new Error(`Gemini API failed: ${fallbackErr.message}`);
+    }
   }
 }
 function extractJSON(text) {
@@ -895,4 +947,44 @@ ${postText}
   }
 }
 
-module.exports = { parseResume, analyzeJob, matchResumes, generateEmail, tailorResume, extractAtsKeywords, scoreTailoredResume, extractLinkedInPostData };
+// ── Generate LinkedIn DM ────────────────────────────────────────────────────────
+async function generateLinkedInDM({ hrName, companyName, candidateName, targetRole, candidateSkills, appliedJobTitle }) {
+  const jobContext = appliedJobTitle ? `They recently applied for the "${appliedJobTitle}" position.` : '';
+  const skillsContext = candidateSkills ? `Candidate skills to highlight sparingly: ${candidateSkills}` : '';
+
+  const prompt = `You are an expert LinkedIn networking strategist.
+Write a highly personalized, conversational, and professional direct message to an HR professional on LinkedIn.
+
+RECIPIENT: ${hrName} (HR at ${companyName})
+SENDER: ${candidateName}
+TARGET ROLE: ${targetRole}
+${jobContext}
+${skillsContext}
+
+CONSTRAINTS:
+- Length: Maximum 3 sentences. Extremely concise.
+- Tone: Professional, warm, and conversational. Do not sound desperate. Avoid sales/spam tones.
+- Do NOT use phrases like "I am writing to express my interest". Use natural openers.
+- Avoid excessive punctuation or emojis.
+- Do NOT wrap the message in quotes. Return the raw text.
+
+Example format:
+Hi ${hrName},
+
+I noticed you're part of the talent team at ${companyName}. I'm currently exploring opportunities in ${targetRole} and would really appreciate connecting.
+
+Thanks for your time.
+${candidateName}
+
+Return ONLY the raw message text.`;
+
+  try {
+    const text = await generateAIResponse(prompt);
+    return text.trim();
+  } catch (err) {
+    console.error('generateLinkedInDM error:', err.message);
+    throw new Error(`Failed to generate LinkedIn message: ${err.message}`);
+  }
+}
+
+module.exports = { parseResume, analyzeJob, matchResumes, generateEmail, tailorResume, extractAtsKeywords, scoreTailoredResume, extractLinkedInPostData, generateLinkedInDM };
