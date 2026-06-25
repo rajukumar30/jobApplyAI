@@ -285,10 +285,10 @@ async function matchResumes(req, res) {
         // 6. Save tailored resume metadata to Supabase DB so it appears in the UI
         let dbSaved = false;
         if (supabase) {
-          const { data, error } = await supabase.from('resumes').insert([{
-            ...tailoredResume,
-            id: undefined // Let Supabase auto-generate the UUID
-          }]).select();
+          // Omit `id` entirely (our local id is a non-UUID string) so Postgres'
+          // gen_random_uuid() default fills the uuid column.
+          const { id: _localId, ...insertPayload } = tailoredResume;
+          const { data, error } = await supabase.from('resumes').insert([insertPayload]).select();
 
           if (error) {
             console.error('❌ Failed to save tailored resume metadata to Supabase DB:', error.message);
