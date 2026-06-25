@@ -1,20 +1,20 @@
 const dmService = require('../services/dmService');
 const geminiService = require('../services/gemini/geminiService');
 
-// In-memory rate limiting tracker: { ip: { count, resetTime } }
+// In-memory rate limiting tracker keyed by user id: { uid: { count, resetTime } }
 const rateLimitStore = {};
 
-function checkRateLimit(ip) {
+function checkRateLimit(key) {
   const now = Date.now();
   const windowTime = 60 * 60 * 1000; // 1 hour
   const maxRequests = 10;
 
-  if (!rateLimitStore[ip]) {
-    rateLimitStore[ip] = { count: 1, resetTime: now + windowTime };
+  if (!rateLimitStore[key]) {
+    rateLimitStore[key] = { count: 1, resetTime: now + windowTime };
     return { allowed: true };
   }
 
-  const record = rateLimitStore[ip];
+  const record = rateLimitStore[key];
 
   // Reset if window has passed
   if (now > record.resetTime) {
@@ -34,11 +34,7 @@ function checkRateLimit(ip) {
 
 exports.getSyncKey = async (req, res) => {
   try {
-    const { uid } = req.query;
-    if (!uid) {
-      return res.status(400).json({ success: false, error: 'UID is required' });
-    }
-    const syncKey = await dmService.getOrCreateSyncKey(uid);
+    const syncKey = await dmService.getOrCreateSyncKey(req.user.uid);
     return res.status(200).json({ success: true, syncKey });
   } catch (error) {
     console.error('Error generating sync key:', error);
@@ -48,19 +44,7 @@ exports.getSyncKey = async (req, res) => {
 
 exports.getConnections = async (req, res) => {
   try {
-    const { syncKey } = req.query;
-    if (!syncKey) {
-      // Fallback for missing sync key, if old users try to use it
-      const cachedData = dmService.getConnectionsCache();
-      if (cachedData) {
-        return res.status(200).json({ success: true, source: 'csv', ...cachedData });
-      }
-      const mockData = dmService.getMockConnections();
-      return res.status(200).json({ success: true, source: 'mock', totalAnalyzed: mockData.length, companiesFound: mockData.length, data: mockData });
-    }
-
-    // Fetch from Firebase via syncKey
-    const firebaseData = await dmService.getConnectionsFromFirebase(syncKey);
+    const firebaseData = await dmService.getConnectionsForUser(req.user.uid);
     return res.status(200).json({
       success: true,
       source: 'firebase',
@@ -89,6 +73,9 @@ exports.uploadConnections = async (req, res) => {
     if (!result.success) {
       return res.status(400).json({ success: false, error: result.error });
     }
+
+    const contacts = (result.data || []).flatMap(group => group.contacts || []);
+    await dmService.saveConnectionsForUser(req.user.uid, contacts);
 
     return res.status(200).json(result);
 
@@ -122,10 +109,10 @@ exports.importConnections = async (req, res) => {
 
 exports.generateMessage = async (req, res) => {
   try {
-    // 1. Rate Limiting Check
-    // Get IP securely (works behind Render proxy if trust proxy is set)
-    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-    const rateLimit = checkRateLimit(clientIp);
+    // 1. Rate Limiting Check — scoped per authenticated user so users don't
+    // share a quota when behind the same IP/proxy.
+    const rateLimitKey = req.user?.uid || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    const rateLimit = checkRateLimit(rateLimitKey);
 
     if (!rateLimit.allowed) {
       return res.status(429).json({ 

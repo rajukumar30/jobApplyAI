@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState, useCallback } from 'react';
 import { useApp } from '../lib/AppContext';
@@ -31,6 +32,12 @@ function LoginScreen({ onLogin }) {
           </svg>
           Continue with Google
         </button>
+        <p className="text-xs text-slate-500">
+          By continuing you agree to our{' '}
+          <Link href="/terms" className="text-brand-400 hover:underline">Terms of Service</Link>{' '}
+          and{' '}
+          <Link href="/privacy" className="text-brand-400 hover:underline">Privacy Policy</Link>.
+        </p>
       </div>
     </div>
   );
@@ -156,12 +163,12 @@ export default function Dashboard() {
               {gmailConnected ? (
                 <span className="badge-green flex items-center gap-1.5 text-xs">
                   <span className="status-dot bg-emerald-400 animate-pulse" />
-                  <span className="hidden sm:inline">Gmail SMTP Ready</span>
+                  <span className="hidden sm:inline">Gmail Ready</span>
                 </span>
               ) : (
                 <span className="badge-red flex items-center gap-1.5 text-xs">
                   <span className="status-dot bg-red-400" />
-                  <span className="hidden sm:inline">SMTP Not Set</span>
+                  <span className="hidden sm:inline">Gmail Not Connected</span>
                 </span>
               )}
               {user && (
@@ -259,7 +266,7 @@ export default function Dashboard() {
               <NavCard
                 icon="⚙️"
                 title="User Profile"
-                description="View your account details, Gmail SMTP status, and manage your JobApply AI settings."
+                description="View your account details, Gmail connection, and manage your JobApply AI settings."
                 onClick={() => router.push('/profile')}
                 accent="amber"
               />

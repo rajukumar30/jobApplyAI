@@ -3,9 +3,9 @@ const path = require('path');
 const { execSync, spawnSync } = require('child_process');
 const { compileJsonToPdf } = require('./pdfService');
 const { buildResumeDocument } = require('./resumeTemplate');
+const { getUserGeneratedDir } = require('../userStorage');
 
 const TEMPLATE_PATH = path.join(__dirname, '../../templates/resume.tex');
-const GENERATED_DIR = path.join(__dirname, '../../generated-resumes');
 
 // ── LaTeX special character escaping ─────────────────────────────────────────
 function escapeLatex(text) {
@@ -52,6 +52,186 @@ function formatSkillsTabular(skillCategoriesOrArray) {
     .join('\n');
 }
 
+function normalizeUrl(value) {
+  if (!value) return '';
+  const raw = String(value).trim();
+  const url = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+  return /^https?:\/\/[^\s{}\\]+$/i.test(url) ? url : '';
+}
+
+function formatContactLine(data) {
+  const parts = [];
+  if (data.phone) parts.push(`\\faMobile\\ ${escapeLatex(String(data.phone))}`);
+  if (data.email) parts.push(`\\faEnvelope\\ ${escapeLatex(String(data.email))}`);
+  if (data.location) parts.push(`\\faMapMarker\\ ${escapeLatex(String(data.location))}`);
+  if (parts.length === 0) return '';
+  return `\\textcolor{primary}{${parts.join('\n\\textcolor{accent}{$\\bullet$}\n')}}`;
+}
+
+function formatSocialLine(data) {
+  const parts = [];
+  const linkedIn = normalizeUrl(data.linkedIn);
+  const github = normalizeUrl(data.github);
+  const website = normalizeUrl(data.website);
+
+  if (linkedIn) {
+    parts.push(`\\faLinkedin\\ \\href{${linkedIn}}{LinkedIn}`);
+  }
+  if (github) {
+    parts.push(`\\faGithub\\ \\href{${github}}{GitHub}`);
+  }
+  if (website) {
+    parts.push(`\\faGlobe\\ \\href{${website}}{Portfolio}`);
+  }
+
+  return parts.join('\n\\textcolor{accent}{$\\bullet$}\n');
+}
+
+// ── Section header (title + underline rule) ──────────────────────────────────
+function sectionHeader(title) {
+  return `\\noindent\n\\textbf{\\large ${title}} \\\\\n\\rule{\\textwidth}{0.5pt}\n`;
+}
+
+// Build an ATS-friendly date range, ignoring garbage computed durations.
+function formatExperienceDates(exp) {
+  const range = [exp.startDate, exp.endDate].filter(Boolean).join(' -- ');
+  if (range) return range;
+  const duration = String(exp.duration || '').trim();
+  if (duration && !/^0\s+years?\s+0\s+months?$/i.test(duration)) return duration;
+  return '';
+}
+
+function bulletList(items) {
+  const valid = (items || []).filter(b => b && String(b).trim());
+  if (valid.length === 0) return '';
+  return `\\begin{itemize}\n${valid.map(b => `\\item ${escapeLatex(String(b))}`).join('\n')}\n\\end{itemize}`;
+}
+
+// ── SUMMARY ──────────────────────────────────────────────────────────────────
+function formatSummarySection(orig, ai) {
+  const summary = ai.summary || orig.summary || '';
+  if (!summary) return '';
+  return `${sectionHeader('PROFESSIONAL SUMMARY')}\n${escapeLatex(summary)}\n\n\\vspace{0.3cm}\n`;
+}
+
+// ── SKILLS ───────────────────────────────────────────────────────────────────
+function formatSkillsSection(orig, ai) {
+  const rows = formatSkillsTabular(ai.skillCategories || orig.skills);
+  if (!rows) return '';
+  return `${sectionHeader('TECHNICAL SKILLS')}\n\\begin{tabular}{@{}p{0.30\\textwidth}p{0.65\\textwidth}@{}}\n${rows}\n\\end{tabular}\n\n\\vspace{0.3cm}\n`;
+}
+
+// ── EXPERIENCE (ALL roles, not just the most recent) ─────────────────────────
+// experience[0] uses the AI-tailored bullets; older roles keep their original
+// achievements so no real experience is dropped.
+function formatExperienceSection(orig, ai) {
+  const experiences = Array.isArray(orig.experience) ? orig.experience : [];
+  if (experiences.length === 0) return '';
+
+  const blocks = experiences.map((exp, i) => {
+    const role = escapeLatex(exp.role || 'Professional Experience');
+    const dates = escapeLatex(formatExperienceDates(exp));
+    const companyLine = [exp.company, exp.location].filter(Boolean).map(escapeLatex).join(', ');
+
+    const bullets = (i === 0 && Array.isArray(ai.experienceBullets) && ai.experienceBullets.length)
+      ? ai.experienceBullets
+      : (Array.isArray(exp.achievements) && exp.achievements.length
+          ? exp.achievements
+          : (exp.description ? [exp.description] : []));
+
+    return `\\textbf{${role}}${dates ? ` \\hfill ${dates}` : ''} \\\\\n${companyLine}\n\n${bulletList(bullets)}`;
+  });
+
+  return `${sectionHeader('PROFESSIONAL EXPERIENCE')}\n${blocks.join('\n\n\\vspace{0.2cm}\n\n')}\n\n\\vspace{0.3cm}\n`;
+}
+
+// ── PROJECTS (ALL projects; GitHub link only when a REAL url exists) ──────────
+function formatProjectsSection(orig, ai) {
+  const projects = Array.isArray(orig.projects) ? orig.projects : [];
+  if (projects.length === 0) return '';
+
+  const blocks = projects.map((proj, i) => {
+    const aiProj = ai.projects?.[i] || {};
+    const name = escapeLatex(proj.name || aiProj.name || `Project ${i + 1}`);
+    // URLs must be factual — use only the original resume's url, never AI-invented.
+    const url = normalizeUrl(proj.url || proj.link);
+    const linkText = url ? escapeLatex(url.replace(/^https?:\/\//, '')) : '';
+    const linkPart = url ? ` \\hfill \\faGithub\\ \\href{${url}}{${linkText}}` : '';
+
+    const tech = Array.isArray(proj.technologies) && proj.technologies.length
+      ? `\\textit{${proj.technologies.map(escapeLatex).join(', ')}}\n\n`
+      : '';
+
+    const bullets = (Array.isArray(aiProj.bullets) && aiProj.bullets.length)
+      ? aiProj.bullets
+      : (Array.isArray(proj.achievements) && proj.achievements.length
+          ? proj.achievements
+          : (proj.description ? [proj.description] : []));
+
+    return `\\textbf{${name}}${linkPart} \\\\\n${tech}${bulletList(bullets)}`;
+  });
+
+  return `${sectionHeader('PROJECTS')}\n${blocks.join('\n\n\\vspace{0.2cm}\n\n')}\n\n\\vspace{0.3cm}\n`;
+}
+
+// Build education year/range from parsed fields (prefers full range as written).
+function formatEducationYear(edu) {
+  if (!edu) return '';
+  if (edu.yearRange) return String(edu.yearRange).trim();
+  const start = edu.startYear;
+  const end = edu.endYear || edu.graduationYear || edu.year;
+  if (start && end) return `${start} – ${end}`;
+  if (end) return String(end).trim();
+  if (start) return String(start).trim();
+  return '';
+}
+
+// ── EDUCATION ────────────────────────────────────────────────────────────────
+function formatEducationSection(data) {
+  const education = Array.isArray(data.education) ? data.education : [];
+  if (education.length === 0) return '';
+
+  const rows = education.map((edu, index) => {
+    const institution = escapeLatex(edu.institution || '');
+    const degree = escapeLatex(edu.degree || 'Degree');
+    const year = escapeLatex(formatEducationYear(edu));
+    const spacing = index < education.length - 1 ? '[0.2cm]' : '';
+
+    // Institution + dates on first line, degree below (matches common resume layout).
+    if (institution) {
+      const degreeLine = degree ? `\n${degree}` : '';
+      return `\\textbf{${institution}}${year ? ` & \\hfill ${year}` : ''} \\\\${degreeLine} \\\\${spacing}`;
+    }
+    return `\\textbf{${degree}}${year ? ` & \\hfill ${year}` : ''} \\\\${spacing}`;
+  });
+
+  const table = `\\begin{tabular}{@{}p{0.75\\textwidth}p{0.23\\textwidth}@{}}\n${rows.join('\n\n')}\n\\end{tabular}`;
+  return `${sectionHeader('EDUCATION')}\n${table}\n\n\\vspace{0.3cm}\n`;
+}
+
+// ── RELEVANT COURSEWORK (collected from all education entries) ────────────────
+function formatCourseworkSection(data) {
+  const education = Array.isArray(data.education) ? data.education : [];
+  const courses = [];
+  for (const edu of education) {
+    if (Array.isArray(edu.relevantCourses)) courses.push(...edu.relevantCourses);
+  }
+  if (Array.isArray(data.coursework)) courses.push(...data.coursework);
+
+  const unique = [...new Set(courses.map(c => String(c).trim()).filter(Boolean))];
+  if (unique.length === 0) return '';
+
+  return `${sectionHeader('RELEVANT COURSEWORK')}\n${escapeLatex(unique.join(', '))}\n\n\\vspace{0.3cm}\n`;
+}
+
+// ── CERTIFICATIONS (section hidden entirely when empty) ───────────────────────
+function formatCertificationsSection(data) {
+  const certifications = Array.isArray(data.certifications) ? data.certifications : [];
+  const valid = certifications.map(c => String(c).trim()).filter(Boolean);
+  if (valid.length === 0) return '';
+  return `${sectionHeader('CERTIFICATIONS')}\n${bulletList(valid)}\n`;
+}
+
 // ── Fill LaTeX template with data ────────────────────────────────────────────
 // LOCKED sections are hardcoded in the .tex file (name, contact, edu, certs).
 // This function ONLY replaces the content placeholders for the 4 editable areas:
@@ -73,67 +253,38 @@ function fillLatexTemplate(originalData, rewrittenSections) {
   const orig = originalData || {};
   const ai   = rewrittenSections || {};
 
-  // ── SUMMARY ─────────────────────────────────────────────────────────────
-  template = template.replace(
-    /\{\{SUMMARY\}\}/g,
-    escapeLatex(ai.summary || orig.summary || '')
-  );
+  // Build each section once.
+  const sectionBuilders = {
+    summary:        () => formatSummarySection(orig, ai),
+    skills:         () => formatSkillsSection(orig, ai),
+    experience:     () => formatExperienceSection(orig, ai),
+    projects:       () => formatProjectsSection(orig, ai),
+    education:      () => formatEducationSection(orig),
+    coursework:     () => formatCourseworkSection(orig),
+    certifications: () => formatCertificationsSection(orig),
+  };
 
-  // ── SKILLS (tabular rows) ────────────────────────────────────────────────
-  template = template.replace(
-    /\{\{SKILLS\}\}/g,
-    formatSkillsTabular(ai.skillCategories || orig.skills)
-  );
-
-  // ── EXPERIENCE BULLETS (6 individual placeholders) ───────────────────────
-  const expBullets = ai.experienceBullets || [];
-  for (let i = 1; i <= 6; i++) {
-    const bullet = expBullets[i - 1];
-    const placeholder = `{{EXPERIENCE_POINT_${i}}}`;
-    template = template.replace(
-      new RegExp(escapeRegex(placeholder), 'g'),
-      bullet ? `\\item ${escapeLatex(bullet)}` : ''
-    );
+  // Follow the candidate's original section order when available, then append any
+  // sections they didn't have in that list so nothing is ever dropped.
+  const defaultOrder = ['summary', 'skills', 'experience', 'projects', 'education', 'coursework', 'certifications'];
+  const order = Array.isArray(orig.sectionOrder) && orig.sectionOrder.length
+    ? orig.sectionOrder.filter(k => sectionBuilders[k])
+    : [...defaultOrder];
+  for (const key of defaultOrder) {
+    if (!order.includes(key)) order.push(key);
   }
 
-  // ── PROJECT 1 ────────────────────────────────────────────────────────────
-  const proj1Orig = orig.projects?.[0] || {};
-  const proj1AI   = ai.projects?.[0]   || {};
-  const proj1Name = proj1AI.name || proj1Orig.name || 'Project 1';
-  const proj1Url  = proj1AI.url  || proj1Orig.url  || proj1Orig.link || '';
-  const proj1UrlText = proj1Url.replace(/^https?:\/\//, '');
+  const body = order.map(key => sectionBuilders[key]()).filter(Boolean).join('\n');
 
-  template = template.replace(/\{\{PROJECT_1_TITLE\}\}/g,     escapeLatex(proj1Name));
-  template = template.replace(/\{\{PROJECT_1_LINK\}\}/g,      proj1Url);           // NOT escaped — raw URL for \href
-  template = template.replace(/\{\{PROJECT_1_LINK_TEXT\}\}/g, escapeLatex(proj1UrlText));
+  const replacements = {
+    '{{NAME}}':         escapeLatex(orig.name || 'Candidate Name'),
+    '{{CONTACT_LINE}}': formatContactLine(orig),
+    '{{SOCIAL_LINE}}':  formatSocialLine(orig),
+    '{{BODY}}':         body,
+  };
 
-  const proj1Bullets = proj1AI.bullets || [];
-  for (let i = 1; i <= 4; i++) {
-    const bullet = proj1Bullets[i - 1];
-    template = template.replace(
-      new RegExp(escapeRegex(`{{PROJECT_1_POINT_${i}}}`), 'g'),
-      bullet ? `\\item ${escapeLatex(bullet)}` : ''
-    );
-  }
-
-  // ── PROJECT 2 ────────────────────────────────────────────────────────────
-  const proj2Orig = orig.projects?.[1] || {};
-  const proj2AI   = ai.projects?.[1]   || {};
-  const proj2Name = proj2AI.name || proj2Orig.name || 'Project 2';
-  const proj2Url  = proj2AI.url  || proj2Orig.url  || proj2Orig.link || '';
-  const proj2UrlText = proj2Url.replace(/^https?:\/\//, '');
-
-  template = template.replace(/\{\{PROJECT_2_TITLE\}\}/g,     escapeLatex(proj2Name));
-  template = template.replace(/\{\{PROJECT_2_LINK\}\}/g,      proj2Url);           // NOT escaped — raw URL for \href
-  template = template.replace(/\{\{PROJECT_2_LINK_TEXT\}\}/g, escapeLatex(proj2UrlText));
-
-  const proj2Bullets = proj2AI.bullets || [];
-  for (let i = 1; i <= 4; i++) {
-    const bullet = proj2Bullets[i - 1];
-    template = template.replace(
-      new RegExp(escapeRegex(`{{PROJECT_2_POINT_${i}}}`), 'g'),
-      bullet ? `\\item ${escapeLatex(bullet)}` : ''
-    );
+  for (const [placeholder, value] of Object.entries(replacements)) {
+    template = template.replace(new RegExp(escapeRegex(placeholder), 'g'), () => value);
   }
 
   return template;
@@ -168,15 +319,15 @@ function isPdflatexAvailable() {
 }
 
 // ── Compile LaTeX to PDF ─────────────────────────────────────────────────────
-function compileLatexToPdf(texContent, filenameBase) {
+function compileLatexToPdf(texContent, filenameBase, outputDir) {
   return new Promise((resolve, reject) => {
     try {
-      if (!fs.existsSync(GENERATED_DIR)) {
-        fs.mkdirSync(GENERATED_DIR, { recursive: true });
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
       }
 
-      const texPath = path.join(GENERATED_DIR, `${filenameBase}.tex`);
-      const pdfPath = path.join(GENERATED_DIR, `${filenameBase}.pdf`);
+      const texPath = path.join(outputDir, `${filenameBase}.tex`);
+      const pdfPath = path.join(outputDir, `${filenameBase}.pdf`);
 
       fs.writeFileSync(texPath, texContent, 'utf8');
       console.log(`📝 Saved LaTeX source to ${texPath}`);
@@ -184,7 +335,7 @@ function compileLatexToPdf(texContent, filenameBase) {
       const pdflatexCmd = getPdflatexCmd();
       if (!pdflatexCmd) throw new Error('pdflatex not found — install MiKTeX or TeX Live');
 
-      const args = ['-interaction=nonstopmode', `-output-directory=${GENERATED_DIR}`, texPath];
+      const args = ['-interaction=nonstopmode', `-output-directory=${outputDir}`, texPath];
 
       // Run twice (second pass fixes cross-references / layout)
       for (let pass = 1; pass <= 2; pass++) {
@@ -204,7 +355,7 @@ function compileLatexToPdf(texContent, filenameBase) {
 
       // Clean up auxiliary files
       ['.aux', '.log', '.out'].forEach(ext => {
-        const auxPath = path.join(GENERATED_DIR, `${filenameBase}${ext}`);
+        const auxPath = path.join(outputDir, `${filenameBase}${ext}`);
         if (fs.existsSync(auxPath)) fs.unlinkSync(auxPath);
       });
 
@@ -220,19 +371,17 @@ function compileLatexToPdf(texContent, filenameBase) {
 // originalData     = the selected resume's parsedData (all fields)
 // rewrittenSections = ONLY the AI-rewritten sections in the new format:
 //   { summary, skillCategories, experienceBullets, projects }
-async function generateTailoredResumePdf(originalData, rewrittenSections, filenameBase) {
-  if (!fs.existsSync(GENERATED_DIR)) {
-    fs.mkdirSync(GENERATED_DIR, { recursive: true });
-  }
+async function generateTailoredResumePdf(userId, originalData, rewrittenSections, filenameBase) {
+  const outputDir = getUserGeneratedDir(userId);
 
   // Save the data for debugging
-  const jsonPath = path.join(GENERATED_DIR, `${filenameBase}.json`);
+  const jsonPath = path.join(outputDir, `${filenameBase}.json`);
   fs.writeFileSync(jsonPath, JSON.stringify({ originalData, rewrittenSections }, null, 2), 'utf8');
 
   if (isPdflatexAvailable()) {
     console.log('📄 Using LaTeX (pdflatex) for PDF generation...');
     const texContent = fillLatexTemplate(originalData, rewrittenSections);
-    return compileLatexToPdf(texContent, filenameBase);
+    return compileLatexToPdf(texContent, filenameBase, outputDir);
   }
 
   console.log('⚠️ pdflatex not found. Using pdfmake fallback.');
@@ -251,7 +400,7 @@ async function generateTailoredResumePdf(originalData, rewrittenSections, filena
     })),
   };
   const pdfMakeDefinition = buildResumeDocument(originalData, fallbackSections);
-  return compileJsonToPdf(pdfMakeDefinition, filenameBase);
+  return compileJsonToPdf(pdfMakeDefinition, filenameBase, outputDir);
 }
 
 module.exports = { generateTailoredResumePdf, fillLatexTemplate, isPdflatexAvailable };

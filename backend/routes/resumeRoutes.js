@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const upload = require('../middleware/upload');
+const { requireAuth } = require('../middleware/auth');
 const resumeController = require('../controllers/resumeController');
+
+router.use(requireAuth);
 
 // Upload one or more resumes (PDF)
 router.post('/upload', upload.array('resumes', 10), resumeController.uploadResumes);

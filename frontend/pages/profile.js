@@ -1,10 +1,24 @@
+import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useApp } from '../lib/AppContext';
 import PageLayout from '../components/layout/PageLayout';
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, authLoading, gmailConnected, resumes, handleLogout } = useApp();
+  const { user, authLoading, gmailConnected, resumes, handleLogout, connectGmail, showToast } = useApp();
+
+  // Surface the result of the Gmail OAuth redirect (/profile?gmail=connected|error).
+  useEffect(() => {
+    if (!router.isReady) return;
+    const { gmail } = router.query;
+    if (gmail === 'connected') {
+      showToast('success', 'Gmail connected successfully.');
+      router.replace('/profile', undefined, { shallow: true });
+    } else if (gmail === 'error') {
+      showToast('error', 'Gmail connection failed. Please try again.');
+      router.replace('/profile', undefined, { shallow: true });
+    }
+  }, [router.isReady, router.query.gmail]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (authLoading) return (
     <div className="min-h-screen flex items-center justify-center">
@@ -96,25 +110,35 @@ export default function ProfilePage() {
               </svg>
             </div>
             <div className="flex-1">
-              <h2 className="font-semibold text-white text-base">Gmail SMTP</h2>
-              <p className="text-xs text-slate-400">Used to send application emails</p>
+              <h2 className="font-semibold text-white text-base">Gmail</h2>
+              <p className="text-xs text-slate-400">Used to send application emails from your account</p>
             </div>
             {gmailConnected ? (
               <span className="badge-green flex items-center gap-1.5 text-xs">
-                <span className="status-dot bg-emerald-400 animate-pulse" />Ready
+                <span className="status-dot bg-emerald-400 animate-pulse" />Connected
               </span>
             ) : (
               <span className="badge-red flex items-center gap-1.5 text-xs">
-                <span className="status-dot bg-red-400" />Not Set
+                <span className="status-dot bg-red-400" />Not Connected
               </span>
             )}
           </div>
 
-          {!gmailConnected && (
-            <div className="bg-navy-900/60 rounded-lg p-4 font-mono text-xs text-slate-300 space-y-1.5">
-              <p className="text-slate-400 font-sans text-xs mb-2 non-mono">Add to your <code className="bg-navy-900/60 px-1.5 py-0.5 rounded text-brand-400">.env</code> file and restart the backend:</p>
-              <p><span className="text-brand-400">GMAIL_USER</span>=you@gmail.com</p>
-              <p><span className="text-brand-400">GMAIL_APP_PASSWORD</span>=xxxx xxxx xxxx xxxx</p>
+          {gmailConnected ? (
+            <p className="text-xs text-slate-400">
+              Your Gmail account is connected. Application emails will be sent securely from your own inbox.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-xs text-slate-400">
+                Connect your Gmail account with one click to send application emails directly from your inbox. No app passwords or manual setup required.
+              </p>
+              <button onClick={connectGmail} className="btn-primary text-sm justify-center">
+                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Connect Gmail
+              </button>
             </div>
           )}
         </div>

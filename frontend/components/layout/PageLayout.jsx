@@ -68,12 +68,12 @@ export default function PageLayout({ children, title, subtitle, showBack = true,
               {gmailConnected ? (
                 <span className="badge-green flex items-center gap-1.5 text-xs">
                   <span className="status-dot bg-emerald-400 animate-pulse" />
-                  <span className="hidden sm:inline">Gmail SMTP Ready</span>
+                  <span className="hidden sm:inline">Gmail Connected</span>
                 </span>
               ) : (
                 <span className="badge-red flex items-center gap-1.5 text-xs">
                   <span className="status-dot bg-red-400" />
-                  <span className="hidden sm:inline">SMTP Not Set</span>
+                  <span className="hidden sm:inline">Gmail Not Connected</span>
                 </span>
               )}
               {user && (
@@ -99,6 +99,11 @@ export default function PageLayout({ children, title, subtitle, showBack = true,
         <footer className="border-t border-white/5 py-4 text-center">
           <p className="text-xs text-slate-600">
             JobApply AI · Powered by Google Gemini · Gmail API
+          </p>
+          <p className="text-xs text-slate-600 mt-1.5 flex items-center justify-center gap-3">
+            <Link href="/privacy" className="hover:text-slate-400 transition-colors">Privacy Policy</Link>
+            <span className="text-slate-700">·</span>
+            <Link href="/terms" className="hover:text-slate-400 transition-colors">Terms of Service</Link>
           </p>
         </footer>
       </div>

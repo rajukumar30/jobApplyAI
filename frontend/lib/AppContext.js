@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { auth, googleProvider, signInWithPopup, signOut } from './firebase';
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { auth, googleProvider, signInWithPopup, signOut, GoogleAuthProvider } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import axios from 'axios';
 
@@ -45,7 +45,6 @@ export function AppProvider({ children }) {
   // ── Flow state (hydrated from sessionStorage) ─────────────────────────────
   const [jobResult, setJobResultState] = useState(() => loadSession('app_jobResult'));
   const [matchResult, setMatchResultState] = useState(() => loadSession('app_matchResult'));
-  const [fakeJobResult, setFakeJobResultState] = useState(() => loadSession('app_fakeJobResult'));
   const [duplicateWarning, setDuplicateWarning] = useState(() => loadSession('app_duplicateWarning'));
   const [pipelineSteps, setPipelineSteps] = useState(INITIAL_STEPS);
 
@@ -66,11 +65,6 @@ export function AppProvider({ children }) {
     saveSession('app_matchResult', val);
   }, []);
 
-  const setFakeJobResult = useCallback((val) => {
-    setFakeJobResultState(val);
-    saveSession('app_fakeJobResult', val);
-  }, []);
-
   const setDupWarning = useCallback((val) => {
     setDuplicateWarning(val);
     saveSession('app_duplicateWarning', val);
@@ -79,10 +73,9 @@ export function AppProvider({ children }) {
   const resetFlow = useCallback(() => {
     setJobResultState(null);
     setMatchResultState(null);
-    setFakeJobResultState(null);
     setDuplicateWarning(null);
     setPipelineSteps(INITIAL_STEPS);
-    clearSession('app_jobResult', 'app_matchResult', 'app_fakeJobResult', 'app_duplicateWarning');
+    clearSession('app_jobResult', 'app_matchResult', 'app_duplicateWarning');
   }, []);
 
   // ── step updater helper ──────────────────────────────────────────────────
@@ -90,14 +83,26 @@ export function AppProvider({ children }) {
     setPipelineSteps(prev => prev.map(s => s.id === id ? { ...s, ...patch } : s));
   }, []);
 
+  // Track the previously authenticated uid so we can wipe per-user state when
+  // the account changes (login, logout, or switching accounts on a shared
+  // browser) and prevent one user's data from bleeding into another's session.
+  const prevUidRef = useRef(null);
+
   // ── Auth listener ─────────────────────────────────────────────────────────
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
+      const nextUid = u?.uid || null;
+      if (prevUidRef.current !== nextUid) {
+        prevUidRef.current = nextUid;
+        setResumes([]);
+        setGmailConnected(false);
+        resetFlow();
+      }
       setUser(u);
       setAuthLoading(false);
     });
     return () => unsub();
-  }, []);
+  }, [resetFlow]);
 
   useEffect(() => {
     if (user) {
@@ -126,10 +131,34 @@ export function AppProvider({ children }) {
     } catch (_) {}
   };
 
+  // Send the Google OAuth access token (with gmail.send scope) returned by the
+  // sign-in popup to the backend so it can send email from the user's account.
+  const syncGmailToken = async (result) => {
+    try {
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const accessToken = credential?.accessToken;
+      if (!accessToken) {
+        console.warn('[gmail] No Google access token in sign-in result — gmail.send scope may not have been granted.');
+        return false;
+      }
+      const res = await axios.post(`${API}/gmail/connect-token`, { accessToken });
+      if (res.data?.success) setGmailConnected(true);
+      return true;
+    } catch (err) {
+      console.error('[gmail] connect-token failed:', err.response?.data?.error || err.message);
+      return false;
+    }
+  };
+
   // ── Auth actions ──────────────────────────────────────────────────────────
   const handleLogin = async () => {
-    try { await signInWithPopup(auth, googleProvider); }
-    catch (err) { showToast('error', 'Login failed. Please try again.'); }
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      await syncGmailToken(result);
+      await checkGmailStatus();
+    } catch (err) {
+      showToast('error', 'Login failed. Please try again.');
+    }
   };
 
   const handleLogout = async () => {
@@ -146,6 +175,28 @@ export function AppProvider({ children }) {
     setTimeout(() => setToast(null), duration);
   }, []);
   const clearToast = useCallback(() => setToast(null), []);
+
+  // ── Gmail connect ─────────────────────────────────────────────────────────
+  // Re-run the Google popup to (re)grant the gmail.send scope and refresh the
+  // access token, then hand it to the backend. Used to grant permission if it
+  // was skipped at login, or to refresh an expired token.
+  const connectGmail = useCallback(async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const accessToken = credential?.accessToken;
+      if (!accessToken) {
+        showToast('error', 'Could not get Gmail permission. Please try again.');
+        return;
+      }
+      await axios.post(`${API}/gmail/connect-token`, { accessToken });
+      const res = await axios.get(`${API}/gmail/status`);
+      setGmailConnected(!!res.data.connected);
+      showToast('success', 'Gmail connected successfully.');
+    } catch (err) {
+      showToast('error', err.response?.data?.error || 'Could not connect Gmail.');
+    }
+  }, [showToast]);
 
   // ── Resume actions ────────────────────────────────────────────────────────
   const handleResumeUploaded = useCallback((newResumes) => {
@@ -168,11 +219,10 @@ export function AppProvider({ children }) {
       // auth
       user, authLoading, handleLogin, handleLogout,
       // data
-      resumes, resumes_loading, gmailConnected, loadResumes,
+      resumes, resumes_loading, gmailConnected, loadResumes, connectGmail,
       // flow state
       jobResult, setJobResult,
       matchResult, setMatchResult,
-      fakeJobResult, setFakeJobResult,
       duplicateWarning, setDuplicateWarning: setDupWarning,
       pipelineSteps, setPipelineSteps, setStep,
       resetFlow,

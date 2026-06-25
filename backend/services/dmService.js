@@ -278,6 +278,64 @@ async function getConnectionsFromFirebase(syncKey) {
   };
 }
 
+async function getConnectionsForUser(uid) {
+  if (!db) {
+    throw new Error('Firebase is not initialized.');
+  }
+
+  const connectionsRef = db.collection('users').doc(uid).collection('connections');
+  const snapshot = await connectionsRef.get();
+  const hrContacts = snapshot.docs.map(doc => doc.data());
+
+  const groupedData = {};
+  for (const contact of hrContacts) {
+    const company = contact.companyName || 'Unknown Company';
+    if (!groupedData[company]) {
+      groupedData[company] = {
+        companyName: company,
+        hrConnectionsCount: 0,
+        primaryLocation: contact.location || '',
+        topRole: '',
+        contacts: [],
+        _roleCounts: {},
+      };
+    }
+    const group = groupedData[company];
+    group.contacts.push(contact);
+    group.hrConnectionsCount++;
+    group._roleCounts[contact.title] = (group._roleCounts[contact.title] || 0) + 1;
+  }
+
+  const data = Object.values(groupedData).map(group => {
+    group.topRole = Object.entries(group._roleCounts)
+      .sort((a, b) => b[1] - a[1])[0]?.[0] || '';
+    delete group._roleCounts;
+    return group;
+  }).sort((a, b) => b.hrConnectionsCount - a.hrConnectionsCount);
+
+  return { totalAnalyzed: hrContacts.length, companiesFound: data.length, data };
+}
+
+async function saveConnectionsForUser(uid, contacts) {
+  if (!db) {
+    throw new Error('Firebase is not initialized.');
+  }
+  if (!Array.isArray(contacts) || contacts.length === 0) return;
+
+  const batch = db.batch();
+  const connectionsRef = db.collection('users').doc(uid).collection('connections');
+  for (const contact of contacts) {
+    const uniqueId = (contact.profileUrl || `${contact.name}-${contact.companyName}`)
+      .replace(/[^a-z0-9]/gi, '_')
+      .slice(0, 120);
+    batch.set(connectionsRef.doc(uniqueId), {
+      ...contact,
+      importedAt: new Date().toISOString(),
+    }, { merge: true });
+  }
+  await batch.commit();
+}
+
 /**
  * Parses raw CSV content, validates headers, and extracts HR contacts.
  *
@@ -465,5 +523,7 @@ module.exports = {
   getMockConnections,
   getOrCreateSyncKey,
   processRawConnectionsToFirebase,
-  getConnectionsFromFirebase
+  getConnectionsFromFirebase,
+  getConnectionsForUser,
+  saveConnectionsForUser,
 };

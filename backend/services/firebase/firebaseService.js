@@ -5,22 +5,35 @@ const fs = require('fs');
 let db = null;
 let bucket = null;
 
+function configureFirestore(instance) {
+  if (!instance || instance.__settingsApplied) return instance;
+  try {
+    instance.settings({ ignoreUndefinedProperties: true });
+    instance.__settingsApplied = true;
+  } catch (error) {
+    // settings() can only be called once before first use; ignore if already set.
+  }
+  return instance;
+}
+
 function initFirebase() {
   if (admin.apps.length > 0) {
-    db = admin.firestore();
-    bucket = admin.storage().bucket();
+    db = configureFirestore(admin.firestore());
     return { db, bucket };
   }
 
   try {
     const serviceAccountPath = path.join(__dirname, '../../firebase-service-account.json');
+    const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
 
-    if (!fs.existsSync(serviceAccountPath)) {
+    if (!serviceAccountJson && !fs.existsSync(serviceAccountPath)) {
       console.warn('⚠️ Firebase Warning: firebase-service-account.json not found in backend directory. Firebase features will not work until you add it.');
       return { db: null, bucket: null };
     }
 
-    const serviceAccount = require(serviceAccountPath);
+    const serviceAccount = serviceAccountJson
+      ? JSON.parse(serviceAccountJson)
+      : require(serviceAccountPath);
     const storageBucket = process.env.FIREBASE_STORAGE_BUCKET;
 
     if (!storageBucket || storageBucket === 'your-project-id.appspot.com') {
@@ -32,8 +45,8 @@ function initFirebase() {
       storageBucket: storageBucket || undefined
     });
 
-    db = admin.firestore();
-    bucket = admin.storage().bucket();
+    db = configureFirestore(admin.firestore());
+    bucket = storageBucket ? admin.storage().bucket(storageBucket) : null;
 
     console.log('🔥 Firebase Admin initialized successfully');
   } catch (error) {

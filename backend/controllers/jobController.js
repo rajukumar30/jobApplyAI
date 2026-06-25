@@ -8,6 +8,22 @@ const { generateTailoredResumePdf } = require('../services/pdf/latexService');
 const { supabase } = require('../services/supabase/supabaseService');
 const fakeJobDetectionService = require('../services/fakeJobDetectionService');
 
+// ── Cancellation ─────────────────────────────────────────────────────────────
+// Returns an AbortSignal that fires when the client disconnects before the
+// response is finished (e.g. the user clicks "Cancel" in the UI, which aborts
+// the in-flight request). This lets us stop the Gemini pipeline server-side.
+function abortSignalForRequest(req, res) {
+  const controller = new AbortController();
+  req.on('close', () => {
+    if (!res.writableEnded) controller.abort();
+  });
+  return controller.signal;
+}
+
+function isCancelled(signal, err) {
+  return (signal && signal.aborted) || geminiService.isCancel(err);
+}
+
 // ── Analyze Job ──────────────────────────────────────────────────────────────
 async function analyzeJob(req, res) {
   const { text, url, detectFakeJob } = req.body;
@@ -25,26 +41,10 @@ async function analyzeJob(req, res) {
     const fetchResult = await linkedinService.fetchJobPageUnauthenticated(url);
 
     if (fetchResult.requiresLogin) {
-      const linkedinToken = linkedinService.getLinkedInToken();
-      if (linkedinToken) {
-        const authResult = await linkedinService.fetchJobPageAuthenticated(url, linkedinToken.access_token);
-        if (authResult.success) {
-          description = authResult.description;
-          source = 'linkedin_authenticated';
-        } else {
-          return res.status(401).json({
-            error: 'LinkedIn login required to access this job post.',
-            requiresLinkedInLogin: true,
-            authUrl: linkedinService.getAuthUrl(),
-          });
-        }
-      } else {
-        return res.status(401).json({
-          error: 'LinkedIn login required to access this job post.',
-          requiresLinkedInLogin: true,
-          authUrl: linkedinService.getAuthUrl(),
-        });
-      }
+      return res.status(422).json({
+        error: 'LinkedIn blocks automated access to this post. Paste the job description text instead.',
+        requiresLinkedInLogin: false,
+      });
     } else if (fetchResult.success) {
       description = fetchResult.description;
       source = 'linkedin_scraped';
@@ -59,16 +59,18 @@ async function analyzeJob(req, res) {
     return res.status(400).json({ error: 'Job description is too short or empty.' });
   }
 
+  const signal = abortSignalForRequest(req, res);
+
   try {
     console.log(`🤖 Analyzing job with Gemini (source: ${source})...`);
     
     // Concurrently run regular analysis and fake job detection (if requested)
-    const analysisPromise = geminiService.analyzeJob(description);
+    const analysisPromise = geminiService.analyzeJob(description, { signal });
     
     let fakeJobPromise = Promise.resolve(null);
     if (detectFakeJob) {
       console.log(`🛡️ Fake job detection requested. Extracting data...`);
-      fakeJobPromise = geminiService.extractLinkedInPostData(description)
+      fakeJobPromise = geminiService.extractLinkedInPostData(description, { signal })
         .then(extractedData => fakeJobDetectionService.scoreFakeJob(extractedData))
         .catch(err => {
           console.warn(`⚠️ Fake job detection failed, proceeding without it: ${err.message}`);
@@ -94,7 +96,7 @@ async function analyzeJob(req, res) {
     // ── Duplicate application check ──────────────────────────────────────
     let duplicateWarning = null;
     if (jobData.company) {
-      const previousApplications = await applicationStore.checkDuplicate(jobData.company);
+      const previousApplications = await applicationStore.checkDuplicate(req.user.uid, jobData.company);
       if (previousApplications.length > 0) {
         duplicateWarning = {
           isDuplicate: true,
@@ -114,8 +116,12 @@ async function analyzeJob(req, res) {
       fakeJobAnalysis,
     });
   } catch (err) {
+    if (isCancelled(signal, err)) {
+      console.log('🚫 Job analysis cancelled by user.');
+      return;
+    }
     console.error('❌ Job analysis error:', err.message);
-    return res.status(500).json({ error: `Failed to analyze job: ${err.message}` });
+    if (!res.writableEnded) return res.status(500).json({ error: `Failed to analyze job: ${err.message}` });
   }
 }
 
@@ -127,7 +133,7 @@ async function matchResumes(req, res) {
     return res.status(400).json({ error: 'Job data is required for resume matching.' });
   }
 
-  const resumes = await resumeController.readStore();
+  const resumes = await resumeController.readStore(req.user.uid);
   // Filter out already tailored resumes so we don't match against them
   const originalResumes = resumes.filter(r => !r.isTailored);
 
@@ -135,9 +141,11 @@ async function matchResumes(req, res) {
     return res.status(404).json({ error: 'No original resumes found. Please upload at least one resume.' });
   }
 
+  const signal = abortSignalForRequest(req, res);
+
   try {
     console.log(`🤖 Matching ${originalResumes.length} original resume(s) with Gemini...`);
-    const matchResult = await geminiService.matchResumes(jobData, originalResumes);
+    const matchResult = await geminiService.matchResumes(jobData, originalResumes, { signal });
 
     // Use the AI's intelligent score directly
     matchResult.rankings.sort((a, b) => b.score - a.score);
@@ -161,7 +169,7 @@ async function matchResumes(req, res) {
       return safe;
     })();
 
-    emitProgress('match_resume', 'done', `Matched ${originalResumes.length} resume(s). Best score: ${matchResult.rankings[0]?.score ?? '?'}%`);
+    emitProgress(req.user.uid, 'match_resume', 'done', `Matched ${originalResumes.length} resume(s). Best score: ${matchResult.rankings[0]?.score ?? '?'}%`);
 
     let tailoringPerformed = false;
     let tailoredResume = null;
@@ -171,16 +179,16 @@ async function matchResumes(req, res) {
     let tailoringResult = null;    // full result including atsReport
 
     // ── AI Resume Tailoring (if score < 80) ──────────────────────────────────
-    emitProgress('score', 'running', 'Evaluating resume match quality...');
+    emitProgress(req.user.uid, 'score', 'running', 'Evaluating resume match quality...');
     if (bestScore < 80 && bestResume) {
       console.log(`⚠️ Best match score is ${bestScore}%. Initiating AI Resume Tailoring...`);
       try {
         tailoringPerformed = true;
-        emitProgress('score', 'done', `Best match: ${bestScore}% — tailoring resume for better fit...`);
+        emitProgress(req.user.uid, 'score', 'done', `Best match: ${bestScore}% - tailoring resume for better fit...`);
 
         // 1. ATS keyword gap analysis + tailoring (2-stage pipeline inside geminiService)
-        emitProgress('tailor', 'running', 'Stage 1: Extracting ATS keywords & running gap analysis...');
-        tailoringResult = await geminiService.tailorResume(jobData, bestResume);
+        emitProgress(req.user.uid, 'tailor', 'running', 'Stage 1: Extracting ATS keywords and running gap analysis...');
+        tailoringResult = await geminiService.tailorResume(jobData, bestResume, { signal });
         let tailoredData = tailoringResult.tailoredData;
         const rewrittenSections = tailoringResult.rewrittenContent;
         const atsReport = tailoringResult.atsReport || {};
@@ -192,20 +200,28 @@ async function matchResumes(req, res) {
         // 2. Build PDF using the fixed LaTeX template (falls back to pdfmake if pdflatex unavailable)
         // IMPORTANT: Pass originalData + rewrittenSections separately so the template
         // uses original data for locked fields and AI content only for the 4 editable placeholders.
+        if (signal.aborted) throw new geminiService.CancelledError();
+
         const injected = (atsReport.missingKeywordsInjected || []).length;
-        emitProgress('tailor', 'done', `Stage 2: ATS optimization complete — ${injected} missing keywords injected.`);
-        emitProgress('compile_pdf', 'running', 'Compiling ATS-optimized resume to PDF...');
+        emitProgress(req.user.uid, 'tailor', 'done', `Stage 2: ATS optimization complete - ${injected} missing keywords injected.`);
+        emitProgress(req.user.uid, 'compile_pdf', 'running', 'Compiling ATS-optimized resume to PDF...');
         const originalData = bestResume.parsedData || {};
+        if (bestResume.rawText) resumeController.backfillEducationYears(originalData, bestResume.rawText);
         const safeJobTitle = (jobData.jobTitle || 'Role').replace(/[^a-zA-Z0-9]/g, '_');
         const filenameBase = `tailored_resume_${safeJobTitle}_${Date.now()}`;
-        const pdfBuffer = await generateTailoredResumePdf(originalData, rewrittenSections, filenameBase);
-        emitProgress('compile_pdf', 'done', 'PDF compiled successfully.');
+        const pdfBuffer = await generateTailoredResumePdf(
+          req.user.uid,
+          originalData,
+          rewrittenSections,
+          filenameBase
+        );
+        emitProgress(req.user.uid, 'compile_pdf', 'done', 'PDF compiled successfully.');
 
         // 3. Upload tailored PDF to Supabase Storage
         let firebaseStoragePath = null;
         if (supabase) {
-          emitProgress('upload', 'running', 'Uploading tailored PDF to cloud storage...');
-          const destFileName = `${filenameBase}.pdf`;
+          emitProgress(req.user.uid, 'upload', 'running', 'Uploading tailored PDF to cloud storage...');
+          const destFileName = `${req.user.uid}/${filenameBase}.pdf`;
           console.log(`☁️ Uploading tailored resume to Supabase Storage: tailored-resumes/${destFileName}...`);
 
           // Ensure the tailored-resumes bucket exists
@@ -226,11 +242,11 @@ async function matchResumes(req, res) {
 
           if (error) {
             console.error('❌ Failed to upload tailored resume to Supabase:', error.message);
-            emitProgress('upload', 'warn', 'Cloud upload failed — using local fallback.');
+            emitProgress(req.user.uid, 'upload', 'warn', 'Cloud upload failed - using local fallback.');
           } else {
             firebaseStoragePath = data.path;
             console.log(`✅ Tailored resume uploaded successfully.`);
-            emitProgress('upload', 'done', 'Tailored resume uploaded to cloud.');
+            emitProgress(req.user.uid, 'upload', 'done', 'Tailored resume uploaded to cloud.');
 
             // Generate a signed URL (valid for 1 hour) so caller can access the PDF
             const { data: signedData, error: signedError } = await supabase.storage
@@ -249,12 +265,13 @@ async function matchResumes(req, res) {
 
         // 4. Re-evaluate the new score
         console.log('🤖 Re-evaluating tailored resume score...');
-        tailoredMatchPercentage = await geminiService.scoreTailoredResume(jobData, tailoredData);
+        tailoredMatchPercentage = await geminiService.scoreTailoredResume(jobData, tailoredData, { signal });
         console.log(`📈 New score after tailoring: ${tailoredMatchPercentage}%`);
-        emitProgress('email', 'done', `✅ Ready! New match score: ${tailoredMatchPercentage}%`);
+        emitProgress(req.user.uid, 'email', 'done', `Ready. New match score: ${tailoredMatchPercentage}%`);
 
         // 5. Construct tailored resume object
         tailoredResume = {
+          userId: req.user.uid,
           id: `tailored_${Date.now()}`,
           filename: `${filenameBase}.pdf`,
           originalName: `Tailored Resume for ${jobData.jobTitle}.pdf`,
@@ -286,11 +303,11 @@ async function matchResumes(req, res) {
         // Fallback: If DB save failed or Supabase not configured, save locally
         if (!dbSaved) {
           console.log('⚠️ Saving tailored resume locally as fallback.');
-          const localStorePath = path.join(__dirname, '../data/resumeStore.json');
           try {
-            const localStore = fs.existsSync(localStorePath) ? JSON.parse(fs.readFileSync(localStorePath, 'utf8')) : [];
+            const localStore = await resumeController.readStore(req.user.uid);
             localStore.push(tailoredResume);
-            fs.writeFileSync(localStorePath, JSON.stringify(localStore, null, 2));
+            const { writeUserJson } = require('../services/userStorage');
+            writeUserJson(req.user.uid, 'resumeStore.json', localStore);
             console.log('✅ Tailored resume metadata saved to local fallback store.');
           } catch (localErr) {
             console.error('❌ Failed to save to local store:', localErr.message);
@@ -298,11 +315,19 @@ async function matchResumes(req, res) {
         }
 
       } catch (err) {
+        // Propagate user cancellation so the outer handler can stop cleanly
+        // instead of silently falling back to the original resume.
+        if (isCancelled(signal, err)) throw err;
         console.error('❌ Tailoring pipeline failed:', err.message);
         // Fallback to original resume if tailoring fails
         tailoringPerformed = false;
         tailoredResume = null;
       }
+    }
+
+    if (signal.aborted) {
+      console.log('🚫 Resume matching cancelled by user.');
+      return;
     }
 
     return res.json({
@@ -323,15 +348,19 @@ async function matchResumes(req, res) {
       atsReport: tailoringPerformed ? (tailoringResult?.atsReport || null) : null  // ATS keyword injection report
     });
   } catch (err) {
+    if (isCancelled(signal, err)) {
+      console.log('🚫 Resume matching cancelled by user.');
+      return;
+    }
     console.error('❌ Resume matching error:', err.message);
-    return res.status(500).json({ error: `Failed to match resumes: ${err.message}` });
+    if (!res.writableEnded) return res.status(500).json({ error: `Failed to match resumes: ${err.message}` });
   }
 }
 
 // ── SSE Progress Stream ──────────────────────────────────────────────────────
 // Holds references to all connected SSE clients so other parts of this
 // controller can push progress events via emitProgress().
-const sseClients = new Set();
+const sseClients = new Map();
 
 function progressStream(req, res) {
   // Set SSE headers
@@ -345,22 +374,29 @@ function progressStream(req, res) {
   res.write('data: {"type":"connected"}\n\n');
 
   // Register this client
-  sseClients.add(res);
+  const userId = req.user.uid;
+  if (!sseClients.has(userId)) sseClients.set(userId, new Set());
+  sseClients.get(userId).add(res);
 
   // Remove when the client disconnects
   req.on('close', () => {
-    sseClients.delete(res);
+    const clients = sseClients.get(userId);
+    if (!clients) return;
+    clients.delete(res);
+    if (clients.size === 0) sseClients.delete(userId);
   });
 }
 
 // Call this from anywhere in this controller to push a step update to all clients
-function emitProgress(step, status, detail = null) {
+function emitProgress(userId, step, status, detail = null) {
   const payload = JSON.stringify({ step, status, detail });
-  for (const client of sseClients) {
+  const clients = sseClients.get(userId);
+  if (!clients) return;
+  for (const client of clients) {
     try {
       client.write(`data: ${payload}\n\n`);
     } catch (_) {
-      sseClients.delete(client);
+      clients.delete(client);
     }
   }
 }

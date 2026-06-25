@@ -19,4 +19,9 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
-export { app, auth, db, googleProvider, signInWithPopup, signOut };
+// Request permission to send email on the user's behalf as part of Google
+// sign-in, so the account they log in with can be used to send application
+// emails without a separate connection step.
+googleProvider.addScope('https://www.googleapis.com/auth/gmail.send');
+
+export { app, auth, db, googleProvider, signInWithPopup, signOut, GoogleAuthProvider };

@@ -1,49 +1,83 @@
 const path = require('path');
 const fs = require('fs');
 const pdfParse = require('pdf-parse');
+const { extractPdfLinks } = require('../services/pdf/pdfLinks');
 const geminiService = require('../services/gemini/geminiService');
 const { supabase } = require('../services/supabase/supabaseService');
-
-const RESUME_STORE_PATH = path.join(__dirname, '../data/resumeStore.json');
-const RESUMES_DIR = path.join(__dirname, '../resumes');
+const {
+  getUserResumeDir,
+  getUserGeneratedDir,
+  readUserJson,
+  writeUserJson,
+} = require('../services/userStorage');
 
 // Helpers for local fallback
-function readLocalStore() {
-  try {
-    return JSON.parse(fs.readFileSync(RESUME_STORE_PATH, 'utf8'));
-  } catch {
-    return [];
-  }
+function readLocalStore(userId) {
+  return readUserJson(userId, 'resumeStore.json', []);
 }
 
-function writeLocalStore(data) {
-  fs.writeFileSync(RESUME_STORE_PATH, JSON.stringify(data, null, 2));
+function writeLocalStore(userId, data) {
+  writeUserJson(userId, 'resumeStore.json', data);
+}
+
+// Recover education year ranges (e.g. "2021 – 2025") from raw PDF text when the
+// AI parser only captures a single graduation year.
+function backfillEducationYears(parsedData, rawText) {
+  const education = parsedData?.education;
+  if (!Array.isArray(education) || !rawText) return;
+
+  for (const edu of education) {
+    if (edu.yearRange) continue;
+    if (edu.startYear && edu.endYear) {
+      edu.yearRange = `${edu.startYear} – ${edu.endYear}`;
+      continue;
+    }
+
+    const inst = (edu.institution || '').split(',')[0].trim();
+    if (!inst || inst.length < 4) continue;
+
+    const idx = rawText.indexOf(inst);
+    if (idx === -1) continue;
+
+    const snippet = rawText.slice(idx, idx + inst.length + 100);
+    const rangeMatch = snippet.match(/(\d{4})\s*[–\-—]\s*(\d{4})/);
+    if (!rangeMatch) continue;
+
+    edu.startYear = edu.startYear || rangeMatch[1];
+    edu.endYear = edu.endYear || rangeMatch[2];
+    edu.yearRange = `${rangeMatch[1]} – ${rangeMatch[2]}`;
+  }
 }
 
 // Export readStore for jobController
-async function readStore() {
+async function readStore(userId) {
   if (!supabase) {
-    return readLocalStore();
+    return readLocalStore(userId);
   }
   try {
-    const { data, error } = await supabase.from('resumes').select('*').order('uploadedAt', { ascending: false });
+    const { data, error } = await supabase
+      .from('resumes')
+      .select('*')
+      .eq('userId', userId)
+      .order('uploadedAt', { ascending: false });
     if (error) throw error;
     return data || [];
   } catch (err) {
     console.error('Supabase read error (resumes):', err.message);
-    return readLocalStore();
+    return readLocalStore(userId);
   }
 }
 
 // ── Upload Resumes ───────────────────────────────────────────────────────────
 async function uploadResumes(req, res) {
+  const userId = req.user.uid;
   if (!req.files || req.files.length === 0) {
     return res.status(400).json({ error: 'No PDF files uploaded.' });
   }
 
   const results = [];
   const errors = [];
-  let localStore = readLocalStore();
+  let localStore = readLocalStore(userId);
 
   for (const file of req.files) {
     try {
@@ -60,16 +94,31 @@ async function uploadResumes(req, res) {
         continue;
       }
 
+      // Recover hyperlink URLs (LinkedIn/GitHub/portfolio) from the PDF's link
+      // annotations — pdf-parse only returns visible text, so labelled links lose
+      // their underlying URL otherwise.
+      const detectedLinks = extractPdfLinks(pdfBuffer);
+      if (detectedLinks.links.length) {
+        console.log(`🔗 Detected ${detectedLinks.links.length} link(s) in ${file.originalname}: ${detectedLinks.links.join(', ')}`);
+      }
+
       // Parse with AI
       console.log(`🤖 Parsing resume with Gemini: ${file.originalname}`);
-      const parsedData = await geminiService.parseResume(rawText);
+      const parsedData = await geminiService.parseResume(rawText, detectedLinks);
+
+      // Deterministically backfill social links from the detected annotations so
+      // they are never lost even if the model misses them.
+      if (!parsedData.linkedIn && detectedLinks.linkedIn) parsedData.linkedIn = detectedLinks.linkedIn;
+      if (!parsedData.github && detectedLinks.github) parsedData.github = detectedLinks.github;
+      if (!parsedData.website && detectedLinks.website) parsedData.website = detectedLinks.website;
+      backfillEducationYears(parsedData, rawText);
 
       let storageUrl = null;
 
       // Upload to Supabase Storage
       if (supabase) {
         console.log(`☁️  Uploading ${file.filename} to Supabase Storage...`);
-        const destFileName = `${Date.now()}_${file.filename}`;
+        const destFileName = `${userId}/${file.filename}`;
 
         const { data, error } = await supabase.storage
           .from('resumes')
@@ -87,6 +136,7 @@ async function uploadResumes(req, res) {
       }
 
       const resumeEntry = {
+        userId,
         filename: file.filename,
         originalName: file.originalname,
         fileSize: file.size,
@@ -123,7 +173,7 @@ async function uploadResumes(req, res) {
   }
 
   if (!supabase || results.some(r => !r.firebaseStoragePath)) {
-    writeLocalStore(localStore);
+    writeLocalStore(userId, localStore);
   }
 
   return res.json({
@@ -137,17 +187,18 @@ async function uploadResumes(req, res) {
 
 // ── List Resumes ─────────────────────────────────────────────────────────────
 async function listResumes(req, res) {
-  const store = await readStore();
+  const store = await readStore(req.user.uid);
   const safe = store.map(({ rawText, ...r }) => r);
   return res.json({ resumes: safe });
 }
 
 // ── Delete Resume ────────────────────────────────────────────────────────────
 async function deleteResume(req, res) {
+  const userId = req.user.uid;
   const { filename } = req.params;
   if (!filename) return res.status(400).json({ error: 'Filename is required.' });
 
-  const store = await readStore();
+  const store = await readStore(userId);
   const entry = store.find(r => r.filename === filename);
 
   if (!entry) {
@@ -171,20 +222,24 @@ async function deleteResume(req, res) {
 
     // Delete from Supabase Database
     if (supabase && entry.id && !entry.id.startsWith('resume_')) {
-      const { error } = await supabase.from('resumes').delete().eq('id', entry.id);
+      const { error } = await supabase
+        .from('resumes')
+        .delete()
+        .eq('id', entry.id)
+        .eq('userId', userId);
       if (error) throw error;
       console.log(`🗑️  Deleted document from Supabase DB: ${entry.id}`);
     }
 
     // Local Fallback Cleanup
     if (!supabase || (entry.id && entry.id.startsWith('resume_'))) {
-      const localFilePath = path.join(RESUMES_DIR, filename);
+      const localFilePath = path.join(getUserResumeDir(userId), filename);
       if (fs.existsSync(localFilePath)) {
         fs.unlinkSync(localFilePath);
       }
-      let localStore = readLocalStore();
+      let localStore = readLocalStore(userId);
       localStore = localStore.filter(r => r.filename !== filename);
-      writeLocalStore(localStore);
+      writeLocalStore(userId, localStore);
     }
 
     return res.json({ success: true, message: `Resume "${entry.originalName}" deleted.` });
@@ -196,17 +251,18 @@ async function deleteResume(req, res) {
 
 // ── Download Resume ──────────────────────────────────────────────────────────
 async function downloadResume(req, res) {
+  const userId = req.user.uid;
   const { filename } = req.params;
   const isTailored = req.query.isTailored === 'true';
 
   if (!filename) return res.status(400).json({ error: 'Filename is required.' });
 
-  const store = await readStore();
+  const store = await readStore(userId);
   let entry = store.find(r => r.filename === filename);
 
   // For tailored resumes not found in DB, check local store as fallback
   if (!entry && isTailored) {
-    const localStore = readLocalStore();
+    const localStore = readLocalStore(userId);
     entry = localStore.find(r => r.filename === filename);
   }
 
@@ -232,7 +288,7 @@ async function downloadResume(req, res) {
     }
 
     // 2. Fallback to Local Storage
-    const localDir = isTailored ? path.join(__dirname, '../generated-resumes') : RESUMES_DIR;
+    const localDir = isTailored ? getUserGeneratedDir(userId) : getUserResumeDir(userId);
     const localFilePath = path.join(localDir, filename);
 
     if (fs.existsSync(localFilePath)) {
@@ -248,9 +304,10 @@ async function downloadResume(req, res) {
             console.error('Bucket creation error:', bucketError.message);
           }
 
+          const storagePath = `${userId}/${filename}`;
           const { data: uploadData, error: uploadError } = await supabase.storage
             .from('tailored-resumes')
-            .upload(filename, pdfBuffer, {
+            .upload(storagePath, pdfBuffer, {
               contentType: 'application/pdf',
               upsert: true
             });
@@ -259,7 +316,11 @@ async function downloadResume(req, res) {
             console.log(`✅ Uploaded missing tailored resume to Supabase: ${uploadData.path}`);
             // Update the DB entry with the storage path
             if (entry && entry.id && !String(entry.id).startsWith('tailored_')) {
-              await supabase.from('resumes').update({ firebaseStoragePath: uploadData.path }).eq('id', entry.id);
+              await supabase
+                .from('resumes')
+                .update({ firebaseStoragePath: uploadData.path })
+                .eq('id', entry.id)
+                .eq('userId', userId);
             }
           } else if (uploadError) {
             console.error('⚠️ Failed to upload tailored resume on-demand:', uploadError.message);
@@ -277,7 +338,7 @@ async function downloadResume(req, res) {
     if (supabase && isTailored) {
       const { data, error } = await supabase.storage
         .from('tailored-resumes')
-        .download(filename);
+        .download(`${userId}/${filename}`);
 
       if (!error && data) {
         const arrayBuffer = await data.arrayBuffer();
@@ -297,4 +358,4 @@ async function downloadResume(req, res) {
   }
 }
 
-module.exports = { uploadResumes, listResumes, deleteResume, downloadResume, readStore };
+module.exports = { uploadResumes, listResumes, deleteResume, downloadResume, readStore, backfillEducationYears };

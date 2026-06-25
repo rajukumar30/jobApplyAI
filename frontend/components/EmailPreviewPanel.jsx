@@ -60,7 +60,7 @@ export default function EmailPreviewPanel({ jobData, matchResult, gmailConnected
       await axios.post(`${API}/gmail/verify`);
       setVerifyResult('success');
     } catch (err) {
-      setVerifyResult(err.response?.data?.error || 'SMTP connection failed.');
+      setVerifyResult(err.response?.data?.error || 'Gmail connection failed.');
     } finally {
       setVerifying(false);
     }
@@ -69,7 +69,7 @@ export default function EmailPreviewPanel({ jobData, matchResult, gmailConnected
   const handleSend = async () => {
     if (!subject.trim() || !body.trim()) { setSendError('Email subject and body are required.'); return; }
     if (!recipientEmail.trim()) { setSendError('Recipient email address is required.'); return; }
-    if (!gmailConnected) { setSendError('Gmail SMTP is not configured. Set GMAIL_USER and GMAIL_APP_PASSWORD in .env and restart the server.'); return; }
+    if (!gmailConnected) { setSendError('Connect your Gmail account before sending.'); return; }
 
     setSending(true);
     setSendError('');
@@ -93,7 +93,7 @@ export default function EmailPreviewPanel({ jobData, matchResult, gmailConnected
       setSendSuccess(`✅ Email sent to ${recipientEmail}! Message ID: ${res.data.messageId}`);
       onSent?.(); // Trigger history refresh
     } catch (err) {
-      setSendError(err.response?.data?.error || 'Failed to send email. Check SMTP config.');
+      setSendError(err.response?.data?.error || 'Failed to send email. Check your Gmail connection.');
     } finally {
       setSending(false);
     }
@@ -119,13 +119,13 @@ export default function EmailPreviewPanel({ jobData, matchResult, gmailConnected
             <div className="flex items-center gap-2">
               <span className="badge-green flex items-center gap-1.5">
                 <span className="status-dot bg-emerald-400 animate-pulse" />
-                Gmail SMTP Ready
+                Gmail Ready
               </span>
               <button
                 onClick={handleVerifySmtp}
                 disabled={verifying}
                 className="btn-secondary text-xs px-3 py-1.5"
-                title="Test SMTP connection"
+                title="Test Gmail connection"
               >
                 {verifying ? '...' : '🔌 Test'}
               </button>
@@ -134,7 +134,7 @@ export default function EmailPreviewPanel({ jobData, matchResult, gmailConnected
             <div className="flex items-center gap-2">
               <span className="badge-red flex items-center gap-1.5">
                 <span className="status-dot bg-red-400" />
-                SMTP Not Set
+                Gmail Not Connected
               </span>
             </div>
           )}
@@ -151,13 +151,12 @@ export default function EmailPreviewPanel({ jobData, matchResult, gmailConnected
       {/* SMTP Not Configured Warning */}
       {!gmailConnected && (
         <div className="mb-5 p-4 bg-amber-900/20 border border-amber-500/30 rounded-xl fade-in">
-          <p className="text-amber-300 text-sm font-semibold mb-2">⚠️ Gmail SMTP not configured</p>
+          <p className="text-amber-300 text-sm font-semibold mb-2">Gmail is not connected</p>
           <p className="text-amber-200/70 text-xs leading-relaxed mb-3">
             Add these two values to your <code className="bg-navy-900/60 px-1.5 py-0.5 rounded text-amber-300">.env</code> file and restart the backend:
           </p>
           <div className="bg-navy-900/60 rounded-lg p-3 font-mono text-xs text-slate-300 space-y-1">
-            <p><span className="text-brand-400">GMAIL_USER</span>=you@gmail.com</p>
-            <p><span className="text-brand-400">GMAIL_APP_PASSWORD</span>=xxxx xxxx xxxx xxxx</p>
+            <p>Open your profile and connect your Gmail account.</p>
           </div>
           <a
             href="https://myaccount.google.com/apppasswords"
@@ -181,7 +180,7 @@ export default function EmailPreviewPanel({ jobData, matchResult, gmailConnected
       )}
       {verifyResult === 'success' && (
         <div className="mb-4 p-3 bg-emerald-900/30 border border-emerald-500/30 rounded-xl text-emerald-300 text-xs fade-in">
-          ✅ SMTP connection verified! Ready to send.
+          Gmail connection verified. Ready to send.
         </div>
       )}
 
@@ -282,7 +281,7 @@ export default function EmailPreviewPanel({ jobData, matchResult, gmailConnected
 
           {gmailConnected && (
             <p className="text-xs text-slate-500">
-              📤 Sending via Gmail SMTP
+              Sending via Gmail
             </p>
           )}
 
@@ -305,7 +304,7 @@ export default function EmailPreviewPanel({ jobData, matchResult, gmailConnected
             className="btn-success w-full justify-center"
           >
             {sending ? (
-              <><LoadingSpinner size="sm" /> Sending via Gmail SMTP...</>
+              <><LoadingSpinner size="sm" /> Sending via Gmail...</>
             ) : (
               <>
                 <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2}>
@@ -318,7 +317,7 @@ export default function EmailPreviewPanel({ jobData, matchResult, gmailConnected
 
           {!gmailConnected && (
             <p className="text-center text-xs text-slate-500">
-              Add GMAIL_USER + GMAIL_APP_PASSWORD to .env to enable sending
+              Connect Gmail in your profile to enable sending
             </p>
           )}
         </div>

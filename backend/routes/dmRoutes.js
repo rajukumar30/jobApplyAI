@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const dmController = require('../controllers/dmController');
+const { requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -21,11 +22,11 @@ const upload = multer({
 });
 
 // Routes
-router.get('/sync-key', dmController.getSyncKey);
-router.get('/connections', dmController.getConnections);
-router.post('/upload-connections', upload.single('csvFile'), dmController.uploadConnections);
+router.get('/sync-key', requireAuth, dmController.getSyncKey);
+router.get('/connections', requireAuth, dmController.getConnections);
+router.post('/upload-connections', requireAuth, upload.single('csvFile'), dmController.uploadConnections);
 router.post('/import-connections', express.json({ limit: '10mb' }), dmController.importConnections);
-router.post('/generate-message', express.json(), dmController.generateMessage);
+router.post('/generate-message', requireAuth, express.json(), dmController.generateMessage);
 
 // Error handler for multer errors
 router.use((err, req, res, next) => {

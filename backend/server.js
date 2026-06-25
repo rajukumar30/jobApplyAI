@@ -16,7 +16,15 @@ const dmRoutes = require('./routes/dmRoutes');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ── Ensure required directories and files exist ─────────────────────────────
+// Trust the reverse proxy (e.g. load balancer) so secure cookies and protocol
+// detection work correctly in production deployments behind HTTPS terminators.
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
+// ── Ensure required directories exist ───────────────────────────────────────
+// Per-user storage (data/users/{uid}/...) is created on demand by userStorage.
+// We only ensure the top-level parent directories used as the local fallback.
 const dirs = [
   path.join(__dirname, 'resumes'),
   path.join(__dirname, 'data'),
@@ -27,24 +35,6 @@ dirs.forEach(dir => {
     console.log(`📁 Created directory: ${dir}`);
   }
 });
-
-const resumeStorePath = path.join(__dirname, 'data', 'resumeStore.json');
-if (!fs.existsSync(resumeStorePath)) {
-  fs.writeFileSync(resumeStorePath, JSON.stringify([], null, 2));
-  console.log('📄 Initialized resumeStore.json');
-}
-
-const tokenStorePath = path.join(__dirname, 'data', 'tokenStore.json');
-if (!fs.existsSync(tokenStorePath)) {
-  fs.writeFileSync(tokenStorePath, JSON.stringify({}, null, 2));
-  console.log('📄 Initialized tokenStore.json');
-}
-
-const sentApplicationsPath = path.join(__dirname, 'data', 'sent-applications.json');
-if (!fs.existsSync(sentApplicationsPath)) {
-  fs.writeFileSync(sentApplicationsPath, JSON.stringify([], null, 2));
-  console.log('📄 Initialized sent-applications.json');
-}
 
 // ── Middleware ───────────────────────────────────────────────────────────────
 app.use(cors({
@@ -62,8 +52,9 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false, // set to true in production with HTTPS
+    secure: process.env.NODE_ENV === 'production', // HTTPS-only cookies in production
     httpOnly: true,
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
   },
 }));
@@ -117,7 +108,7 @@ app.listen(PORT, () => {
     console.log(`🔑 AI Provider:   Google Gemini 1.5 Flash ✓ (${process.env.GEMINI_API_KEY ? 'API key configured' : '⚠️ NOT SET'})`);
   }
   
-  console.log(`📧 Gmail SMTP:    ${process.env.GMAIL_USER ? `Configured ✓ (${process.env.GMAIL_USER})` : '⚠️  NOT SET — add GMAIL_USER + GMAIL_APP_PASSWORD to .env'}`);
+  console.log('Gmail: Per-user OAuth enabled');
   console.log(`🔗 LinkedIn OAuth: ${process.env.LINKEDIN_CLIENT_ID ? 'Configured ✓' : 'Not set (optional)'}`);
   console.log('');
 });

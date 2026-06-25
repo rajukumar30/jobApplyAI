@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { buildAuthenticatedUrl } from '../lib/authenticatedAxios';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -133,9 +134,10 @@ function ResumeItem({ resume, expanded, toggleExpand, handleDelete, deleting }) 
         {/* Actions */}
         <div className="flex items-center gap-2 flex-shrink-0">
           <button
-            onClick={() => {
+            onClick={async () => {
               const url = `${API}/resumes/download/${encodeURIComponent(resume.filename)}?isTailored=${resume.isTailored || false}`;
-              window.open(url, '_blank');
+              const authenticatedUrl = await buildAuthenticatedUrl(url);
+              window.open(authenticatedUrl, '_blank', 'noopener,noreferrer');
             }}
             className="text-slate-400 hover:text-emerald-400 transition-colors p-1.5 rounded-lg hover:bg-emerald-900/20"
             title="Download PDF"
@@ -234,4 +236,3 @@ function ResumeItem({ resume, expanded, toggleExpand, handleDelete, deleting }) 
     </div>
   );
 }
-

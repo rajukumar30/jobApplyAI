@@ -63,7 +63,7 @@ export default function GenerateMessageModal({ contact, onClose, onGenerate }) {
     // 2. Scan History for previously applied Job Titles at THIS Company
     const fetchHistory = async () => {
       try {
-        const res = await axios.get(`${API}/applications`, { withCredentials: true });
+        const res = await axios.get(`${API}/applications`);
         if (res.data.success) {
           const apps = res.data.applications || [];
           const matchedApps = apps.filter(a => a.companyName?.toLowerCase() === contact.companyName?.toLowerCase());

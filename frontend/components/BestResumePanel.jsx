@@ -1,6 +1,13 @@
 import { StepRow } from './AIPipelineProgress';
+import { buildAuthenticatedUrl } from '../lib/authenticatedAxios';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
+async function openResumeDownload(filename, isTailored) {
+  const url = `${API}/resumes/download/${encodeURIComponent(filename)}?isTailored=${isTailored || false}`;
+  const authenticatedUrl = await buildAuthenticatedUrl(url);
+  window.open(authenticatedUrl, '_blank', 'noopener,noreferrer');
+}
 
 export default function BestResumePanel({ matchResult, loading, steps = [] }) {
   if (loading) {
@@ -127,10 +134,7 @@ export default function BestResumePanel({ matchResult, loading, steps = [] }) {
             </div>
             <span className="ml-auto badge-green flex-shrink-0">✓ Selected</span>
             <button
-              onClick={() => {
-                const url = `${API}/resumes/download/${encodeURIComponent(best.filename)}?isTailored=${best.isTailored || false}`;
-                window.open(url, '_blank');
-              }}
+              onClick={() => openResumeDownload(best.filename, best.isTailored)}
               className="ml-2 text-slate-400 hover:text-emerald-400 transition-colors p-1.5 rounded-lg hover:bg-emerald-900/20"
               title="Download PDF"
             >
@@ -221,10 +225,7 @@ export default function BestResumePanel({ matchResult, loading, steps = [] }) {
                       </p>
                     </div>
                     <button
-                      onClick={() => {
-                        const url = `${API}/resumes/download/${encodeURIComponent(resume.filename)}?isTailored=${resume.isTailored || false}`;
-                        window.open(url, '_blank');
-                      }}
+                      onClick={() => openResumeDownload(resume.filename, resume.isTailored)}
                       className="ml-2 text-slate-400 hover:text-brand-400 transition-colors p-1.5 rounded-lg hover:bg-brand-900/20"
                       title="Download PDF"
                     >

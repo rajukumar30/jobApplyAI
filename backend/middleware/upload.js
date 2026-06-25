@@ -1,17 +1,14 @@
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-
-// Ensure the resumes directory exists
-const resumesDir = path.join(__dirname, '../resumes');
-if (!fs.existsSync(resumesDir)) {
-  fs.mkdirSync(resumesDir, { recursive: true });
-}
+const { getUserResumeDir } = require('../services/userStorage');
 
 // Storage configuration — keep original filename with timestamp prefix
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, resumesDir);
+    try {
+      cb(null, getUserResumeDir(req.user.uid));
+    } catch (error) {
+      cb(error);
+    }
   },
   filename: (req, file, cb) => {
     // Sanitize original name and add timestamp to avoid collisions

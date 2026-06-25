@@ -48,12 +48,6 @@ async function sendEmail(req, res) {
     return res.status(400).json({ error: `Invalid recipient email: ${to}` });
   }
 
-  if (!gmailService.isConfigured()) {
-    return res.status(503).json({
-      error: 'Gmail SMTP is not configured. Add GMAIL_USER and GMAIL_APP_PASSWORD to .env and restart.',
-    });
-  }
-
   // We now pass the filename/path down; gmailService will fetch from Supabase Storage
   let attachmentName = null;
   if (resumeFilename) {
@@ -62,7 +56,7 @@ async function sendEmail(req, res) {
 
   try {
     console.log(`📧 Sending email to ${to} via Gmail SMTP...`);
-    const result = await gmailService.sendEmail({
+    const result = await gmailService.sendEmail(req.user.uid, {
       to,
       subject,
       body,
@@ -73,7 +67,7 @@ async function sendEmail(req, res) {
     });
 
     // ── Save application record after successful send ─────────────────────
-    const savedEntry = await applicationStore.saveApplication({
+    const savedEntry = await applicationStore.saveApplication(req.user.uid, {
       company:  company  || 'Unknown Company',
       role:     role     || 'Unknown Role',
       email:    to,

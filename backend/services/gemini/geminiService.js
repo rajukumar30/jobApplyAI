@@ -14,8 +14,8 @@ const USE_VERTEX_AI = process.env.USE_VERTEX_AI === 'true' && fs.existsSync(SERV
 const GCP_PROJECT  = process.env.GOOGLE_CLOUD_PROJECT  || 'jobapply-ai-c597b';
 const GCP_LOCATION = process.env.GOOGLE_CLOUD_LOCATION || 'global';
 
-// Primary model — gemini-2.0-flash (has high free tier quota, whereas 2.5-flash is limited to 20/day)
-const PRIMARY_MODEL = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+// Primary model — gemini-2.5-flash (gemini-2.0-flash was retired and now 404s).
+const PRIMARY_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
 
 let vertexClient = null;   // @google/genai client for Vertex AI
 let genAI        = null;   // @google/generative-ai client for API key fallback
@@ -35,7 +35,8 @@ if (USE_VERTEX_AI) {
   genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   const MODEL_CHAIN = [
     PRIMARY_MODEL,
-    PRIMARY_MODEL === 'gemini-2.5-flash' ? 'gemini-2.0-flash' : 'gemini-2.5-flash',
+    'gemini-2.5-flash',
+    'gemini-flash-latest',
     'gemini-1.5-flash-latest',
   ].filter((v, i, arr) => arr.indexOf(v) === i);
 
@@ -58,7 +59,41 @@ function isLocationError(err) {
   );
 }
 
-async function generateAIResponse(prompt) {
+// ── Cancellation helpers ─────────────────────────────────────────────────────
+class CancelledError extends Error {
+  constructor() {
+    super('Request cancelled by user');
+    this.name = 'CancelledError';
+    this.cancelled = true;
+  }
+}
+
+// True when an error originates from an aborted/cancelled request.
+function isCancel(err) {
+  return !!(err && (err.cancelled || err.name === 'CancelledError' || err.name === 'AbortError'));
+}
+
+// Throws immediately if the given signal is already aborted.
+function throwIfAborted(signal) {
+  if (signal && signal.aborted) throw new CancelledError();
+}
+
+// A promise that rejects as soon as the signal aborts (never settles otherwise).
+function makeAbortRejection(signal) {
+  return new Promise((_, reject) => {
+    if (!signal) return;
+    if (signal.aborted) return reject(new CancelledError());
+    signal.addEventListener('abort', () => reject(new CancelledError()), { once: true });
+  });
+}
+
+async function generateAIResponse(prompt, options = {}) {
+  // json defaults to true — nearly all callers expect structured JSON. Pass
+  // { json: false } for free-text responses (e.g. LinkedIn DM).
+  const { signal, json = true } = options;
+  throwIfAborted(signal);
+  const jsonConfig = json ? { responseMimeType: 'application/json' } : {};
+
   const makeTimeout = () =>
     new Promise((_, reject) =>
       setTimeout(
@@ -66,6 +101,7 @@ async function generateAIResponse(prompt) {
         GEMINI_TIMEOUT_MS
       )
     );
+  const abortRejection = makeAbortRejection(signal);
 
   // ── Path 1: Vertex AI (Agent Platform) ─────────────────────────────────────
   if (USE_VERTEX_AI) {
@@ -74,12 +110,14 @@ async function generateAIResponse(prompt) {
         vertexClient.models.generateContent({
           model:    PRIMARY_MODEL,
           contents: prompt,
-          config:   { temperature: 0.1, topP: 0.9, maxOutputTokens: 16384 },
+          config:   { temperature: 0.1, topP: 0.9, maxOutputTokens: 16384, abortSignal: signal, ...jsonConfig },
         }),
         makeTimeout(),
+        abortRejection,
       ]);
       return result.text;
     } catch (err) {
+      if (isCancel(err)) throw err;
       console.error(`Vertex AI call failed (${PRIMARY_MODEL}):`, err.message);
       throw new Error(`Gemini API failed: ${err.message}`);
     }
@@ -92,15 +130,21 @@ async function generateAIResponse(prompt) {
 
   let lastErr = null;
   for (let i = 0; i < geminiModels.length; i++) {
+    throwIfAborted(signal);
     const { name: modelName, instance: model } = geminiModels[i];
     try {
       const result = await Promise.race([
-        model.generateContent(prompt),
+        model.generateContent(
+          { contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: jsonConfig },
+          signal ? { signal } : undefined
+        ),
         makeTimeout(),
+        abortRejection,
       ]);
       if (i > 0) console.log(`✅ Model [${modelName}] succeeded (fallback #${i}).`);
       return result.response.text();
     } catch (err) {
+      if (isCancel(err)) throw err;
       lastErr = err;
       console.error(`Gemini API call failed (${modelName}):`, err.message);
 
@@ -119,6 +163,67 @@ async function generateAIResponse(prompt) {
   }
   throw new Error(`Gemini API failed: ${lastErr?.message || 'Unknown error'}`);
 }
+// Escape raw control characters (literal newlines/tabs/CR) that appear INSIDE
+// string literals — the single most common reason Gemini JSON fails to parse.
+// Walks the text tracking string state so structural whitespace is untouched.
+function escapeControlCharsInStrings(jsonStr) {
+  let out = '';
+  let inString = false;
+  let escaped = false;
+  for (let i = 0; i < jsonStr.length; i++) {
+    const ch = jsonStr[i];
+    if (escaped) { out += ch; escaped = false; continue; }
+    if (ch === '\\') { out += ch; escaped = true; continue; }
+    if (ch === '"') { inString = !inString; out += ch; continue; }
+    if (inString) {
+      if (ch === '\n') { out += '\\n'; continue; }
+      if (ch === '\r') { out += '\\r'; continue; }
+      if (ch === '\t') { out += '\\t'; continue; }
+    }
+    out += ch;
+  }
+  return out;
+}
+
+// Attempt to repair an incomplete/truncated JSON by closing any unterminated
+// string and balancing open brackets/braces.
+function closeUnbalancedJson(jsonStr) {
+  let inString = false;
+  let escaped = false;
+  const stack = [];
+  for (let i = 0; i < jsonStr.length; i++) {
+    const ch = jsonStr[i];
+    if (escaped) { escaped = false; continue; }
+    if (ch === '\\') { escaped = true; continue; }
+    if (ch === '"') { inString = !inString; continue; }
+    if (inString) continue;
+    if (ch === '{' || ch === '[') stack.push(ch);
+    else if (ch === '}' || ch === ']') stack.pop();
+  }
+  let repaired = jsonStr;
+  if (inString) repaired += '"';
+  repaired = repaired.replace(/,\s*$/, '');
+  while (stack.length) {
+    const open = stack.pop();
+    repaired += open === '{' ? '}' : ']';
+  }
+  return repaired;
+}
+
+function tryParseWithRepairs(jsonStr) {
+  const candidates = [
+    jsonStr,
+    jsonStr.replace(/,\s*([\}\]])/g, '$1'),                       // trailing commas
+    escapeControlCharsInStrings(jsonStr),                          // raw control chars
+    escapeControlCharsInStrings(jsonStr).replace(/,\s*([\}\]])/g, '$1'),
+    closeUnbalancedJson(escapeControlCharsInStrings(jsonStr).replace(/,\s*([\}\]])/g, '$1')),
+  ];
+  for (const candidate of candidates) {
+    try { return JSON.parse(candidate); } catch (_) { /* next */ }
+  }
+  return undefined;
+}
+
 function extractJSON(text) {
   try {
     return JSON.parse(text);
@@ -126,7 +231,8 @@ function extractJSON(text) {
     // Attempt 1: Look for markdown JSON block
     const fenceMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
     if (fenceMatch) {
-      try { return JSON.parse(fenceMatch[1]); } catch (err2) {}
+      const fenced = tryParseWithRepairs(fenceMatch[1].trim());
+      if (fenced !== undefined) return fenced;
     }
 
     // Attempt 2: Manually clean and parse
@@ -153,34 +259,62 @@ function extractJSON(text) {
 
     if (startIndex !== -1) {
       const endIndex = isObject ? cleanedText.lastIndexOf('}') : cleanedText.lastIndexOf(']');
-      if (endIndex !== -1 && endIndex > startIndex) {
-        const jsonStr = cleanedText.substring(startIndex, endIndex + 1);
-        try {
-          return JSON.parse(jsonStr);
-        } catch (err3) {
-          // Attempt 3: Sometimes Gemini leaves trailing commas. This is a naive attempt to fix simple trailing commas
-          const noTrailingComma = jsonStr.replace(/,\s*([\}\]])/g, '$1');
-          try {
-             return JSON.parse(noTrailingComma);
-          } catch(err4) {
-             console.error('Final JSON repair failed:', err4.message);
-          }
-        }
-      }
+      const sliceEnd = endIndex !== -1 && endIndex > startIndex ? endIndex + 1 : cleanedText.length;
+      const jsonStr = cleanedText.substring(startIndex, sliceEnd);
+      const parsed = tryParseWithRepairs(jsonStr);
+      if (parsed !== undefined) return parsed;
     }
 
-    console.error('Raw failed JSON output length:', text.length);
+    console.error('Final JSON repair failed. Raw output length:', text.length);
     throw new Error('Could not extract valid JSON from AI response. Check backend logs for details.');
   }
 }
 
+// Detect the order in which the candidate arranged their resume sections, so the
+// rebuilt/tailored PDF can follow the same layout order. Returns an ordered array
+// of section keys (e.g. ['summary','education','experience',...]) or null.
+function detectSectionOrder(rawText) {
+  if (!rawText) return null;
+  const patterns = [
+    ['summary',        /^(professional\s+summary|summary|profile|objective|about\s+me)\b/i],
+    ['skills',         /^(technical\s+skills|skills|core\s+competencies|technical\s+expertise|areas\s+of\s+expertise)\b/i],
+    ['experience',     /^(professional\s+experience|work\s+experience|experience|employment(\s+history)?|work\s+history)\b/i],
+    ['projects',       /^(projects|personal\s+projects|academic\s+projects|key\s+projects)\b/i],
+    ['education',      /^(education|academic\s+background|academics|qualifications)\b/i],
+    ['coursework',     /^(relevant\s+coursework|coursework|courses)\b/i],
+    ['certifications', /^(certifications?|certificates?|licenses?(\s*&?\s*certifications?)?)\b/i],
+  ];
+
+  const found = [];
+  const seen = new Set();
+  for (const rawLine of rawText.split(/\r?\n/)) {
+    const line = rawLine.trim();
+    if (!line || line.length > 40) continue;
+    for (const [key, re] of patterns) {
+      if (seen.has(key)) continue;
+      if (re.test(line)) { found.push(key); seen.add(key); break; }
+    }
+  }
+  return found.length ? found : null;
+}
+
 // â”€â”€ Parse Resume â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-async function parseResume(pdfText) {
+async function parseResume(pdfText, detectedLinks = null) {
+  // Hyperlinks recovered from the PDF annotations (their URLs are not part of the
+  // visible text). Give them to the model so it can map them to the right fields.
+  let linksBlock = '';
+  if (detectedLinks && Array.isArray(detectedLinks.links) && detectedLinks.links.length) {
+    linksBlock = `\n\nDETECTED HYPERLINKS (extracted from the PDF's clickable links — use these for the linkedIn / github / website fields, matching by domain; do NOT discard them):\n${detectedLinks.links.join('\n')}\n`;
+  }
+
   const prompt = `You are a professional resume parser. Your job is to extract EVERY piece of information from the resume text below with 100% accuracy. Do NOT skip any detail. Do NOT use placeholder text.
 
 CRITICAL RULES:
 - Extract the ACTUAL values from the resume text â€” never use example text
 - If a field is missing in the resume, use null for strings or [] for arrays
+- For linkedIn, github and website: if the visible text only shows a label (e.g. "GitHub", "LinkedIn", "Portfolio") use the matching URL from the DETECTED HYPERLINKS list below
+- For experience startDate/endDate, copy the dates EXACTLY as written in the resume (e.g. "July 2025", "Present"). Do NOT invent or recompute them
+- For education startYear/endYear/graduationYear, copy dates EXACTLY as written (e.g. "2021 – 2025", "May 2020"). If a range like "2021 – 2025" appears, put the full range in yearRange AND set startYear/endYear separately
 - Extract ALL skills, tools, technologies mentioned anywhere in the resume
 - For experience, extract EVERY job with full details including achievements/metrics
 - For education, include ALL degrees, certifications, courses
@@ -231,7 +365,10 @@ Return this EXACT JSON structure with real extracted values:
       "institution": "university/college name",
       "degree": "degree type and field of study",
       "gpa": "GPA if mentioned or null",
-      "graduationYear": "year or expected year",
+      "startYear": "start year if mentioned or null",
+      "endYear": "end/graduation year or null",
+      "yearRange": "full date range exactly as written e.g. 2021 – 2025, or null",
+      "graduationYear": "graduation year if only a single year is given, or null",
       "relevantCourses": ["relevant courses if listed"]
     }
   ],
@@ -241,11 +378,14 @@ Return this EXACT JSON structure with real extracted values:
 }
 
 Resume Text (FULL):
-${pdfText}`;
+${pdfText}${linksBlock}`;
 
   try {
     const text = await generateAIResponse(prompt);
-    return extractJSON(text);
+    const parsed = extractJSON(text);
+    // Record the candidate's original section ordering for layout fidelity.
+    parsed.sectionOrder = detectSectionOrder(pdfText);
+    return parsed;
   } catch (err) {
     console.error('parseResume error:', err.message);
     throw new Error(`Failed to parse resume: ${err.message}`);
@@ -253,7 +393,7 @@ ${pdfText}`;
 }
 
 // â”€â”€ Analyze Job â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-async function analyzeJob(description) {
+async function analyzeJob(description, options = {}) {
   const prompt = `You are an expert job description analyst. Extract EVERY piece of information from the job description below with complete accuracy. Miss nothing.
 
 CRITICAL RULES:
@@ -299,20 +439,21 @@ Job Description (FULL):
 ${description}`;
 
   try {
-    const text = await generateAIResponse(prompt);
+    const text = await generateAIResponse(prompt, options);
     const result = extractJSON(text);
     return result;
   } catch (err) {
+    if (isCancel(err)) throw err;
     console.error('analyzeJob error:', err.message);
     throw new Error(`Failed to analyze job: ${err.message}`);
   }
 }
 
 // â”€â”€ Match Resumes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-async function matchResumes(jobData, resumes) {
+async function matchResumes(jobData, resumes, options = {}) {
   if (!resumes || resumes.length === 0) throw new Error('No resumes to match');
 
-  if (resumes.length === 1) {
+  if (resumes.length === 1 && process.env.SKIP_SINGLE_RESUME_SCORING === 'true') {
     return {
       rankings: [{ index: 0, score: 100, reason: 'Only one resume available â€” automatically selected.', strengths: [], gaps: [] }],
       bestMatchIndex: 0,
@@ -408,9 +549,10 @@ Return this EXACT JSON:
 Order rankings from highest score to lowest.`;
 
   try {
-    const text = await generateAIResponse(prompt);
+    const text = await generateAIResponse(prompt, options);
     return extractJSON(text);
   } catch (err) {
+    if (isCancel(err)) throw err;
     console.error('matchResumes error:', err.message);
     throw new Error(`Failed to match resumes: ${err.message}`);
   }
@@ -586,7 +728,7 @@ Return this EXACT JSON:
 // â”€â”€ ATS Keyword Extractor â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Stage 1: Extract all JD keywords and run gap analysis against the resume.
 // Returns an atsContext object that is fed into tailorResume (Stage 2).
-async function extractAtsKeywords(jobData, resumeParsedData) {
+async function extractAtsKeywords(jobData, resumeParsedData, options = {}) {
   const jdKeywords = {
     jobTitle:          jobData.jobTitle || '',
     requiredSkills:    jobData.requiredSkills || [],
@@ -648,9 +790,10 @@ Return ONLY valid JSON:
 }`;
 
   try {
-    const text = await generateAIResponse(prompt);
+    const text = await generateAIResponse(prompt, options);
     return extractJSON(text);
   } catch (err) {
+    if (isCancel(err)) throw err;
     console.warn('ATS keyword extraction failed (non-fatal):', err.message);
     // Return a minimal context so tailoring can still proceed
     return {
@@ -678,12 +821,12 @@ Return ONLY valid JSON:
 //     { name: "...", url: "...", bullets: ["b1","b2","b3","b4"] }
 //   ]
 // }
-async function tailorResume(jobData, bestResume) {
+async function tailorResume(jobData, bestResume, options = {}) {
   const parsedData = bestResume.parsedData || {};
 
   // â”€â”€ Stage 1: ATS Keyword Gap Analysis â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   console.log('ðŸ” [ATS Stage 1] Extracting JD keywords and running gap analysis...');
-  const atsContext = await extractAtsKeywords(jobData, parsedData);
+  const atsContext = await extractAtsKeywords(jobData, parsedData, options);
 
   const missingKeywords  = (atsContext.missingKeywords  || []).map(k => k.keyword);
   const partialKeywords  = (atsContext.partialKeywords  || []).map(k => k.keyword);
@@ -699,7 +842,8 @@ async function tailorResume(jobData, bestResume) {
   const primaryExp  = parsedData.experience?.[0] || {};
   const topProjects = (parsedData.projects || []).slice(0, 2).map(p => ({
     name: p.name || 'Project',
-    url:  p.url  || p.link || `https://github.com/${(p.name || 'project').replace(/\s+/g, '-').toLowerCase()}`,
+    // Only use a REAL url from the resume — never fabricate one from the name.
+    url:  p.url  || p.link || null,
     existingBullets: p.achievements || (p.description ? [p.description] : [])
   }));
 
@@ -730,6 +874,9 @@ Your task is to rewrite the 4 editable resume sections below to:
 - Do NOT modify candidate name, email, phone, location, LinkedIn, GitHub
 - Do NOT modify education, certifications, or any locked sections
 - Do NOT invent new companies, degrees, certifications, or institutions
+- Do NOT invent metrics, percentages, revenue, dataset sizes, tools, responsibilities, or achievements
+- Preserve measurable claims only when they already exist in the original resume
+- When the source has no metric, write a strong factual qualitative bullet without adding a number
 - Do NOT change role title, company name, or project titles
 - Do NOT add LaTeX, HTML, markdown, or any formatting code
 - Do NOT truncate â€” always produce ALL required bullets
@@ -749,17 +896,16 @@ Your task is to rewrite the 4 editable resume sections below to:
   - Each category: 4â€“7 skills. Category names must be professional and ATS-neutral.
 
 ðŸ”· EXPERIENCE BULLETS (EXACTLY 5â€“6 bullets REQUIRED):
-  - Each bullet: strong action verb + specific task + MEASURABLE outcome (numbers, %, $, X times)
+  - Each bullet: strong action verb + specific task + a source-supported outcome
   - Inject these JD keywords naturally: [${[...missingKeywords, ...keywordsToBoost].slice(0,8).join(', ')}]
   - ATS date format rule: Use MM/YYYY or "Month YYYY" format. If only year known, use YYYY only.
   - Every bullet must mention at least one tool or skill from the job description
-  - Minimum 1 bullet with a percentage improvement (e.g., "improved accuracy by 23%")
-  - Minimum 1 bullet with a numeric scale (e.g., "analyzed 50,000+ records", "reduced time by 3 hours/week")
+  - Reuse percentages or numeric scale only when present in the original content
 
 ðŸ”· PROJECT BULLETS (3â€“4 bullets per project REQUIRED):
   - Align each project with a specific job responsibility or required skill
   - Inject remaining missing keywords: [${missingKeywords.slice(4).join(', ')}]
-  - Each bullet: action verb + technical detail + measurable impact
+  - Each bullet: action verb + technical detail + source-supported impact
   - Mention at least one tool from toolsAndTechnologies in each project
 
 ðŸ”· KEYWORD DENSITY RULE:
@@ -828,7 +974,7 @@ Return ONLY valid JSON with this EXACT structure (no extra keys, no extra text):
 }`;
 
   try {
-    const text = await generateAIResponse(prompt);
+    const text = await generateAIResponse(prompt, options);
     const rewrittenContent = extractJSON(text);
 
     // â”€â”€ Build tailoredData (flat structure for email, scoring, UI) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -872,6 +1018,7 @@ Return ONLY valid JSON with this EXACT structure (no extra keys, no extra text):
       atsReport,
     };
   } catch (err) {
+    if (isCancel(err)) throw err;
     console.error('tailorResume error:', err.message);
     throw new Error(`Failed to tailor resume: ${err.message}`);
   }
@@ -910,7 +1057,7 @@ function _formatAtsDate(raw) {
 
 
 // â”€â”€ Score Tailored Resume â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-async function scoreTailoredResume(jobData, tailoredData) {
+async function scoreTailoredResume(jobData, tailoredData, options = {}) {
   const prompt = `You are a technical recruiter. You just received a tailored resume for a specific job. Rate how well this resume matches the job description on a scale of 0 to 100.
 
 Job Description:
@@ -935,17 +1082,18 @@ Return EXACTLY this JSON:
 }`;
 
   try {
-    const text = await generateAIResponse(prompt);
+    const text = await generateAIResponse(prompt, options);
     const result = extractJSON(text);
     return result.score;
   } catch (err) {
+    if (isCancel(err)) throw err;
     console.error('scoreTailoredResume error:', err.message);
     return 90; // Fallback score if parsing fails
   }
 }
 
 // ── Extract LinkedIn Post Data for Fake Detection ────────────────────────────
-async function extractLinkedInPostData(postText) {
+async function extractLinkedInPostData(postText, options = {}) {
   const prompt = `You are a cybersecurity and recruitment fraud analyst. Extract the following information from the provided LinkedIn job post text.
 If any piece of information is not visibly present in the text, return null for that field.
 
@@ -973,9 +1121,10 @@ ${postText}
 `;
 
   try {
-    const text = await generateAIResponse(prompt);
+    const text = await generateAIResponse(prompt, options);
     return extractJSON(text);
   } catch (err) {
+    if (isCancel(err)) throw err;
     console.error('extractLinkedInPostData error:', err.message);
     throw new Error(`Failed to extract LinkedIn post data: ${err.message}`);
   }
@@ -1013,7 +1162,7 @@ ${candidateName}
 Return ONLY the raw message text.`;
 
   try {
-    const text = await generateAIResponse(prompt);
+    const text = await generateAIResponse(prompt, { json: false });
     return text.trim();
   } catch (err) {
     console.error('generateLinkedInDM error:', err.message);
@@ -1021,4 +1170,4 @@ Return ONLY the raw message text.`;
   }
 }
 
-module.exports = { parseResume, analyzeJob, matchResumes, generateEmail, tailorResume, extractAtsKeywords, scoreTailoredResume, extractLinkedInPostData, generateLinkedInDM };
+module.exports = { parseResume, analyzeJob, matchResumes, generateEmail, tailorResume, extractAtsKeywords, scoreTailoredResume, extractLinkedInPostData, generateLinkedInDM, isCancel, CancelledError };

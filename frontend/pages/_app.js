@@ -1,5 +1,8 @@
 import '../styles/globals.css';
 import { AppProvider, useApp } from '../lib/AppContext';
+import { installAuthInterceptor } from '../lib/authenticatedAxios';
+
+installAuthInterceptor();
 
 function Toast() {
   const { toast, clearToast } = useApp();

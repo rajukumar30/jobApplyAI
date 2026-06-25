@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const applicationController = require('../controllers/applicationController');
+const { requireAuth } = require('../middleware/auth');
+
+router.use(requireAuth);
 
 // List all sent applications
 router.get('/', applicationController.listApplications);

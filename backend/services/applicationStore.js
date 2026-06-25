@@ -1,37 +1,38 @@
-const path = require('path');
-const fs = require('fs');
 const { db } = require('./firebase/firebaseService');
-
-const LOCAL_STORE_PATH = path.join(__dirname, '../data/sent-applications.json');
+const { readUserJson, writeUserJson } = require('./userStorage');
 
 // Helper to read local applications
-function readLocalApplications() {
-  try {
-    return JSON.parse(fs.readFileSync(LOCAL_STORE_PATH, 'utf8'));
-  } catch {
-    return [];
-  }
+function readLocalApplications(userId) {
+  return readUserJson(userId, 'sent-applications.json', []).map((entry, index) => ({
+    id: entry.id || `local_${index}_${entry.appliedAt || entry.date || 'legacy'}`,
+    ...entry,
+  }));
 }
 
 // Helper to write local applications
-function writeLocalApplications(apps) {
-  fs.writeFileSync(LOCAL_STORE_PATH, JSON.stringify(apps, null, 2));
+function writeLocalApplications(userId, apps) {
+  writeUserJson(userId, 'sent-applications.json', apps);
 }
 
 /**
  * Read all sent applications
  * @returns {Promise<Array>}
  */
-async function readApplications() {
+async function readApplications(userId) {
   if (!db) {
-    return readLocalApplications();
+    return readLocalApplications(userId);
   }
   try {
-    const snapshot = await db.collection('applications').orderBy('appliedAt', 'desc').get();
+    const snapshot = await db
+      .collection('users')
+      .doc(userId)
+      .collection('applications')
+      .orderBy('appliedAt', 'desc')
+      .get();
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   } catch (error) {
     console.error('Firebase read error (applications):', error.message);
-    return readLocalApplications(); // Fallback to local on error
+    return readLocalApplications(userId);
   }
 }
 
@@ -40,11 +41,11 @@ async function readApplications() {
  * @param {string} companyName
  * @returns {Promise<Array>}
  */
-async function checkDuplicate(companyName) {
+async function checkDuplicate(userId, companyName) {
   if (!companyName) return [];
   try {
     const normalized = companyName.toLowerCase().trim();
-    const apps = await readApplications();
+    const apps = await readApplications(userId);
     return apps.filter(a => a.company && a.company.toLowerCase().trim() === normalized);
   } catch (error) {
     console.error('Firebase check duplicate error:', error.message);
@@ -57,8 +58,10 @@ async function checkDuplicate(companyName) {
  * @param {{ company, role, email, resume, date }} data
  * @returns {Promise<Object>}
  */
-async function saveApplication({ company, role, email, resume }) {
+async function saveApplication(userId, { company, role, email, resume }) {
   const entry = {
+    id: `application_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+    userId,
     company: company || 'Unknown Company',
     role: role || 'Unknown Role',
     email: email || null,
@@ -68,23 +71,27 @@ async function saveApplication({ company, role, email, resume }) {
   };
 
   if (!db) {
-    const localApps = readLocalApplications();
+    const localApps = readLocalApplications(userId);
     localApps.push(entry);
-    writeLocalApplications(localApps);
+    writeLocalApplications(userId, localApps);
     console.log(`📋 Application saved to LOCAL storage: ${entry.role} @ ${entry.company}`);
     return entry;
   }
 
   try {
-    const docRef = await db.collection('applications').add(entry);
+    const docRef = await db
+      .collection('users')
+      .doc(userId)
+      .collection('applications')
+      .add(entry);
     console.log(`📋 Application saved to Firebase: ${entry.role} @ ${entry.company} (ID: ${docRef.id})`);
     return { id: docRef.id, ...entry };
   } catch (error) {
     console.error('Firebase save error (applications):', error.message);
     // Fallback to local
-    const localApps = readLocalApplications();
+    const localApps = readLocalApplications(userId);
     localApps.push(entry);
-    writeLocalApplications(localApps);
+    writeLocalApplications(userId, localApps);
     return entry;
   }
 }
@@ -93,12 +100,21 @@ async function saveApplication({ company, role, email, resume }) {
  * Delete a specific application record by ID.
  * @param {string} id
  */
-async function deleteApplication(id) {
+async function deleteApplication(userId, id) {
   if (!db) {
-    return false;
+    const localApps = readLocalApplications(userId);
+    const filtered = localApps.filter(app => String(app.id) !== String(id));
+    if (filtered.length === localApps.length) return false;
+    writeLocalApplications(userId, filtered);
+    return true;
   }
   try {
-    await db.collection('applications').doc(id).delete();
+    await db
+      .collection('users')
+      .doc(userId)
+      .collection('applications')
+      .doc(id)
+      .delete();
     console.log(`🗑️ Application deleted from Firebase (ID: ${id})`);
     return true;
   } catch (error) {

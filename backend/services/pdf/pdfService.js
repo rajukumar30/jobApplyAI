@@ -2,8 +2,6 @@ const PdfPrinter = require('pdfmake');
 const fs = require('fs');
 const path = require('path');
 
-const GENERATED_DIR = path.join(__dirname, '../../generated-resumes');
-
 // Define standard built-in fonts for pdfmake
 const fonts = {
   Helvetica: {
@@ -22,15 +20,18 @@ const fonts = {
  * @param {string} filenameBase (e.g. "tailored_resume_12345")
  * @returns {Promise<Buffer>}
  */
-function compileJsonToPdf(docDefinition, filenameBase) {
+function compileJsonToPdf(docDefinition, filenameBase, outputDir) {
   return new Promise((resolve, reject) => {
     try {
-      if (!fs.existsSync(GENERATED_DIR)) {
-        fs.mkdirSync(GENERATED_DIR, { recursive: true });
+      if (!outputDir) {
+        throw new Error('A user-scoped PDF output directory is required.');
+      }
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
       }
 
       // 1. Save the JSON definition locally
-      const jsonPath = path.join(GENERATED_DIR, `${filenameBase}.json`);
+      const jsonPath = path.join(outputDir, `${filenameBase}.json`);
       fs.writeFileSync(jsonPath, JSON.stringify(docDefinition, null, 2), 'utf8');
       console.log(`📝 Saved PDF definition to ${jsonPath}`);
 
@@ -52,7 +53,7 @@ function compileJsonToPdf(docDefinition, filenameBase) {
         const pdfBuffer = Buffer.concat(chunks);
 
         // Save PDF locally
-        const pdfPath = path.join(GENERATED_DIR, `${filenameBase}.pdf`);
+        const pdfPath = path.join(outputDir, `${filenameBase}.pdf`);
         fs.writeFileSync(pdfPath, pdfBuffer);
         console.log(`✅ Saved compiled PDF to ${pdfPath}`);
 

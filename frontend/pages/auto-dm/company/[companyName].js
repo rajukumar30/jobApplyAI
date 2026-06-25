@@ -10,8 +10,15 @@ import { useApp } from '../../../lib/AppContext';
 export default function CompanyHRPage() {
   const router = useRouter();
   const { companyName } = router.query;
-  const { user } = useApp();
+  const { user, authLoading } = useApp();
   const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
+  // Require authentication
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace('/');
+    }
+  }, [authLoading, user, router]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,7 +39,7 @@ export default function CompanyHRPage() {
     const fetchCompanyData = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`${API}/dm/connections`, { withCredentials: true });
+        const res = await axios.get(`${API}/dm/connections`);
         if (res.data.success) {
           const allCompanies = res.data.data;
           const target = allCompanies.find(c => c.companyName === companyName);
@@ -68,7 +75,7 @@ export default function CompanyHRPage() {
       appliedJobTitle
     };
 
-    const res = await axios.post(`${API}/dm/generate-message`, payload, { withCredentials: true });
+    const res = await axios.post(`${API}/dm/generate-message`, payload);
     
     if (res.data.success) {
       setGeneratedMessage(res.data.message);

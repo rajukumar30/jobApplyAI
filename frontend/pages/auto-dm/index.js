@@ -18,8 +18,15 @@ export default function AutoDMPage() {
   const [syncKeyLoading, setSyncKeyLoading] = useState(false);
   const [sortMethod, setSortMethod] = useState('connections');
   
-  const { user } = useApp();
+  const { user, authLoading } = useApp();
   const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
+  // ── Guard: require authentication ─────────────────────────────────────────
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace('/');
+    }
+  }, [authLoading, user, router]);
 
   // ── Guard: redirect to install page if extension is not detected ──────────
   // Poll every 300ms for up to 3 seconds — content scripts can be slightly slow
@@ -45,12 +52,11 @@ export default function AutoDMPage() {
     return () => clearInterval(interval);
   }, [router]);
 
-  const fetchConnections = async (key) => {
+  const fetchConnections = async () => {
     setLoading(true);
     setError(null);
     try {
-      const qs = key ? `?syncKey=${key}` : '';
-      const res = await axios.get(`${API}/dm/connections${qs}`, { withCredentials: true });
+      const res = await axios.get(`${API}/dm/connections`);
       if (res.data.success) {
         setCompanies(res.data.data);
       }
@@ -66,10 +72,10 @@ export default function AutoDMPage() {
     if (!user?.uid) return;
     setSyncKeyLoading(true);
     try {
-      const res = await axios.get(`${API}/dm/sync-key?uid=${user.uid}`, { withCredentials: true });
+      const res = await axios.get(`${API}/dm/sync-key`);
       if (res.data.success && res.data.syncKey) {
         setSyncKey(res.data.syncKey);
-        fetchConnections(res.data.syncKey);
+        fetchConnections();
       }
     } catch (err) {
       console.error('Error fetching sync key:', err);
@@ -83,8 +89,6 @@ export default function AutoDMPage() {
   useEffect(() => {
     if (user?.uid) {
       loadSyncKey();
-    } else {
-      fetchConnections();
     }
   }, [user]);
 
@@ -114,7 +118,6 @@ export default function AutoDMPage() {
     try {
       const res = await axios.post(`${API}/dm/upload-connections`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
-        withCredentials: true
       });
 
       if (res.data.success) {

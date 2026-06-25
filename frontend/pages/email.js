@@ -48,7 +48,7 @@ export default function EmailPage() {
   const {
     user, authLoading,
     jobResult, matchResult,
-    gmailConnected, triggerHistoryRefresh, showToast,
+    gmailConnected, connectGmail, triggerHistoryRefresh, showToast,
   } = useApp();
 
   const [subject, setSubject] = useState('');
@@ -92,14 +92,14 @@ export default function EmailPage() {
     }
   };
 
-  const handleVerifySmtp = async () => {
+  const handleVerifyGmail = async () => {
     setVerifying(true);
     setVerifyResult('');
     try {
       await axios.post(`${API}/gmail/verify`);
       setVerifyResult('success');
     } catch (err) {
-      setVerifyResult(err.response?.data?.error || 'SMTP connection failed.');
+      setVerifyResult(err.response?.data?.error || 'Gmail connection failed.');
     } finally {
       setVerifying(false);
     }
@@ -108,7 +108,7 @@ export default function EmailPage() {
   const handleSend = async () => {
     if (!subject.trim() || !body.trim()) { setSendError('Email subject and body are required.'); return; }
     if (!recipientEmail.trim()) { setSendError('Recipient email address is required.'); return; }
-    if (!gmailConnected) { setSendError('Gmail SMTP is not configured. Add GMAIL_USER and GMAIL_APP_PASSWORD to .env and restart the backend.'); return; }
+    if (!gmailConnected) { setSendError('Connect your Gmail account before sending.'); return; }
 
     setSending(true);
     setSendError('');
@@ -131,7 +131,7 @@ export default function EmailPage() {
       triggerHistoryRefresh();
       showToast('success', `✅ Application sent to ${jd.company || recipientEmail}!`);
     } catch (err) {
-      setSendError(err.response?.data?.error || 'Failed to send email. Check SMTP config.');
+      setSendError(err.response?.data?.error || 'Failed to send email. Check your Gmail connection.');
     } finally {
       setSending(false);
     }
@@ -182,14 +182,14 @@ export default function EmailPage() {
                     <span className="status-dot bg-emerald-400 animate-pulse" />
                     Gmail Ready
                   </span>
-                  <button onClick={handleVerifySmtp} disabled={verifying} className="btn-secondary text-xs px-3 py-1.5">
+                  <button onClick={handleVerifyGmail} disabled={verifying} className="btn-secondary text-xs px-3 py-1.5">
                     {verifying ? '…' : '🔌 Test'}
                   </button>
                 </>
               ) : (
                 <span className="badge-red flex items-center gap-1.5 text-xs">
                   <span className="status-dot bg-red-400" />
-                  SMTP Not Set
+                  Gmail Not Connected
                 </span>
               )}
             </div>
@@ -200,17 +200,14 @@ export default function EmailPage() {
             <div className="p-3 bg-red-900/30 border border-red-500/30 rounded-xl text-red-300 text-xs fade-in">❌ {verifyResult}</div>
           )}
           {verifyResult === 'success' && (
-            <div className="p-3 bg-emerald-900/30 border border-emerald-500/30 rounded-xl text-emerald-300 text-xs fade-in">✅ SMTP connection verified!</div>
+            <div className="p-3 bg-emerald-900/30 border border-emerald-500/30 rounded-xl text-emerald-300 text-xs fade-in">Gmail connection verified.</div>
           )}
 
           {/* SMTP warning */}
           {!gmailConnected && (
             <div className="p-4 bg-amber-900/20 border border-amber-500/30 rounded-xl fade-in">
-              <p className="text-amber-300 text-sm font-semibold mb-1">⚠️ Gmail SMTP not configured</p>
-              <div className="bg-navy-900/60 rounded-lg p-3 font-mono text-xs text-slate-300 space-y-1 mt-2">
-                <p><span className="text-brand-400">GMAIL_USER</span>=you@gmail.com</p>
-                <p><span className="text-brand-400">GMAIL_APP_PASSWORD</span>=xxxx xxxx xxxx xxxx</p>
-              </div>
+              <p className="text-amber-300 text-sm font-semibold mb-2">Connect Gmail to send from your own account.</p>
+              <button onClick={connectGmail} className="btn-primary text-xs">Connect Gmail</button>
             </div>
           )}
 
