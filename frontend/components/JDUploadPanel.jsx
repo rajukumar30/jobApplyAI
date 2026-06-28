@@ -72,7 +72,7 @@ export default function JDUploadPanel({ onTailorRequest, disabled = false }) {
   };
 
   return (
-    <div className="glass-card p-6 h-full flex flex-col">
+    <div className="glass-card p-4 sm:p-6 h-full flex flex-col">
       <div className="panel-header mb-4">
         <div className="panel-icon bg-violet-600/20 text-violet-400">
           <span className="text-lg">📄</span>

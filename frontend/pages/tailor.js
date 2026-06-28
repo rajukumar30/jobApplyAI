@@ -14,8 +14,6 @@ const TAILOR_STEPS = [
   { id: 'analyze_job', label: '🔍 Analyzing job requirements', status: 'idle', detail: null },
   { id: 'match_resume', label: '🏆 Scoring your resumes (ATS)', status: 'idle', detail: null },
   { id: 'tailor', label: '✨ Tailoring best resume', status: 'idle', detail: null },
-  { id: 'compile_pdf', label: '📄 Generating tailored PDF', status: 'idle', detail: null },
-  { id: 'upload', label: '☁️ Saving tailored resume', status: 'idle', detail: null },
 ];
 
 export default function TailorPage() {
@@ -77,6 +75,7 @@ export default function TailorPage() {
       const matchRes = await axios.post(`${API}/job/match-resumes`, {
         jobData: jobResult.jobData,
         forceTailor: true,
+        deferPdfGeneration: true,
       }, { signal: controller.signal, timeout: 300000 });
 
       const data = matchRes.data;
@@ -88,22 +87,12 @@ export default function TailorPage() {
       });
 
       if (!data.tailoringPerformed) {
-        ['tailor', 'compile_pdf', 'upload'].forEach(id =>
-          setStep(id, { status: 'error', detail: 'Tailoring did not complete. Try again.' })
-        );
+        setStep('tailor', { status: 'error', detail: 'Tailoring did not complete. Try again.' });
         showToast('error', 'Tailoring did not complete. Please try again.');
         return;
       }
 
-      setStep('tailor', { status: 'done', detail: 'Resume rewritten for this job.' });
-      setStep('compile_pdf', {
-        status: 'done',
-        detail: data.bestResume?.originalName || 'PDF ready',
-      });
-      setStep('upload', {
-        status: data.supabasePublicUrl ? 'done' : 'warn',
-        detail: data.supabasePublicUrl ? 'Saved to cloud storage.' : 'Saved locally.',
-      });
+      setStep('tailor', { status: 'done', detail: 'Content optimized — pick a format on the next page.' });
 
       // Store in AppContext (memory + sessionStorage) before navigating — same
       // pattern as the apply → analysis flow so results are always available.
@@ -147,7 +136,7 @@ export default function TailorPage() {
     <PageLayout title="Tailor Resume from JD" showBack backHref="/" backLabel="Dashboard">
       <div className="page-hero">
         <h1>Tailor Resume from Job Description</h1>
-        <p>Upload or paste a job description. AI scores all your resumes and creates an ATS-optimized version you can download.</p>
+        <p>Upload or paste a job description. AI scores your resumes, tailors content, then you pick a format and generate your PDF.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
@@ -155,8 +144,8 @@ export default function TailorPage() {
         <ResumeUploadPanel onUploaded={handleResumeUploaded} />
       </div>
 
-      <div className="glass-card p-5">
-        <div className="flex items-center justify-between mb-3">
+      <div className="glass-card p-4 sm:p-5">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
           <h3 className="text-sm font-semibold text-white">Your Resumes</h3>
           <span className="badge-blue text-xs">{originalResumes.length} available</span>
         </div>

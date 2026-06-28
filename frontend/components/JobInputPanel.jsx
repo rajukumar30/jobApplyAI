@@ -80,7 +80,7 @@ export default function JobInputPanel({ onJobAnalyzed, onJobAnalysisStarted, onL
   };
 
   return (
-    <div className="glass-card p-6 slide-up">
+    <div className="glass-card p-4 sm:p-6 slide-up">
       {/* Header */}
       <div className="panel-header">
         <div className="panel-icon bg-brand-600/20 text-brand-400">
@@ -95,7 +95,7 @@ export default function JobInputPanel({ onJobAnalyzed, onJobAnalysisStarted, onL
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 mb-5 bg-navy-900/60 p-1 rounded-xl w-fit">
+      <div className="tabs-scroll mb-5 bg-navy-900/60 p-1 rounded-xl w-full sm:w-fit">
         {[
           { id: 'text', label: 'Paste Description' },
           { id: 'url', label: 'LinkedIn URL' },
@@ -103,7 +103,7 @@ export default function JobInputPanel({ onJobAnalyzed, onJobAnalysisStarted, onL
           <button
             key={t.id}
             onClick={() => { setTab(t.id); setError(''); }}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+            className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap shrink-0 ${
               tab === t.id
                 ? 'bg-brand-600 text-white shadow-sm'
                 : 'text-slate-400 hover:text-slate-200'

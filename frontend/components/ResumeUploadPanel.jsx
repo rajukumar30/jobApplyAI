@@ -74,7 +74,7 @@ export default function ResumeUploadPanel({ onUploaded }) {
   };
 
   return (
-    <div className="glass-card p-6 slide-up">
+    <div className="glass-card p-4 sm:p-6 slide-up">
       {/* Header */}
       <div className="panel-header">
         <div className="panel-icon bg-violet-600/20 text-violet-400">

@@ -5,6 +5,10 @@ const linkedinService = require('../services/linkedin/linkedinService');
 const applicationStore = require('../services/applicationStore');
 const resumeController = require('./resumeController');
 const { generateTailoredResumePdf } = require('../services/pdf/latexService');
+const { listResumeFormats } = require('../services/pdf/formatRegistry');
+const { collectJdKeywords } = require('../services/pdf/keywordHighlighter');
+const { evaluateCollegeTier } = require('../services/pdf/collegeTierService');
+const { getPrimaryCollege } = require('../services/pdf/educationUtils');
 const { supabase } = require('../services/supabase/supabaseService');
 const fakeJobDetectionService = require('../services/fakeJobDetectionService');
 const { extractJdText } = require('../services/jd/jdParserService');
@@ -154,9 +158,117 @@ async function analyzeJob(req, res) {
   }
 }
 
+// ── Session-only tailored PDF metadata (file already in generated-resumes/) ───
+function saveTailoredResumeForSession(userId, pdfBuffer, filenameBase, jobData, tailoredData) {
+  const filename = `${filenameBase}.pdf`;
+
+  emitProgress(userId, 'upload', 'done', 'PDF ready for email (session only, not saved to library).');
+
+  const tailoredResume = {
+    userId,
+    id: `session_${Date.now()}`,
+    filename,
+    originalName: `Tailored Resume for ${jobData?.jobTitle || 'Role'}.pdf`,
+    fileSize: pdfBuffer.length,
+    uploadedAt: new Date().toISOString(),
+    parsedData: tailoredData,
+    firebaseStoragePath: null,
+    isTailored: true,
+    sessionOnly: true,
+  };
+
+  return { tailoredResume, supabasePublicUrl: null };
+}
+
+// ── Legacy: upload tailored PDF to Supabase + library (unused by apply/tailor flows)
+async function saveTailoredResumeRecord(userId, pdfBuffer, filenameBase, jobData, tailoredData) {
+  let firebaseStoragePath = null;
+  let supabasePublicUrl = null;
+
+  if (supabase) {
+    emitProgress(userId, 'upload', 'running', 'Uploading tailored PDF to cloud storage...');
+    const destFileName = `${userId}/${filenameBase}.pdf`;
+    console.log(`☁️ Uploading tailored resume to Supabase Storage: tailored-resumes/${destFileName}...`);
+
+    const { error: bucketError } = await supabase.storage.createBucket('tailored-resumes', {
+      public: false,
+      fileSizeLimit: 10485760,
+    });
+    if (bucketError && !bucketError.message.includes('already exists')) {
+      console.error('❌ Failed to create tailored-resumes bucket:', bucketError.message);
+    }
+
+    const { data, error } = await supabase.storage
+      .from('tailored-resumes')
+      .upload(destFileName, pdfBuffer, {
+        contentType: 'application/pdf',
+        upsert: true,
+      });
+
+    if (error) {
+      console.error('❌ Failed to upload tailored resume to Supabase:', error.message);
+      emitProgress(userId, 'upload', 'warn', 'Cloud upload failed - using local fallback.');
+    } else {
+      firebaseStoragePath = data.path;
+      console.log('✅ Tailored resume uploaded successfully.');
+      emitProgress(userId, 'upload', 'done', 'Tailored resume uploaded to cloud.');
+
+      const { data: signedData, error: signedError } = await supabase.storage
+        .from('tailored-resumes')
+        .createSignedUrl(destFileName, 3600);
+
+      if (signedError) {
+        console.warn('⚠️ Could not generate signed URL:', signedError.message);
+      } else {
+        supabasePublicUrl = signedData.signedUrl;
+      }
+    }
+  }
+
+  const tailoredResume = {
+    userId,
+    id: `tailored_${Date.now()}`,
+    filename: `${filenameBase}.pdf`,
+    originalName: `Tailored Resume for ${jobData?.jobTitle || 'Role'}.pdf`,
+    fileSize: pdfBuffer.length,
+    uploadedAt: new Date().toISOString(),
+    parsedData: tailoredData,
+    firebaseStoragePath,
+    isTailored: true,
+  };
+
+  let dbSaved = false;
+  if (supabase) {
+    const { id: _localId, ...insertPayload } = tailoredResume;
+    const { data, error } = await supabase.from('resumes').insert([insertPayload]).select();
+
+    if (error) {
+      console.error('❌ Failed to save tailored resume metadata to Supabase DB:', error.message);
+    } else if (data && data.length > 0) {
+      tailoredResume.id = data[0].id;
+      console.log('✅ Tailored resume metadata saved to Supabase DB.');
+      dbSaved = true;
+    }
+  }
+
+  if (!dbSaved) {
+    console.log('⚠️ Saving tailored resume locally as fallback.');
+    try {
+      const localStore = await resumeController.readStore(userId);
+      localStore.push(tailoredResume);
+      const { writeUserJson } = require('../services/userStorage');
+      writeUserJson(userId, 'resumeStore.json', localStore);
+    } catch (localErr) {
+      console.error('❌ Failed to save to local store:', localErr.message);
+    }
+  }
+
+  return { tailoredResume, supabasePublicUrl };
+}
+
 // ── Match Resumes ────────────────────────────────────────────────────────────
 async function matchResumes(req, res) {
-  const { jobData, forceTailor } = req.body;
+  const { jobData, forceTailor, deferPdfGeneration } = req.body;
 
   if (!jobData) {
     return res.status(400).json({ error: 'Job data is required for resume matching.' });
@@ -206,6 +318,10 @@ async function matchResumes(req, res) {
     let latexCode = null;
     let supabasePublicUrl = null;  // signed URL for the tailored PDF (set when Supabase upload succeeds)
     let tailoringResult = null;    // full result including atsReport
+    let rewrittenContent = null;
+    let originalDataSnapshot = null;
+    let tailoredDataSnapshot = null;
+    let collegeTierInfo = null;
 
     // ── AI Resume Tailoring (if score < 80, or forceTailor for dedicated tailor flow) ──
     emitProgress(req.user.uid, 'score', 'running', 'Evaluating resume match quality...');
@@ -238,114 +354,69 @@ async function matchResumes(req, res) {
 
         const injected = (atsReport.missingKeywordsInjected || []).length;
         emitProgress(req.user.uid, 'tailor', 'done', `Stage 2: ATS optimization complete - ${injected} missing keywords injected.`);
-        emitProgress(req.user.uid, 'compile_pdf', 'running', 'Compiling ATS-optimized resume to PDF...');
+
         const originalData = bestResume.parsedData || {};
         if (bestResume.rawText) resumeController.backfillEducationYears(originalData, bestResume.rawText);
-        const safeJobTitle = (jobData.jobTitle || 'Role').replace(/[^a-zA-Z0-9]/g, '_');
-        const filenameBase = `tailored_resume_${safeJobTitle}_${Date.now()}`;
-        const pdfBuffer = await generateTailoredResumePdf(
-          req.user.uid,
-          originalData,
-          rewrittenSections,
-          filenameBase
-        );
-        emitProgress(req.user.uid, 'compile_pdf', 'done', 'PDF compiled successfully.');
+        rewrittenContent = rewrittenSections;
+        originalDataSnapshot = originalData;
+        tailoredDataSnapshot = tailoredData;
 
-        // 3. Upload tailored PDF to Supabase Storage
-        let firebaseStoragePath = null;
-        if (supabase) {
-          emitProgress(req.user.uid, 'upload', 'running', 'Uploading tailored PDF to cloud storage...');
-          const destFileName = `${req.user.uid}/${filenameBase}.pdf`;
-          console.log(`☁️ Uploading tailored resume to Supabase Storage: tailored-resumes/${destFileName}...`);
+        const primaryCollege = getPrimaryCollege(originalData.education);
+        if (primaryCollege) {
+          emitProgress(req.user.uid, 'tailor', 'running', 'Evaluating college tier for education placement...');
+          collegeTierInfo = await evaluateCollegeTier(
+            primaryCollege.institution,
+            primaryCollege.degree,
+            jobData,
+            { signal }
+          );
+          console.log(`🎓 College tier: ${collegeTierInfo.tierLabel} — education ${collegeTierInfo.placeEducationAtTop ? 'top' : 'bottom'}`);
+        }
 
-          // Ensure the tailored-resumes bucket exists
-          const { error: bucketError } = await supabase.storage.createBucket('tailored-resumes', {
-            public: false,
-            fileSizeLimit: 10485760
-          });
-          if (bucketError && !bucketError.message.includes('already exists')) {
-            console.error('❌ Failed to create tailored-resumes bucket:', bucketError.message);
-          }
-
-          const { data, error } = await supabase.storage
-            .from('tailored-resumes')
-            .upload(destFileName, pdfBuffer, {
-              contentType: 'application/pdf',
-              upsert: true
+        if (deferPdfGeneration) {
+          emitProgress(req.user.uid, 'compile_pdf', 'done', 'Content ready — choose a format on the results page.');
+          emitProgress(req.user.uid, 'upload', 'done', 'PDF generation deferred until you pick a format.');
+          if (!signal.aborted) {
+            console.log('🤖 Scoring tailored resume (format selection)...');
+            tailoredMatchPercentage = await geminiService.scoreTailoredResume(jobData, tailoredData, {
+              signal,
+              baselineScore: bestScore,
+              atsReport: tailoringResult?.atsReport,
             });
-
-          if (error) {
-            console.error('❌ Failed to upload tailored resume to Supabase:', error.message);
-            emitProgress(req.user.uid, 'upload', 'warn', 'Cloud upload failed - using local fallback.');
-          } else {
-            firebaseStoragePath = data.path;
-            console.log(`✅ Tailored resume uploaded successfully.`);
-            emitProgress(req.user.uid, 'upload', 'done', 'Tailored resume uploaded to cloud.');
-
-            // Generate a signed URL (valid for 1 hour) so caller can access the PDF
-            const { data: signedData, error: signedError } = await supabase.storage
-              .from('tailored-resumes')
-              .createSignedUrl(destFileName, 3600);
-
-            if (signedError) {
-              console.warn('⚠️ Could not generate signed URL:', signedError.message);
-            } else {
-              supabasePublicUrl = signedData.signedUrl;
-              console.log(`🔗 Supabase signed URL generated (expires in 1 hour)`);
-            }
+            console.log(`📈 Tailored ATS match: ${tailoredMatchPercentage}%`);
           }
-        }
+        } else {
+          emitProgress(req.user.uid, 'compile_pdf', 'running', 'Compiling ATS-optimized resume to PDF...');
+          const safeJobTitle = (jobData.jobTitle || 'Role').replace(/[^a-zA-Z0-9]/g, '_');
+          const filenameBase = `tailored_resume_${safeJobTitle}_${Date.now()}`;
+          const highlightKeywords = collectJdKeywords(jobData);
+          const pdfBuffer = await generateTailoredResumePdf(
+            req.user.uid,
+            originalData,
+            rewrittenSections,
+            filenameBase,
+            { formatId: 'ats-classic', highlightKeywords, collegeTierInfo }
+          );
+          emitProgress(req.user.uid, 'compile_pdf', 'done', 'PDF compiled successfully.');
 
+          const saved = saveTailoredResumeForSession(
+            req.user.uid,
+            pdfBuffer,
+            filenameBase,
+            jobData,
+            tailoredData
+          );
+          tailoredResume = saved.tailoredResume;
+          supabasePublicUrl = saved.supabasePublicUrl;
 
-        // 4. Re-evaluate the new score
-        console.log('🤖 Re-evaluating tailored resume score...');
-        tailoredMatchPercentage = await geminiService.scoreTailoredResume(jobData, tailoredData, { signal });
-        console.log(`📈 New score after tailoring: ${tailoredMatchPercentage}%`);
-        emitProgress(req.user.uid, 'email', 'done', `Ready. New match score: ${tailoredMatchPercentage}%`);
-
-        // 5. Construct tailored resume object
-        tailoredResume = {
-          userId: req.user.uid,
-          id: `tailored_${Date.now()}`,
-          filename: `${filenameBase}.pdf`,
-          originalName: `Tailored Resume for ${jobData.jobTitle}.pdf`,
-          fileSize: pdfBuffer.length,
-          uploadedAt: new Date().toISOString(),
-          parsedData: tailoredData,
-          firebaseStoragePath, // Still using this key for compatibility with emailController
-          isTailored: true
-        };
-
-        // 6. Save tailored resume metadata to Supabase DB so it appears in the UI
-        let dbSaved = false;
-        if (supabase) {
-          // Omit `id` entirely (our local id is a non-UUID string) so Postgres'
-          // gen_random_uuid() default fills the uuid column.
-          const { id: _localId, ...insertPayload } = tailoredResume;
-          const { data, error } = await supabase.from('resumes').insert([insertPayload]).select();
-
-          if (error) {
-            console.error('❌ Failed to save tailored resume metadata to Supabase DB:', error.message);
-            console.error('Hint: Make sure the "resumes" table has an "isTailored" boolean column!');
-          } else if (data && data.length > 0) {
-            tailoredResume.id = data[0].id;
-            console.log('✅ Tailored resume metadata saved to Supabase DB.');
-            dbSaved = true;
-          }
-        }
-
-        // Fallback: If DB save failed or Supabase not configured, save locally
-        if (!dbSaved) {
-          console.log('⚠️ Saving tailored resume locally as fallback.');
-          try {
-            const localStore = await resumeController.readStore(req.user.uid);
-            localStore.push(tailoredResume);
-            const { writeUserJson } = require('../services/userStorage');
-            writeUserJson(req.user.uid, 'resumeStore.json', localStore);
-            console.log('✅ Tailored resume metadata saved to local fallback store.');
-          } catch (localErr) {
-            console.error('❌ Failed to save to local store:', localErr.message);
-          }
+          console.log('🤖 Re-evaluating tailored resume score...');
+          tailoredMatchPercentage = await geminiService.scoreTailoredResume(jobData, tailoredData, {
+            signal,
+            baselineScore: bestScore,
+            atsReport: tailoringResult?.atsReport,
+          });
+          console.log(`📈 New score after tailoring: ${tailoredMatchPercentage}%`);
+          emitProgress(req.user.uid, 'email', 'done', `Ready. New match score: ${tailoredMatchPercentage}%`);
         }
 
       } catch (err) {
@@ -379,7 +450,12 @@ async function matchResumes(req, res) {
       latexCode,
       originalResume: bestResume,             // reference to the original
       supabasePublicUrl: supabasePublicUrl || null,  // signed URL (1-hour expiry) for the tailored PDF
-      atsReport: tailoringPerformed ? (tailoringResult?.atsReport || null) : null  // ATS keyword injection report
+      atsReport: tailoringPerformed ? (tailoringResult?.atsReport || null) : null,
+      pdfDeferred: !!(deferPdfGeneration && tailoringPerformed),
+      rewrittenContent: tailoringPerformed ? rewrittenContent : null,
+      originalData: tailoringPerformed ? originalDataSnapshot : null,
+      tailoredData: tailoringPerformed ? tailoredDataSnapshot : null,
+      collegeTierInfo: tailoringPerformed ? collegeTierInfo : null,
     });
   } catch (err) {
     if (isCancelled(signal, err)) {
@@ -435,4 +511,101 @@ function emitProgress(userId, step, status, detail = null) {
   }
 }
 
-module.exports = { analyzeJob, parseJd, matchResumes, progressStream, emitProgress };
+// ── Resume format list ───────────────────────────────────────────────────────
+function getResumeFormats(req, res) {
+  return res.json({ success: true, formats: listResumeFormats() });
+}
+
+// ── Preview resume in a chosen format (no AI, pdflatex only) ─────────────────
+async function previewResumeFormat(req, res) {
+  const { formatId, originalData, rewrittenSections, highlightKeywords, jobData, collegeTierInfo } = req.body;
+
+  if (!formatId || !originalData || !rewrittenSections) {
+    return res.status(400).json({ error: 'formatId, originalData, and rewrittenSections are required.' });
+  }
+
+  try {
+    const keywords = highlightKeywords?.length
+      ? highlightKeywords
+      : collectJdKeywords(jobData);
+    const filenameBase = `preview_${formatId}_${Date.now()}`;
+    const pdfBuffer = await generateTailoredResumePdf(
+      req.user.uid,
+      originalData,
+      rewrittenSections,
+      filenameBase,
+      { formatId, highlightKeywords: keywords, collegeTierInfo }
+    );
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename="${filenameBase}.pdf"`);
+    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('X-Format-Id', formatId);
+    if (req.body.tailoredMatchPercentage != null) {
+      res.setHeader('X-Tailored-Match-Percentage', String(req.body.tailoredMatchPercentage));
+    }
+    return res.send(pdfBuffer);
+  } catch (err) {
+    console.error('❌ Preview PDF error:', err.message);
+    return res.status(500).json({ error: `Failed to generate preview: ${err.message}` });
+  }
+}
+
+// ── Generate final tailored PDF after user picks a format (returns PDF only — not saved) ──
+async function generateTailoredPdf(req, res) {
+  const { formatId, originalData, rewrittenSections, jobData, tailoredData, jobTitle, collegeTierInfo, tailoredMatchPercentage: clientScore } = req.body;
+
+  if (!formatId || !originalData || !rewrittenSections) {
+    return res.status(400).json({ error: 'formatId, originalData, and rewrittenSections are required.' });
+  }
+
+  const signal = abortSignalForRequest(req, res);
+
+  try {
+    const safeJobTitle = (jobTitle || jobData?.jobTitle || 'Role').replace(/[^a-zA-Z0-9]/g, '_');
+    const filenameBase = `tailored_resume_${safeJobTitle}_${Date.now()}`;
+    const highlightKeywords = collectJdKeywords(jobData);
+
+    emitProgress(req.user.uid, 'compile_pdf', 'running', `Compiling resume (${formatId})...`);
+    const pdfBuffer = await generateTailoredResumePdf(
+      req.user.uid,
+      originalData,
+      rewrittenSections,
+      filenameBase,
+      { formatId, highlightKeywords, collegeTierInfo }
+    );
+    emitProgress(req.user.uid, 'compile_pdf', 'done', 'PDF compiled successfully.');
+
+    let tailoredMatchPercentage = clientScore ?? null;
+    if (tailoredMatchPercentage == null && jobData && tailoredData && !signal.aborted) {
+      tailoredMatchPercentage = await geminiService.scoreTailoredResume(jobData, tailoredData, {
+        signal,
+        baselineScore: req.body.originalMatchPercentage,
+      });
+    }
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${filenameBase}.pdf"`);
+    res.setHeader('Cache-Control', 'no-store');
+    if (tailoredMatchPercentage != null) {
+      res.setHeader('X-Tailored-Match-Percentage', String(tailoredMatchPercentage));
+    }
+    res.setHeader('X-Format-Id', formatId);
+    return res.send(pdfBuffer);
+  } catch (err) {
+    if (isCancelled(signal, err)) return;
+    console.error('❌ Generate tailored PDF error:', err.message);
+    return res.status(500).json({ error: `Failed to generate PDF: ${err.message}` });
+  }
+}
+
+module.exports = {
+  analyzeJob,
+  parseJd,
+  matchResumes,
+  progressStream,
+  emitProgress,
+  getResumeFormats,
+  previewResumeFormat,
+  generateTailoredPdf,
+};

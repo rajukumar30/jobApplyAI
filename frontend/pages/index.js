@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState, useCallback } from 'react';
 import { useApp } from '../lib/AppContext';
+import SiteHeader from '../components/layout/SiteHeader';
+import SiteFooter from '../components/layout/SiteFooter';
 
 // ── Auth gate ──────────────────────────────────────────────────────────────
 function LoginScreen({ onLogin }) {
@@ -14,8 +16,8 @@ function LoginScreen({ onLogin }) {
         </div>
         <div>
           <h1 className="text-3xl font-bold text-white mb-2">Welcome to JobApply AI</h1>
-          <p className="text-slate-400 text-sm leading-relaxed">
-            Automate your job applications with AI-powered resume matching,<br />
+          <p className="text-slate-400 text-sm leading-relaxed px-2">
+            Automate your job applications with AI-powered resume matching,
             tailoring, and personalized email generation.
           </p>
         </div>
@@ -94,7 +96,7 @@ function isExtensionInstalled() {
 // ── Dashboard ──────────────────────────────────────────────────────────────
 export default function Dashboard() {
   const router = useRouter();
-  const { user, authLoading, handleLogin, handleLogout, gmailConnected, showToast } = useApp();
+  const { user, authLoading, handleLogin, showToast } = useApp();
   const [extChecking, setExtChecking] = useState(false);
 
   const handleCommingSoon = () => {
@@ -145,55 +147,13 @@ export default function Dashboard() {
         <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>" />
       </Head>
 
-      <div className="min-h-screen flex flex-col">
-        {/* Header */}
-        <header className="border-b border-white/5 bg-navy-800/60 backdrop-blur-sm sticky top-0 z-40">
-          <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-600 to-blue-800 flex items-center justify-center shadow-glow">
-                <span className="text-lg">🚀</span>
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gradient">JobApply AI</h1>
-                <p className="text-xs text-slate-500 hidden sm:block">Automated job applications, powered by Gemini</p>
-              </div>
-            </div>
+      <div className="min-h-screen flex flex-col overflow-x-hidden">
+        <SiteHeader showBack={false} />
 
-            <div className="flex items-center gap-4">
-              {gmailConnected ? (
-                <span className="badge-green flex items-center gap-1.5 text-xs">
-                  <span className="status-dot bg-emerald-400 animate-pulse" />
-                  <span className="hidden sm:inline">Gmail Ready</span>
-                </span>
-              ) : (
-                <span className="badge-red flex items-center gap-1.5 text-xs">
-                  <span className="status-dot bg-red-400" />
-                  <span className="hidden sm:inline">Gmail Not Connected</span>
-                </span>
-              )}
-              {user && (
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    {user.photoURL && (
-                      <img src={user.photoURL} alt={user.displayName} className="w-7 h-7 rounded-full border border-white/10" />
-                    )}
-                    <span className="text-xs text-slate-400 hidden sm:inline">{user.displayName}</span>
-                  </div>
-                  <button onClick={handleLogout} className="text-xs text-slate-400 hover:text-white transition-colors">
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </header>
-
-        {/* Main content */}
-        <main className="flex-1 max-w-6xl w-full mx-auto px-6 py-10">
-          {/* Hero */}
-          <div className="mb-10 fade-in">
+        <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+          <div className="mb-8 sm:mb-10 fade-in">
             <p className="text-xs font-semibold uppercase tracking-widest text-brand-400 mb-2">Dashboard</p>
-            <h2 className="text-3xl font-bold text-white">What would you like to do?</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white">What would you like to do?</h2>
             <p className="text-slate-400 text-sm mt-1">Select an action to get started with your job application workflow.</p>
           </div>
 
@@ -281,9 +241,7 @@ export default function Dashboard() {
           </div>
         </main>
 
-        <footer className="border-t border-white/5 py-4 text-center">
-          <p className="text-xs text-slate-600">JobApply AI · Powered by Google Gemini · Gmail API</p>
-        </footer>
+        <SiteFooter />
       </div>
     </>
   );

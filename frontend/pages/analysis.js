@@ -1,35 +1,9 @@
 import { useRouter } from 'next/router';
 import { useApp } from '../lib/AppContext';
 import PageLayout from '../components/layout/PageLayout';
+import StepFlow from '../components/layout/StepFlow';
 import JobAnalysisPanel from '../components/JobAnalysisPanel';
 import BestResumePanel from '../components/BestResumePanel';
-
-// Step flow indicator (shared pattern)
-function StepFlow({ current }) {
-  const steps = ['Apply', 'Analysis', 'Email'];
-  return (
-    <div className="flex items-center gap-2 mb-8">
-      {steps.map((label, i) => {
-        const idx = i + 1;
-        const isDone = idx < current;
-        const isActive = idx === current;
-        return (
-          <div key={label} className="flex items-center gap-2 flex-1 last:flex-none">
-            <div className={`flex items-center gap-2 ${isActive ? 'text-white' : isDone ? 'text-emerald-400' : 'text-slate-500'}`}>
-              <div className={isActive ? 'step-dot-active' : isDone ? 'step-dot-done' : 'step-dot-idle'}>
-                {isDone ? '✓' : idx}
-              </div>
-              <span className="text-xs font-medium hidden sm:inline">{label}</span>
-            </div>
-            {i < steps.length - 1 && (
-              <div className={`flex-1 h-px ${isDone ? 'bg-gradient-to-r from-emerald-500/40 to-brand-500/40' : 'bg-white/5'}`} />
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
 
 // Score bar
 function ScoreBar({ score }) {
@@ -162,17 +136,17 @@ export default function AnalysisPage() {
       </div>
 
       {/* Bottom action bar */}
-      <div className="flex items-center justify-between pt-6 border-t border-white/5">
+      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-6 border-t border-white/5">
         <button
           onClick={() => router.push('/apply')}
-          className="btn-secondary"
+          className="btn-secondary justify-center sm:justify-start"
         >
           ← Back to Apply
         </button>
         <button
           onClick={() => router.push('/email')}
           disabled={!matchResult && !jobResult}
-          className="btn-primary px-8"
+          className="btn-primary px-6 sm:px-8 justify-center"
           id="proceed-email-btn"
         >
           Proceed to Send Email →

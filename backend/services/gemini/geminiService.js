@@ -3,6 +3,7 @@ const { GoogleAuth }          = require('google-auth-library');
 const { GoogleGenAI }         = require('@google/genai');
 const path = require('path');
 const fs   = require('fs');
+const { mergeSkillCategories } = require('../pdf/skillsUtils');
 
 // ── Auth Mode Detection ─────────────────────────────────────────────────────
 // ── Auth Mode Detection ─────────────────────────────────────────────────────
@@ -315,7 +316,9 @@ CRITICAL RULES:
 - For linkedIn, github and website: if the visible text only shows a label (e.g. "GitHub", "LinkedIn", "Portfolio") use the matching URL from the DETECTED HYPERLINKS list below
 - For experience startDate/endDate, copy the dates EXACTLY as written in the resume (e.g. "July 2025", "Present"). Do NOT invent or recompute them
 - For education startYear/endYear/graduationYear, copy dates EXACTLY as written (e.g. "2021 – 2025", "May 2020"). If a range like "2021 – 2025" appears, put the full range in yearRange AND set startYear/endYear separately
-- Extract ALL skills, tools, technologies mentioned anywhere in the resume
+- Extract ALL skills, tools, technologies, and domain competencies mentioned anywhere in the resume
+- If the resume groups skills under section headings, populate skillCategories using those EXACT heading names from the resume (any industry — e.g. "Languages" for tech, "Marketing" / "Clinical Skills" / "Design Tools" for other fields). Do NOT invent tech-only headings for non-tech resumes
+- If skills are a flat list with no headings, use a single key "Skills" in skillCategories OR split into logical groups that match how the resume is written
 - For experience, extract EVERY job with full details including achievements/metrics
 - For education, include ALL degrees, certifications, courses
 - For projects, include ALL projects with technologies used
@@ -333,7 +336,11 @@ Return this EXACT JSON structure with real extracted values:
   "idealRole": "the single most fitting job title based on their FULL profile (e.g. Senior Data Analyst, Product Manager, Software Engineer)",
   "yearsOfExperience": "total years of professional experience as a number or null",
   "summary": "2-3 sentence professional summary capturing candidate's key strengths, domain, and value proposition",
-  "skills": ["every hard skill mentioned â€” programming languages, frameworks, methodologies, domain skills"],
+  "skills": ["every hard skill, tool, methodology, and domain competency mentioned"],
+  "skillCategories": {
+    "<use EXACT section heading from resume>": ["skills listed under that heading"],
+    "<another heading only if present on resume>": ["..."]
+  },
   "tools": ["every software tool, platform, technology mentioned â€” SQL, Tableau, Excel, JIRA, Salesforce, etc."],
   "certifications": ["certification name - issuer - year if mentioned"],
   "languages": ["spoken/written languages if mentioned"],
@@ -449,53 +456,16 @@ ${description}`;
   }
 }
 
-// â”€â”€ Match Resumes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-async function matchResumes(jobData, resumes, options = {}) {
-  if (!resumes || resumes.length === 0) throw new Error('No resumes to match');
+// ── Shared ATS scoring (same rubric for match + post-tailor) ─────────────────
+const ATS_SCORING_RUBRIC = `SCORING CRITERIA (total 100 points):
+1. Skills match (40 pts): How many required skills does the candidate have? Partial credit for related skills.
+2. Experience relevance (30 pts): Is their experience in the same domain/role type? Do their achievements align?
+3. Tools & technologies (15 pts): Do they use the exact tools mentioned in the job?
+4. Education & qualifications (10 pts): Do they meet the degree/certification requirements?
+5. Seniority fit (5 pts): Does their experience level match what the role needs?`;
 
-  if (resumes.length === 1 && process.env.SKIP_SINGLE_RESUME_SCORING === 'true') {
-    return {
-      rankings: [{ index: 0, score: 100, reason: 'Only one resume available â€” automatically selected.', strengths: [], gaps: [] }],
-      bestMatchIndex: 0,
-      bestMatchReason: 'Only one resume available â€” automatically selected.',
-    };
-  }
-
-  // Build detailed resume summaries â€” include ALL parsed data for accurate matching
-  const resumeSummaries = resumes.map((r, i) => {
-    const p = r.parsedData || {};
-    return {
-      index: i,
-      filename: r.originalName || r.filename,
-      name: p.name || `Resume ${i + 1}`,
-      idealRole: p.idealRole || null,
-      yearsOfExperience: p.yearsOfExperience || null,
-      skills: p.skills || [],
-      tools: p.tools || [],
-      certifications: p.certifications || [],
-      experience: (p.experience || []).map(e => ({
-        role: e.role,
-        company: e.company,
-        duration: e.duration,
-        achievements: e.achievements || [],
-        technologiesUsed: e.technologiesUsed || [],
-      })),
-      education: (p.education || []).map(e => ({
-        institution: e.institution,
-        degree: e.degree,
-        graduationYear: e.graduationYear,
-      })),
-      projects: (p.projects || []).map(proj => ({
-        name: proj.name,
-        description: proj.description,
-        impact: proj.impact,
-        technologies: proj.technologies || [],
-      })),
-      summary: p.summary || '',
-    };
-  });
-
-  const jobSummary = {
+function buildJobSummary(jobData) {
+  return {
     title: jobData.jobTitle,
     company: jobData.company,
     experienceRequired: jobData.experienceYearsRequired,
@@ -508,15 +478,122 @@ async function matchResumes(jobData, resumes, options = {}) {
     industryDomain: jobData.industryDomain || null,
     workMode: jobData.workMode || null,
   };
+}
+
+function buildResumeSummary(parsedData, index = 0) {
+  const p = parsedData || {};
+  return {
+    index,
+    name: p.name || `Resume ${index + 1}`,
+    idealRole: p.idealRole || null,
+    yearsOfExperience: p.yearsOfExperience || null,
+    skills: p.skills || [],
+    skillCategories: p.skillCategories || null,
+    tools: p.tools || [],
+    certifications: p.certifications || [],
+    experience: (p.experience || []).map((e) => ({
+      role: e.role,
+      company: e.company,
+      duration: e.duration,
+      achievements: e.achievements || [],
+      technologiesUsed: e.technologiesUsed || [],
+    })),
+    education: (p.education || []).map((e) => ({
+      institution: e.institution,
+      degree: e.degree,
+      graduationYear: e.graduationYear || e.endYear,
+    })),
+    projects: (p.projects || []).map((proj) => ({
+      name: proj.name,
+      description: proj.description,
+      impact: proj.impact,
+      technologies: proj.technologies || [],
+    })),
+    summary: p.summary || '',
+  };
+}
+
+async function scoreResumeAgainstJob(jobData, parsedData, options = {}) {
+  const jobSummary = buildJobSummary(jobData);
+  const resumeSummary = buildResumeSummary(parsedData);
+  const baselineScore = options.baselineScore;
+  const injected = options.injectedKeywords || [];
+  const isTailored = options.isTailored === true;
+
+  let contextNote = '';
+  if (isTailored) {
+    contextNote = `
+IMPORTANT — ATS-TAILORED RESUME:
+This resume was rewritten specifically for this job. Missing JD keywords were injected into summary, skills, experience bullets, and projects.
+${injected.length ? `Keywords added during tailoring: ${injected.join(', ')}` : ''}
+${baselineScore != null ? `The same candidate's original resume scored ${baselineScore}/100. This tailored version must score at least ${baselineScore} because it adds JD-aligned keywords while keeping truthful experience.` : ''}
+Score based on improved keyword alignment and relevance, not formatting.`;
+  }
+
+  const prompt = `You are a senior technical recruiter with 15 years of experience. Score how well this resume matches the job requirements.
+
+${ATS_SCORING_RUBRIC}
+
+CRITICAL RULES:
+- Base the score on concrete evidence in the resume data
+- Use the same strictness you would for any candidate resume
+- Return ONLY valid JSON
+${contextNote}
+
+Job Requirements:
+${JSON.stringify(jobSummary, null, 2)}
+
+Resume:
+${JSON.stringify(resumeSummary, null, 2)}
+
+Return EXACTLY this JSON:
+{
+  "score": 87,
+  "reason": "Brief reason citing specific resume evidence"
+}`;
+
+  try {
+    const text = await generateAIResponse(prompt, options);
+    const result = extractJSON(text);
+    let score = Math.round(Number(result.score));
+    if (!Number.isFinite(score)) score = baselineScore ?? 0;
+    score = Math.max(0, Math.min(100, score));
+    if (isTailored && baselineScore != null) {
+      const floor = injected.length > 0 ? Math.min(100, baselineScore + 1) : baselineScore;
+      score = Math.max(floor, score);
+    }
+    return score;
+  } catch (err) {
+    if (isCancel(err)) throw err;
+    console.error('scoreResumeAgainstJob error:', err.message);
+    if (isTailored && baselineScore != null) return baselineScore;
+    return baselineScore ?? 90;
+  }
+}
+
+// ── Match Resumes ────────────────────────────────────────────────────────────
+async function matchResumes(jobData, resumes, options = {}) {
+  if (!resumes || resumes.length === 0) throw new Error('No resumes to match');
+
+  if (resumes.length === 1 && process.env.SKIP_SINGLE_RESUME_SCORING === 'true') {
+    return {
+      rankings: [{ index: 0, score: 100, reason: 'Only one resume available â€” automatically selected.', strengths: [], gaps: [] }],
+      bestMatchIndex: 0,
+      bestMatchReason: 'Only one resume available â€” automatically selected.',
+    };
+  }
+
+  // Build detailed resume summaries — include ALL parsed data for accurate matching
+  const resumeSummaries = resumes.map((r, i) => ({
+    ...buildResumeSummary(r.parsedData || {}, i),
+    filename: r.originalName || r.filename,
+  }));
+
+  const jobSummary = buildJobSummary(jobData);
 
   const prompt = `You are a senior technical recruiter with 15 years of experience. Analyze these resumes against the job requirements and rank them by fit.
 
-SCORING CRITERIA (total 100 points):
-1. Skills match (40 pts): How many required skills does the candidate have? Partial credit for related skills.
-2. Experience relevance (30 pts): Is their experience in the same domain/role type? Do their achievements align?
-3. Tools & technologies (15 pts): Do they use the exact tools mentioned in the job?
-4. Education & qualifications (10 pts): Do they meet the degree/certification requirements?
-5. Seniority fit (5 pts): Does their experience level match what the role needs?
+${ATS_SCORING_RUBRIC}
 
 CRITICAL RULES:
 - Base ALL scores on concrete evidence in the resume data
@@ -847,9 +924,14 @@ async function tailorResume(jobData, bestResume, options = {}) {
     existingBullets: p.achievements || (p.description ? [p.description] : [])
   }));
 
+  const skillCategoryNames = parsedData.skillCategories && Object.keys(parsedData.skillCategories).length
+    ? Object.keys(parsedData.skillCategories)
+    : ['Skills'];
+
   const editableInput = {
     summary: parsedData.summary || '',
     skills:  parsedData.skills  || [],
+    skillCategories: parsedData.skillCategories || {},
     tools:   parsedData.tools   || [],
     primaryExperience: {
       role:            primaryExp.role    || '',
@@ -889,20 +971,28 @@ Your task is to rewrite the 4 editable resume sections below to:
   - Highlight candidate's strongest domain expertise + value proposition
   - End with a statement about career goal aligned to this specific role
 
-ðŸ”· SKILL CATEGORIES (3â€“5 named categories REQUIRED):
-  - ALL missing high-priority keywords MUST appear as skills: [${missingKeywords.join(', ')}]
+ðŸ”· SKILL CATEGORIES (use EXACTLY these category names — do NOT invent new names like "Software Engineering & Architecture"):
+  Category names (use verbatim): ${JSON.stringify(skillCategoryNames)}
+  - Populate ONLY these keys in skillCategories
+  - KEEP every skill from the original resume — add JD keywords but NEVER remove existing skills
+  - Each category must include at least as many items as the original (plus any new JD keywords)
+  - Each category: 4-10 concise skill/tool names (1-4 words each — NOT sentences)
+  - NEVER put soft skills, personality traits, or industry names in skillCategories (e.g. "Financial Services", "Willingness to Learn", "Communication Skills")
+  - Concepts category: ONLY technical concepts (OOP, DSA, Agile, distributed systems) — never soft skills or JD phrases
+  - ALL missing high-priority keywords MUST appear in the best-fitting category: [${missingKeywords.join(', ')}]
   - Boost underrepresented keywords: [${[...partialKeywords, ...keywordsToBoost].slice(0,8).join(', ')}]
   - Sort skills within each category by relevance to this job (most relevant first)
-  - Each category: 4â€“7 skills. Category names must be professional and ATS-neutral.
+  - Example (tech resume): "Languages": ["Java"], "Backend": ["Spring Boot"]
+  - Example (non-tech resume): "Marketing": ["SEO", "Google Ads"], "Analytics": ["Tableau", "Excel"]
 
-ðŸ”· EXPERIENCE BULLETS (EXACTLY 5â€“6 bullets REQUIRED):
+ðŸ”· EXPERIENCE BULLETS (EXACTLY 4â€“5 bullets REQUIRED for the primary role):
   - Each bullet: strong action verb + specific task + a source-supported outcome
   - Inject these JD keywords naturally: [${[...missingKeywords, ...keywordsToBoost].slice(0,8).join(', ')}]
   - ATS date format rule: Use MM/YYYY or "Month YYYY" format. If only year known, use YYYY only.
-  - Every bullet must mention at least one tool or skill from the job description
+  - Do NOT append employment dates in parentheses at the end of bullets
   - Reuse percentages or numeric scale only when present in the original content
 
-ðŸ”· PROJECT BULLETS (3â€“4 bullets per project REQUIRED):
+ðŸ”· PROJECT BULLETS (2â€“3 bullets per project REQUIRED):
   - Align each project with a specific job responsibility or required skill
   - Inject remaining missing keywords: [${missingKeywords.slice(4).join(', ')}]
   - Each bullet: action verb + technical detail + source-supported impact
@@ -937,10 +1027,7 @@ Return ONLY valid JSON with this EXACT structure (no extra keys, no extra text):
 {
   "summary": "3â€“4 sentence ATS-optimized professional summary including the job title \"${jobTitle}\"",
   "skillCategories": {
-    "Data Analysis & Statistics": ["Python", "SQL", "R", "Statistics", "Hypothesis Testing"],
-    "Visualization & Reporting": ["Tableau", "Power BI", "Matplotlib", "Seaborn"],
-    "Tools & Platforms": ["Excel", "Google Sheets", "Jupyter Notebook", "SPSS"],
-    "Methodologies": ["EDA", "Regression Analysis", "A/B Testing", "Machine Learning"]
+    ${skillCategoryNames.map((k) => `"${k}": ["skill1", "skill2"]`).join(',\n    ')}
   },
   "experienceBullets": [
     "Performed [task] using [tool/skill from JD], achieving [measurable outcome with number or %]",
@@ -977,6 +1064,11 @@ Return ONLY valid JSON with this EXACT structure (no extra keys, no extra text):
     const text = await generateAIResponse(prompt, options);
     const rewrittenContent = extractJSON(text);
 
+    rewrittenContent.skillCategories = mergeSkillCategories(
+      parsedData,
+      rewrittenContent.skillCategories || {}
+    );
+
     // â”€â”€ Build tailoredData (flat structure for email, scoring, UI) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const flatSkills = rewrittenContent.skillCategories
       ? Object.values(rewrittenContent.skillCategories).flat()
@@ -1011,6 +1103,7 @@ Return ONLY valid JSON with this EXACT structure (no extra keys, no extra text):
         idealRole:  jobData.jobTitle || parsedData.idealRole,
         summary:    rewrittenContent.summary || parsedData.summary,
         skills:     flatSkills,
+        skillCategories: rewrittenContent.skillCategories,
         experience: tailoredExperience,
         projects:   tailoredProjects,
       },
@@ -1058,38 +1151,14 @@ function _formatAtsDate(raw) {
 
 // â”€â”€ Score Tailored Resume â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function scoreTailoredResume(jobData, tailoredData, options = {}) {
-  const prompt = `You are a technical recruiter. You just received a tailored resume for a specific job. Rate how well this resume matches the job description on a scale of 0 to 100.
-
-Job Description:
-${JSON.stringify({
-  title: jobData.jobTitle,
-  skills: jobData.requiredSkills,
-  responsibilities: jobData.responsibilities
-}, null, 2)}
-
-Tailored Resume:
-${JSON.stringify({
-  summary: tailoredData.summary,
-  skills: tailoredData.skills,
-  experience: tailoredData.experience,
-  projects: tailoredData.projects
-}, null, 2)}
-
-Return EXACTLY this JSON:
-{
-  "score": 95,
-  "reason": "Brief reason why it received this score"
-}`;
-
-  try {
-    const text = await generateAIResponse(prompt, options);
-    const result = extractJSON(text);
-    return result.score;
-  } catch (err) {
-    if (isCancel(err)) throw err;
-    console.error('scoreTailoredResume error:', err.message);
-    return 90; // Fallback score if parsing fails
-  }
+  const atsReport = options.atsReport || {};
+  const injectedKeywords = atsReport.missingKeywordsInjected || atsReport.missingKeywords || [];
+  return scoreResumeAgainstJob(jobData, tailoredData, {
+    ...options,
+    isTailored: true,
+    baselineScore: options.baselineScore,
+    injectedKeywords,
+  });
 }
 
 // ── Extract LinkedIn Post Data for Fake Detection ────────────────────────────
@@ -1170,4 +1239,4 @@ Return ONLY the raw message text.`;
   }
 }
 
-module.exports = { parseResume, analyzeJob, matchResumes, generateEmail, tailorResume, extractAtsKeywords, scoreTailoredResume, extractLinkedInPostData, generateLinkedInDM, isCancel, CancelledError };
+module.exports = { parseResume, analyzeJob, matchResumes, generateEmail, tailorResume, extractAtsKeywords, scoreTailoredResume, scoreResumeAgainstJob, extractLinkedInPostData, generateLinkedInDM, isCancel, CancelledError, generateAIResponse };

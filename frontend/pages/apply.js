@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 
 import PageLayout from '../components/layout/PageLayout';
+import StepFlow from '../components/layout/StepFlow';
 import JobInputPanel from '../components/JobInputPanel';
 import ResumeUploadPanel from '../components/ResumeUploadPanel';
 import AnalysisProgressModal from '../components/AnalysisProgressModal';
@@ -10,33 +11,6 @@ import { useApp } from '../lib/AppContext';
 import { INITIAL_STEPS } from '../lib/AppContext';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-
-// Step flow indicator
-function StepFlow({ current }) {
-  const steps = ['Apply', 'Analysis', 'Email'];
-  return (
-    <div className="flex items-center gap-2 mb-8">
-      {steps.map((label, i) => {
-        const idx = i + 1;
-        const isDone = idx < current;
-        const isActive = idx === current;
-        return (
-          <div key={label} className="flex items-center gap-2 flex-1 last:flex-none">
-            <div className={`flex items-center gap-2 ${isActive ? 'text-white' : isDone ? 'text-emerald-400' : 'text-slate-500'}`}>
-              <div className={isActive ? 'step-dot-active' : isDone ? 'step-dot-done' : 'step-dot-idle'}>
-                {isDone ? '✓' : idx}
-              </div>
-              <span className="text-xs font-medium hidden sm:inline">{label}</span>
-            </div>
-            {i < steps.length - 1 && (
-              <div className={`flex-1 h-px ${isDone ? 'bg-gradient-to-r from-emerald-500/40 to-brand-500/40' : 'bg-white/5'}`} />
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
 
 export default function ApplyPage() {
   const router = useRouter();
@@ -144,10 +118,8 @@ export default function ApplyPage() {
             : 'PDF generated via fallback renderer.',
         });
         setStep('upload', {
-          status: matchRes.data.supabasePublicUrl ? 'done' : 'warn',
-          detail: matchRes.data.supabasePublicUrl
-            ? 'Uploaded to Supabase Storage — URL ready.'
-            : 'Saved locally (Supabase upload skipped).',
+          status: 'done',
+          detail: 'PDF ready for email (not saved to your resume library).',
         });
       } else {
         ['tailor', 'compile_pdf', 'upload'].forEach(id =>

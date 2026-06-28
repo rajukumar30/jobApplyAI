@@ -2,10 +2,8 @@ import { useRouter } from 'next/router';
 import PageLayout from '../components/layout/PageLayout';
 import JobAnalysisPanel from '../components/JobAnalysisPanel';
 import BestResumePanel from '../components/BestResumePanel';
-import { buildAuthenticatedUrl } from '../lib/authenticatedAxios';
+import ResumeFormatPicker from '../components/ResumeFormatPicker';
 import { useApp } from '../lib/AppContext';
-
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 function ScoreBar({ score, label }) {
   const color = score >= 80 ? 'bg-emerald-500' : score >= 60 ? 'bg-yellow-500' : 'bg-red-500';
@@ -24,9 +22,58 @@ function ScoreBar({ score, label }) {
   );
 }
 
+function AtsSummaryCard({ matchResult, atsReport, collegeTierInfo }) {
+  const originalScore = matchResult.originalMatchPercentage;
+  const injected = atsReport?.missingKeywordsInjected?.length ?? 0;
+  const stillMissing = (atsReport?.missingKeywords || []).slice(0, 5);
+
+  return (
+    <div className="glass-card p-4 sm:p-6 mb-6 border border-violet-500/30 bg-violet-900/10 slide-up">
+      <h3 className="text-lg font-semibold text-white mb-3">ATS optimization summary</h3>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-4">
+        <div>
+          <p className="text-xs text-slate-500 mb-1">Before tailoring</p>
+          <p className="text-2xl font-bold text-violet-300">{originalScore ?? '—'}%</p>
+        </div>
+        <div>
+          <p className="text-xs text-slate-500 mb-1">After tailoring</p>
+          <p className="text-2xl font-bold text-brand-300">{matchResult.tailoredMatchPercentage ?? '—'}%</p>
+        </div>
+        <div>
+          <p className="text-xs text-slate-500 mb-1">Keywords injected</p>
+          <p className="text-2xl font-bold text-emerald-400">{injected}</p>
+        </div>
+        <div>
+          <p className="text-xs text-slate-500 mb-1">College tier</p>
+          <p className="text-sm font-bold text-brand-300">{collegeTierInfo?.tierLabel || '—'}</p>
+          {collegeTierInfo?.reasoning && (
+            <p className="text-xs text-slate-500 mt-1">{collegeTierInfo.reasoning}</p>
+          )}
+        </div>
+        <div>
+          <p className="text-xs text-slate-500 mb-1">Education placement</p>
+          <p className="text-sm font-medium text-slate-300">
+            {collegeTierInfo?.placeEducationAtTop ? 'Top of resume' : 'Bottom of resume'}
+          </p>
+        </div>
+      </div>
+      {stillMissing.length > 0 && (
+        <div>
+          <p className="text-xs text-amber-400 font-medium mb-2">Top keywords still missing</p>
+          <div className="flex flex-wrap gap-1.5">
+            {stillMissing.map((kw, i) => (
+              <span key={i} className="badge bg-amber-900/30 text-amber-300 border border-amber-500/20 text-xs">{kw}</span>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function TailorResultsPage() {
   const router = useRouter();
-  const { user, authLoading, tailorJobResult, tailorMatchResult } = useApp();
+  const { user, authLoading, tailorJobResult, tailorMatchResult, showToast } = useApp();
 
   if (authLoading) {
     return (
@@ -54,42 +101,36 @@ export default function TailorResultsPage() {
   const rankings = matchResult.rankings || [];
   const bestIdx = matchResult.bestMatchIndex ?? 0;
   const tailored = matchResult.tailoringPerformed;
-  const tailoredResume = tailored ? matchResult.bestResume : null;
   const atsReport = matchResult.atsReport;
+  const pdfDeferred = matchResult.pdfDeferred;
+  const rewrittenContent = matchResult.rewrittenContent;
+  const originalData = matchResult.originalData;
+  const collegeTierInfo = matchResult.collegeTierInfo;
 
-  const handleDownloadTailored = async () => {
-    if (!tailoredResume?.filename) return;
-    const url = `${API}/resumes/download/${encodeURIComponent(tailoredResume.filename)}?isTailored=true`;
-    const authenticatedUrl = await buildAuthenticatedUrl(url);
-    window.open(authenticatedUrl, '_blank', 'noopener,noreferrer');
-  };
+  const tailoredMatchPercentage = matchResult.tailoredMatchPercentage;
 
   return (
     <PageLayout title="Tailor Results" showBack backHref="/tailor" backLabel="Tailor Again">
       <div className="page-hero">
         <h1>Tailored Resume Results</h1>
-        <p>ATS scores for every resume · AI-optimized version ready to download</p>
+        <p>ATS scores for every resume · pick a format and download your PDF</p>
       </div>
 
-      {tailored && tailoredResume && (
-        <div className="glass-card p-6 mb-6 border border-brand-500/30 bg-brand-900/10 slide-up">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-            <div className="flex-1">
-              <p className="text-brand-300 font-semibold text-lg mb-1">✨ Your tailored resume is ready</p>
-              <p className="text-slate-400 text-sm">
-                {tailoredResume.originalName || tailoredResume.parsedData?.name}
-                {matchResult.originalMatchPercentage != null && matchResult.tailoredMatchPercentage != null && (
-                  <span className="ml-2 text-brand-400">
-                    {matchResult.originalMatchPercentage}% → {matchResult.tailoredMatchPercentage}% ATS match
-                  </span>
-                )}
-              </p>
-            </div>
-            <button onClick={handleDownloadTailored} className="btn-primary px-8 py-3 flex-shrink-0">
-              ⬇ Download Tailored PDF
-            </button>
-          </div>
-        </div>
+      {tailored && atsReport && pdfDeferred && (
+        <AtsSummaryCard matchResult={matchResult} atsReport={atsReport} collegeTierInfo={collegeTierInfo} />
+      )}
+
+      {tailored && pdfDeferred && rewrittenContent && originalData && (
+        <ResumeFormatPicker
+          originalData={originalData}
+          rewrittenSections={rewrittenContent}
+          jobData={jobResult.jobData}
+          jobTitle={jobResult.jobData?.jobTitle}
+          collegeTierInfo={collegeTierInfo}
+          originalMatchPercentage={matchResult.originalMatchPercentage}
+          tailoredMatchPercentage={tailoredMatchPercentage}
+          showToast={showToast}
+        />
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
@@ -98,7 +139,7 @@ export default function TailorResultsPage() {
         </div>
 
         <div className="lg:col-span-2 space-y-4">
-          <div className="glass-card p-6 slide-up">
+          <div className="glass-card p-4 sm:p-6 slide-up">
             <div className="panel-header mb-4">
               <div className="panel-icon bg-violet-600/20 text-violet-400">
                 <span className="text-lg">📊</span>
@@ -113,10 +154,7 @@ export default function TailorResultsPage() {
               {rankings.map((ranking, i) => {
                 const resume = ranking.resume;
                 const isBest = ranking.index === bestIdx;
-                const displayScore = isBest && tailored && matchResult.tailoredMatchPercentage != null
-                  ? matchResult.tailoredMatchPercentage
-                  : ranking.score;
-                const showOptimized = isBest && tailored && matchResult.tailoredMatchPercentage != null;
+                const showOptimized = isBest && tailored && tailoredMatchPercentage != null;
 
                 return (
                   <div
@@ -139,10 +177,10 @@ export default function TailorResultsPage() {
                     {showOptimized ? (
                       <div className="space-y-2">
                         <ScoreBar score={ranking.score} label="Before tailoring" />
-                        <ScoreBar score={matchResult.tailoredMatchPercentage} label="After tailoring" />
+                        <ScoreBar score={tailoredMatchPercentage} label="After tailoring" />
                       </div>
                     ) : (
-                      <ScoreBar score={displayScore} />
+                      <ScoreBar score={ranking.score} />
                     )}
 
                     {ranking.reason && (
@@ -159,7 +197,7 @@ export default function TailorResultsPage() {
       </div>
 
       {atsReport && (atsReport.missingKeywordsInjected?.length > 0 || atsReport.missingKeywords?.length > 0) && (
-        <div className="glass-card p-6 mb-8 slide-up">
+        <div className="glass-card p-4 sm:p-6 mb-6 sm:mb-8 slide-up">
           <h3 className="text-sm font-bold text-white mb-4">ATS Keyword Optimization</h3>
           {atsReport.missingKeywordsInjected?.length > 0 && (
             <div className="mb-4">
@@ -184,11 +222,14 @@ export default function TailorResultsPage() {
         </div>
       )}
 
-      <div className="flex items-center justify-between pt-6 border-t border-white/5">
-        <button onClick={() => router.push('/tailor')} className="btn-secondary">
+      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-6 border-t border-white/5">
+        <button
+          onClick={() => router.push('/tailor')}
+          className="btn-secondary justify-center sm:justify-start"
+        >
           ← Tailor Another JD
         </button>
-        <button onClick={() => router.push('/library')} className="btn-primary px-8">
+        <button onClick={() => router.push('/library')} className="btn-primary px-6 sm:px-8 justify-center">
           View Resume Library →
         </button>
       </div>

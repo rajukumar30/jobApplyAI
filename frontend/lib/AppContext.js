@@ -28,7 +28,7 @@ export const INITIAL_STEPS = [
   { id: 'score',        label: '📊 Scoring resume match quality',   status: 'idle', detail: null },
   { id: 'tailor',       label: '✨ AI tailoring resume content',    status: 'idle', detail: null },
   { id: 'compile_pdf',  label: '📄 Compiling LaTeX resume PDF',     status: 'idle', detail: null },
-  { id: 'upload',       label: '☁️  Uploading to Supabase Storage', status: 'idle', detail: null },
+  { id: 'upload',       label: '📎 Preparing tailored PDF',         status: 'idle', detail: null },
   { id: 'email',        label: '✉️  Ready to send email',           status: 'idle', detail: null },
 ];
 

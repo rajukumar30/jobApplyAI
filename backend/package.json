@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon --exec \"node --dns-result-order=ipv4first server.js\" --ignore \"resumes/\" --ignore \"generated-resumes/\" --ignore \"data/\"",
-    "test": "node --test tests/multiTenant.test.js",
+    "test": "node --test tests/multiTenant.test.js tests/keywordHighlighter.test.js",
     "migrate:legacy-user": "node scripts/migrateLegacyUser.js"
   },
   "dependencies": {

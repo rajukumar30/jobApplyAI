@@ -3,35 +3,9 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import { useApp } from '../lib/AppContext';
 import PageLayout from '../components/layout/PageLayout';
+import StepFlow from '../components/layout/StepFlow';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-
-// Step flow indicator
-function StepFlow({ current }) {
-  const steps = ['Apply', 'Analysis', 'Email'];
-  return (
-    <div className="flex items-center gap-2 mb-8">
-      {steps.map((label, i) => {
-        const idx = i + 1;
-        const isDone = idx < current;
-        const isActive = idx === current;
-        return (
-          <div key={label} className="flex items-center gap-2 flex-1 last:flex-none">
-            <div className={`flex items-center gap-2 ${isActive ? 'text-white' : isDone ? 'text-emerald-400' : 'text-slate-500'}`}>
-              <div className={isActive ? 'step-dot-active' : isDone ? 'step-dot-done' : 'step-dot-idle'}>
-                {isDone ? '✓' : idx}
-              </div>
-              <span className="text-xs font-medium hidden sm:inline">{label}</span>
-            </div>
-            {i < steps.length - 1 && (
-              <div className={`flex-1 h-px ${isDone ? 'bg-gradient-to-r from-emerald-500/40 to-brand-500/40' : 'bg-white/5'}`} />
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
 
 function LoadingSpinner({ size = 'md' }) {
   const s = size === 'sm' ? 'w-3.5 h-3.5' : 'w-5 h-5';
@@ -160,9 +134,9 @@ export default function EmailPage() {
 
       <div className="max-w-3xl mx-auto">
         {/* Email card */}
-        <div className="glass-card p-6 slide-up space-y-5">
+        <div className="glass-card p-4 sm:p-6 slide-up space-y-5">
           {/* Header */}
-          <div className="panel-header">
+          <div className="panel-header !mb-0 !pb-0 !border-0">
             <div className="panel-icon bg-rose-600/20 text-rose-400">
               <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -175,12 +149,12 @@ export default function EmailPage() {
               </p>
             </div>
             {/* SMTP status */}
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto sm:ml-auto">
               {gmailConnected ? (
                 <>
                   <span className="badge-green flex items-center gap-1.5 text-xs">
                     <span className="status-dot bg-emerald-400 animate-pulse" />
-                    Gmail Ready
+                    <span className="hidden xs:inline">Gmail Ready</span>
                   </span>
                   <button onClick={handleVerifyGmail} disabled={verifying} className="btn-secondary text-xs px-3 py-1.5">
                     {verifying ? '…' : '🔌 Test'}
@@ -320,15 +294,15 @@ export default function EmailPage() {
 
         {/* Bottom action buttons */}
         {!sendSuccess && (
-          <div className="flex items-center justify-between mt-6">
-            <button onClick={() => router.push('/analysis')} className="btn-secondary">
+          <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 mt-6">
+            <button onClick={() => router.push('/analysis')} className="btn-secondary justify-center sm:justify-start">
               ← Cancel
             </button>
             <button
               id="send-email-btn"
               onClick={handleSend}
               disabled={sending || !subject.trim() || !body.trim() || !recipientEmail.trim()}
-              className="btn-success px-8 justify-center"
+              className="btn-success px-6 sm:px-8 justify-center w-full sm:w-auto"
             >
               {sending ? (
                 <><LoadingSpinner size="sm" /> Sending…</>

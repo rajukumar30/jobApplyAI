@@ -11,6 +11,7 @@ RUN apt-get update && \
     texlive-fonts-recommended \
     texlive-fonts-extra \
     texlive-latex-extra \
+    texlive-xetex \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory inside the container
