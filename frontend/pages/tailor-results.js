@@ -39,13 +39,15 @@ export default function TailorResultsPage() {
   const { user, authLoading } = useApp();
   const [jobResult, setJobResult] = useState(null);
   const [matchResult, setMatchResult] = useState(null);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     setJobResult(loadTailorSession('tailor_jobResult'));
     setMatchResult(loadTailorSession('tailor_matchResult'));
+    setReady(true);
   }, []);
 
-  if (authLoading) {
+  if (authLoading || !ready) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <svg className="w-8 h-8 animate-spin text-brand-400" viewBox="0 0 24 24" fill="none">

@@ -19,7 +19,13 @@ const TAILOR_STEPS = [
 ];
 
 function saveTailorSession(key, value) {
-  try { sessionStorage.setItem(key, JSON.stringify(value)); } catch (_) {}
+  try {
+    sessionStorage.setItem(key, JSON.stringify(value));
+    return true;
+  } catch (err) {
+    console.error(`Failed to save ${key} to sessionStorage:`, err);
+    return false;
+  }
 }
 
 export default function TailorPage() {
@@ -82,7 +88,7 @@ export default function TailorPage() {
       const matchRes = await axios.post(`${API}/job/match-resumes`, {
         jobData: jobResult.jobData,
         forceTailor: true,
-      }, { signal: controller.signal });
+      }, { signal: controller.signal, timeout: 300000 });
 
       const data = matchRes.data;
       const topScore = data.originalMatchPercentage ?? data.rankings?.[0]?.score;
@@ -108,12 +114,16 @@ export default function TailorPage() {
         );
       }
 
-      saveTailorSession('tailor_jobResult', jobResult);
-      saveTailorSession('tailor_matchResult', data);
+      const savedJob = saveTailorSession('tailor_jobResult', jobResult);
+      const savedMatch = saveTailorSession('tailor_matchResult', data);
+      if (!savedJob || !savedMatch) {
+        showToast('error', 'Results were too large to save in the browser. Try with fewer resumes.');
+        return;
+      }
 
       await new Promise(r => setTimeout(r, 800));
       setModalOpen(false);
-      router.push('/tailor-results');
+      await router.push('/tailor-results');
 
     } catch (err) {
       if (axios.isCancel(err) || err.code === 'ERR_CANCELED' || err.name === 'CanceledError') return;
