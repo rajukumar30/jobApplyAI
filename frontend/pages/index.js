@@ -219,6 +219,13 @@ export default function Dashboard() {
                 accent="brand"
               />
               <NavCard
+                icon="✨"
+                title="Tailor Resume from JD"
+                description="Upload or paste a job description (PDF, Word, image, text). AI scores all your resumes and creates an ATS-optimized version to download."
+                onClick={() => router.push('/tailor')}
+                accent="violet"
+              />
+              <NavCard
                 icon="💬"
                 title="Auto Send DM to HR"
                 description="Automatically send personalized direct messages to recruiters on LinkedIn using AI-crafted outreach messages."

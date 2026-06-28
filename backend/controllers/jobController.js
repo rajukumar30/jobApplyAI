@@ -7,6 +7,7 @@ const resumeController = require('./resumeController');
 const { generateTailoredResumePdf } = require('../services/pdf/latexService');
 const { supabase } = require('../services/supabase/supabaseService');
 const fakeJobDetectionService = require('../services/fakeJobDetectionService');
+const { extractJdText } = require('../services/jd/jdParserService');
 
 // ── Cancellation ─────────────────────────────────────────────────────────────
 // Returns an AbortSignal that fires when the client disconnects before the
@@ -22,6 +23,34 @@ function abortSignalForRequest(req, res) {
 
 function isCancelled(signal, err) {
   return (signal && signal.aborted) || geminiService.isCancel(err);
+}
+
+// ── Parse JD from uploaded file (PDF, DOC, image, TXT, etc.) ───────────────
+async function parseJd(req, res) {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No job description file uploaded.' });
+  }
+
+  try {
+    console.log(`📎 Parsing JD file: ${req.file.originalname} (${req.file.mimetype})`);
+    const text = await extractJdText(req.file);
+
+    if (!text || text.trim().length < 50) {
+      return res.status(400).json({
+        error: 'Could not extract enough text from the file. Try a clearer file or paste the description manually.',
+      });
+    }
+
+    return res.json({
+      success: true,
+      text: text.trim(),
+      filename: req.file.originalname,
+      charCount: text.trim().length,
+    });
+  } catch (err) {
+    console.error('❌ JD file parse error:', err.message);
+    return res.status(422).json({ error: err.message || 'Failed to parse job description file.' });
+  }
 }
 
 // ── Analyze Job ──────────────────────────────────────────────────────────────
@@ -127,7 +156,7 @@ async function analyzeJob(req, res) {
 
 // ── Match Resumes ────────────────────────────────────────────────────────────
 async function matchResumes(req, res) {
-  const { jobData } = req.body;
+  const { jobData, forceTailor } = req.body;
 
   if (!jobData) {
     return res.status(400).json({ error: 'Job data is required for resume matching.' });
@@ -178,10 +207,15 @@ async function matchResumes(req, res) {
     let supabasePublicUrl = null;  // signed URL for the tailored PDF (set when Supabase upload succeeds)
     let tailoringResult = null;    // full result including atsReport
 
-    // ── AI Resume Tailoring (if score < 80) ──────────────────────────────────
+    // ── AI Resume Tailoring (if score < 80, or forceTailor for dedicated tailor flow) ──
     emitProgress(req.user.uid, 'score', 'running', 'Evaluating resume match quality...');
-    if (bestScore < 80 && bestResume) {
-      console.log(`⚠️ Best match score is ${bestScore}%. Initiating AI Resume Tailoring...`);
+    const shouldTailor = !!forceTailor || bestScore < 80;
+    if (shouldTailor && bestResume) {
+      if (forceTailor) {
+        console.log(`✨ Force-tailor requested. Tailoring best resume (score ${bestScore}%)...`);
+      } else {
+        console.log(`⚠️ Best match score is ${bestScore}%. Initiating AI Resume Tailoring...`);
+      }
       try {
         tailoringPerformed = true;
         emitProgress(req.user.uid, 'score', 'done', `Best match: ${bestScore}% - tailoring resume for better fit...`);
@@ -401,4 +435,4 @@ function emitProgress(userId, step, status, detail = null) {
   }
 }
 
-module.exports = { analyzeJob, matchResumes, progressStream, emitProgress };
+module.exports = { analyzeJob, parseJd, matchResumes, progressStream, emitProgress };
