@@ -1,0 +1,23 @@
+# Dependencies (reinstalled inside the image)
+node_modules
+npm-debug.log
+
+# Secrets — must never be baked into the image
+.env
+.env.*
+credentials.json
+token.json
+firebase-service-account.json
+
+# Per-user / local-fallback data — must never ship in the image.
+# These are runtime stores; baking them in leaks one user's data to everyone.
+data/
+resumes/
+generated-resumes/
+
+# Build/output and misc
+*.log
+*.aux
+*.out
+.DS_Store
+Thumbs.db

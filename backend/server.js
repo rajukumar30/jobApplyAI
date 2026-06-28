@@ -65,6 +65,17 @@ app.use((req, res, next) => {
   next();
 });
 
+// ── No-store for all API responses ──────────────────────────────────────────
+// Every /api response is user-specific. Without this, a browser or proxy
+// private cache can serve one user's cached response (e.g. GET /api/resumes,
+// which has an identical URL for everyone) to a different signed-in user.
+app.use('/api', (req, res, next) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  next();
+});
+
 // ── Routes ───────────────────────────────────────────────────────────────────
 app.use('/api/resumes', resumeRoutes);
 app.use('/api/job', jobRoutes);
