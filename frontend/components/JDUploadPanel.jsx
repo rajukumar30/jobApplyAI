@@ -105,13 +105,16 @@ export default function JDUploadPanel({ onTailorRequest, disabled = false }) {
       </div>
 
       {tab === 'text' ? (
-        <textarea
-          value={jobText}
-          onChange={(e) => setJobText(e.target.value)}
-          placeholder="Paste the full job description here — role, requirements, skills, responsibilities..."
-          className="input-field flex-1 min-h-[220px] resize-none text-sm leading-relaxed"
-          disabled={disabled || loading}
-        />
+        <div className="space-y-3 flex-1 flex flex-col">
+          <textarea
+            value={jobText}
+            onChange={(e) => setJobText(e.target.value)}
+            placeholder="Paste the full job description here — role, requirements, skills, responsibilities..."
+            className="form-textarea flex-1 min-h-[220px]"
+            disabled={disabled || loading}
+          />
+          <p className="text-xs text-slate-500 text-right">{jobText.length} characters</p>
+        </div>
       ) : (
         <div
           onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
