@@ -46,6 +46,8 @@ export function AppProvider({ children }) {
   const [jobResult, setJobResultState] = useState(() => loadSession('app_jobResult'));
   const [matchResult, setMatchResultState] = useState(() => loadSession('app_matchResult'));
   const [duplicateWarning, setDuplicateWarning] = useState(() => loadSession('app_duplicateWarning'));
+  const [tailorJobResult, setTailorJobResultState] = useState(() => loadSession('tailor_jobResult'));
+  const [tailorMatchResult, setTailorMatchResultState] = useState(() => loadSession('tailor_matchResult'));
   const [pipelineSteps, setPipelineSteps] = useState(INITIAL_STEPS);
 
   // ── Toast ─────────────────────────────────────────────────────────────────
@@ -70,12 +72,24 @@ export function AppProvider({ children }) {
     saveSession('app_duplicateWarning', val);
   }, []);
 
+  const setTailorJobResult = useCallback((val) => {
+    setTailorJobResultState(val);
+    saveSession('tailor_jobResult', val);
+  }, []);
+
+  const setTailorMatchResult = useCallback((val) => {
+    setTailorMatchResultState(val);
+    saveSession('tailor_matchResult', val);
+  }, []);
+
   const resetFlow = useCallback(() => {
     setJobResultState(null);
     setMatchResultState(null);
     setDuplicateWarning(null);
+    setTailorJobResultState(null);
+    setTailorMatchResultState(null);
     setPipelineSteps(INITIAL_STEPS);
-    clearSession('app_jobResult', 'app_matchResult', 'app_duplicateWarning');
+    clearSession('app_jobResult', 'app_matchResult', 'app_duplicateWarning', 'tailor_jobResult', 'tailor_matchResult');
   }, []);
 
   // ── step updater helper ──────────────────────────────────────────────────
@@ -223,6 +237,8 @@ export function AppProvider({ children }) {
       // flow state
       jobResult, setJobResult,
       matchResult, setMatchResult,
+      tailorJobResult, setTailorJobResult,
+      tailorMatchResult, setTailorMatchResult,
       duplicateWarning, setDuplicateWarning: setDupWarning,
       pipelineSteps, setPipelineSteps, setStep,
       resetFlow,

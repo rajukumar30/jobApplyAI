@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import PageLayout from '../components/layout/PageLayout';
 import JobAnalysisPanel from '../components/JobAnalysisPanel';
@@ -7,15 +6,6 @@ import { buildAuthenticatedUrl } from '../lib/authenticatedAxios';
 import { useApp } from '../lib/AppContext';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-
-function loadTailorSession(key) {
-  try {
-    const raw = sessionStorage.getItem(key);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
 
 function ScoreBar({ score, label }) {
   const color = score >= 80 ? 'bg-emerald-500' : score >= 60 ? 'bg-yellow-500' : 'bg-red-500';
@@ -36,18 +26,9 @@ function ScoreBar({ score, label }) {
 
 export default function TailorResultsPage() {
   const router = useRouter();
-  const { user, authLoading } = useApp();
-  const [jobResult, setJobResult] = useState(null);
-  const [matchResult, setMatchResult] = useState(null);
-  const [ready, setReady] = useState(false);
+  const { user, authLoading, tailorJobResult, tailorMatchResult } = useApp();
 
-  useEffect(() => {
-    setJobResult(loadTailorSession('tailor_jobResult'));
-    setMatchResult(loadTailorSession('tailor_matchResult'));
-    setReady(true);
-  }, []);
-
-  if (authLoading || !ready) {
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <svg className="w-8 h-8 animate-spin text-brand-400" viewBox="0 0 24 24" fill="none">
@@ -63,11 +44,13 @@ export default function TailorResultsPage() {
     return null;
   }
 
-  if (!jobResult || !matchResult) {
+  if (!tailorJobResult || !tailorMatchResult) {
     router.replace('/tailor');
     return null;
   }
 
+  const jobResult = tailorJobResult;
+  const matchResult = tailorMatchResult;
   const rankings = matchResult.rankings || [];
   const bestIdx = matchResult.bestMatchIndex ?? 0;
   const tailored = matchResult.tailoringPerformed;
@@ -88,7 +71,6 @@ export default function TailorResultsPage() {
         <p>ATS scores for every resume · AI-optimized version ready to download</p>
       </div>
 
-      {/* Tailored download CTA */}
       {tailored && tailoredResume && (
         <div className="glass-card p-6 mb-6 border border-brand-500/30 bg-brand-900/10 slide-up">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
@@ -116,7 +98,6 @@ export default function TailorResultsPage() {
         </div>
 
         <div className="lg:col-span-2 space-y-4">
-          {/* All resume ATS scores */}
           <div className="glass-card p-6 slide-up">
             <div className="panel-header mb-4">
               <div className="panel-icon bg-violet-600/20 text-violet-400">
@@ -177,7 +158,6 @@ export default function TailorResultsPage() {
         </div>
       </div>
 
-      {/* ATS keyword report */}
       {atsReport && (atsReport.missingKeywordsInjected?.length > 0 || atsReport.missingKeywords?.length > 0) && (
         <div className="glass-card p-6 mb-8 slide-up">
           <h3 className="text-sm font-bold text-white mb-4">ATS Keyword Optimization</h3>

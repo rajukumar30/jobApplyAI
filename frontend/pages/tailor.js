@@ -18,21 +18,12 @@ const TAILOR_STEPS = [
   { id: 'upload', label: '☁️ Saving tailored resume', status: 'idle', detail: null },
 ];
 
-function saveTailorSession(key, value) {
-  try {
-    sessionStorage.setItem(key, JSON.stringify(value));
-    return true;
-  } catch (err) {
-    console.error(`Failed to save ${key} to sessionStorage:`, err);
-    return false;
-  }
-}
-
 export default function TailorPage() {
   const router = useRouter();
   const {
     user, authLoading,
-    resumes, resumes_loading, handleResumeUploaded,
+    resumes, resumes_loading, handleResumeUploaded, loadResumes,
+    setTailorJobResult, setTailorMatchResult,
     showToast,
   } = useApp();
 
@@ -70,16 +61,14 @@ export default function TailorPage() {
     try {
       setStep('parse_jd', { status: 'done', detail: sourceFile ? `From file: ${sourceFile}` : 'From pasted text' });
 
-      // Analyze JD
       setStep('analyze_job', { status: 'running', detail: 'Extracting role, skills, requirements…' });
-      const jobRes = await axios.post(`${API}/job/analyze`, { text }, { signal: controller.signal });
+      const jobRes = await axios.post(`${API}/job/analyze`, { text }, { signal: controller.signal, timeout: 120000 });
       const jobResult = jobRes.data;
       setStep('analyze_job', {
         status: 'done',
         detail: `${jobResult.jobData?.jobTitle || 'Role'} at ${jobResult.jobData?.company || 'Company'}`,
       });
 
-      // Match + force tailor
       setStep('match_resume', {
         status: 'running',
         detail: `ATS scoring ${originalResumes.length} resume(s)…`,
@@ -98,28 +87,29 @@ export default function TailorPage() {
         detail: `Best match: ${topScore}% — ${data.bestResume?.parsedData?.name || data.bestResume?.originalName || 'resume'}`,
       });
 
-      if (data.tailoringPerformed) {
-        setStep('tailor', { status: 'done', detail: 'Resume rewritten for this job.' });
-        setStep('compile_pdf', {
-          status: 'done',
-          detail: data.bestResume?.originalName || 'PDF ready',
-        });
-        setStep('upload', {
-          status: data.supabasePublicUrl ? 'done' : 'warn',
-          detail: data.supabasePublicUrl ? 'Saved to cloud storage.' : 'Saved locally.',
-        });
-      } else {
+      if (!data.tailoringPerformed) {
         ['tailor', 'compile_pdf', 'upload'].forEach(id =>
           setStep(id, { status: 'error', detail: 'Tailoring did not complete. Try again.' })
         );
-      }
-
-      const savedJob = saveTailorSession('tailor_jobResult', jobResult);
-      const savedMatch = saveTailorSession('tailor_matchResult', data);
-      if (!savedJob || !savedMatch) {
-        showToast('error', 'Results were too large to save in the browser. Try with fewer resumes.');
+        showToast('error', 'Tailoring did not complete. Please try again.');
         return;
       }
+
+      setStep('tailor', { status: 'done', detail: 'Resume rewritten for this job.' });
+      setStep('compile_pdf', {
+        status: 'done',
+        detail: data.bestResume?.originalName || 'PDF ready',
+      });
+      setStep('upload', {
+        status: data.supabasePublicUrl ? 'done' : 'warn',
+        detail: data.supabasePublicUrl ? 'Saved to cloud storage.' : 'Saved locally.',
+      });
+
+      // Store in AppContext (memory + sessionStorage) before navigating — same
+      // pattern as the apply → analysis flow so results are always available.
+      setTailorJobResult(jobResult);
+      setTailorMatchResult(data);
+      loadResumes();
 
       await new Promise(r => setTimeout(r, 800));
       setModalOpen(false);
@@ -127,7 +117,7 @@ export default function TailorPage() {
 
     } catch (err) {
       if (axios.isCancel(err) || err.code === 'ERR_CANCELED' || err.name === 'CanceledError') return;
-      const msg = err.response?.data?.error || 'Tailoring failed. Please try again.';
+      const msg = err.response?.data?.error || err.message || 'Tailoring failed. Please try again.';
       setPipelineSteps(prev => prev.map(s =>
         s.status === 'running' ? { ...s, status: 'error', detail: msg } : s
       ));
@@ -135,7 +125,7 @@ export default function TailorPage() {
     } finally {
       abortRef.current = null;
     }
-  }, [originalResumes, setStep, showToast, router]);
+  }, [originalResumes, setStep, showToast, router, setTailorJobResult, setTailorMatchResult, loadResumes]);
 
   if (authLoading) {
     return (
@@ -165,7 +155,6 @@ export default function TailorPage() {
         <ResumeUploadPanel onUploaded={handleResumeUploaded} />
       </div>
 
-      {/* Resume library summary */}
       <div className="glass-card p-5">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-semibold text-white">Your Resumes</h3>
